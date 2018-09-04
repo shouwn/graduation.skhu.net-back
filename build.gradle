@@ -28,6 +28,12 @@ ext {
     springCloudVersion = 'Finchley.SR1'
 }
 
+task print() {
+    doLast{
+        println "github push complete"
+    }
+}
+
 dependencies {
     compile('org.springframework.boot:spring-boot-starter-data-jpa')
     compile('org.springframework.boot:spring-boot-starter-data-redis')
