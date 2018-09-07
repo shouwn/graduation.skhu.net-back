@@ -12,8 +12,7 @@ class Application
 fun main(args: Array<String>) {
     runApplication<Application>(*args){
         setDefaultProperties(
-                hashMapOf("spring.config.location"
-                        to "classpath:/application.yml, /app/config/graduation/application.yml")
-                        as Map<String, Any>)
+                mapOf("spring.config.location"
+                        to "classpath:/application.yml, /app/config/graduation/application.yml"))
     }
 }
