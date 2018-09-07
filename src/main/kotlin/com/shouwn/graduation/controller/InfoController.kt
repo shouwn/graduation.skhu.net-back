@@ -7,15 +7,9 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("test")
-class TestController(
+class InfoController(
         val env: Environment
 ) {
-
-    @GetMapping("hello")
-    fun hello(): String {
-        return "hello"
-    }
 
     @GetMapping("profile")
     fun profile(): String? {
