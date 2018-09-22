@@ -1,12 +1,8 @@
 package com.shouwn.graduation.model.entity
 
-import com.shouwn.graduation.model.type.Satisfying
-import com.shouwn.graduation.model.type.SatisfyingConverter
-import com.shouwn.graduation.model.type.SatisfyingType
-import org.neo4j.ogm.annotation.GeneratedValue
-import org.neo4j.ogm.annotation.Id
-import org.neo4j.ogm.annotation.NodeEntity
-import org.neo4j.ogm.annotation.Property
+import com.shouwn.graduation.model.domain.SatisfyingType
+import com.shouwn.graduation.model.domain.SatisfyingTypeConverter
+import org.neo4j.ogm.annotation.*
 import org.neo4j.ogm.annotation.typeconversion.Convert
 
 @NodeEntity
@@ -17,6 +13,15 @@ data class Requirement constructor(
         @Property
         val name: String,
 
-        @Convert(SatisfyingConverter::class)
-        val satisfying: Satisfying
+        @Convert(SatisfyingTypeConverter::class)
+        val satisfying: SatisfyingType,
+
+        @Property
+        val require: Int,
+
+        @Relationship(type = "child", direction = Relationship.OUTGOING)
+        val children: Set<Requirement>,
+
+        @Relationship(type = "element", direction = Relationship.OUTGOING)
+        val elements: Set<Requirement>
 )
