@@ -15,11 +15,11 @@ data class Subject constructor(
 
         @Property
         @Convert(SubjectTypeConverter::class)
-        val type: SubjectType,
+        val type: SubjectType, // 이 과목의 만족 조건을 나타냄
 
         @Property
-        val content: String,
+        val content: String, // 과목의 만족 조건에 따른 내용을 나타냄
 
         @Property
-        val value: Int
+        val value: Int // 만족될 경우 반환될 값을 나타냄 e.g.) 과목 학점
 )
