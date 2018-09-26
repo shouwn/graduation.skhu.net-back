@@ -4,6 +4,8 @@ import com.shouwn.graduation.model.domain.type.AuthorityType
 import com.shouwn.graduation.model.domain.type.AuthorityTypeConverter
 import org.neo4j.ogm.annotation.*
 import org.neo4j.ogm.annotation.typeconversion.Convert
+import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.userdetails.UserDetails
 
 @NodeEntity
 data class User constructor(
@@ -17,10 +19,10 @@ data class User constructor(
         val email: String,
 
         @Property
-        val username: String,
+        private val username: String,
 
         @Property
-        val password: String,
+        private val password: String,
 
         @Property
         val accountNonExpired: Boolean,
@@ -36,4 +38,18 @@ data class User constructor(
 
         @Convert(AuthorityTypeConverter::class)
         val authority: AuthorityType
-)
+) : UserDetails {
+    override fun getAuthorities(): MutableCollection<out GrantedAuthority> = authorities // 수정 필요
+
+    override fun isEnabled(): Boolean = enabled
+
+    override fun isCredentialsNonExpired(): Boolean = credentialsNonExpired
+
+    override fun getPassword(): String = password
+
+    override fun isAccountNonExpired(): Boolean = accountNonExpired
+
+    override fun isAccountNonLocked(): Boolean = accountNonLocked
+
+    override fun getUsername(): String = username
+}

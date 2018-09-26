@@ -1,5 +1,6 @@
 package com.shouwn.graduation.config
 
+import com.shouwn.graduation.model.domain.entity.User
 import com.shouwn.graduation.service.MyAuthenticationProvider
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Configuration
@@ -25,6 +26,5 @@ class SecurityConfig @Autowired constructor(
                 .antMatchers("/guest").hasAuthority("ROLE_GUEST")
                 .anyRequest().authenticated()
                 .and()
-
     }
 }
