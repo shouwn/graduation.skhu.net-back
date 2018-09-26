@@ -1,7 +1,7 @@
-package com.shouwn.graduation.model.entity
+package com.shouwn.graduation.model.domain.entity
 
-import com.shouwn.graduation.model.domain.SubjectType
-import com.shouwn.graduation.model.domain.SubjectTypeConverter
+import com.shouwn.graduation.model.domain.type.SubjectType
+import com.shouwn.graduation.model.domain.type.SubjectTypeConverter
 import org.neo4j.ogm.annotation.GeneratedValue
 import org.neo4j.ogm.annotation.Id
 import org.neo4j.ogm.annotation.NodeEntity

@@ -1,7 +1,7 @@
-package com.shouwn.graduation.model.entity
+package com.shouwn.graduation.model.domain.entity
 
-import com.shouwn.graduation.model.domain.SatisfyingType
-import com.shouwn.graduation.model.domain.SatisfyingTypeConverter
+import com.shouwn.graduation.model.domain.type.SatisfyingType
+import com.shouwn.graduation.model.domain.type.SatisfyingTypeConverter
 import org.neo4j.ogm.annotation.*
 import org.neo4j.ogm.annotation.typeconversion.Convert
 

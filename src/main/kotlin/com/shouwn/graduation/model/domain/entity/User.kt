@@ -1,6 +1,7 @@
-package com.shouwn.graduation.model.entity
+package com.shouwn.graduation.model.domain.entity
 
-import com.shouwn.graduation.model.domain.AuthorityType
+import com.shouwn.graduation.model.domain.type.AuthorityType
+import com.shouwn.graduation.model.domain.type.AuthorityTypeConverter
 import org.neo4j.ogm.annotation.*
 import org.neo4j.ogm.annotation.typeconversion.Convert
 
@@ -33,6 +34,6 @@ data class User constructor(
         @Property
         val enabled: Boolean,
 
-        @Convert()
+        @Convert(AuthorityTypeConverter::class)
         val authority: AuthorityType
 )

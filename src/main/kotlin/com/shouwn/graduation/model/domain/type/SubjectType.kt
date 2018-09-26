@@ -1,4 +1,4 @@
-package com.shouwn.graduation.model.domain
+package com.shouwn.graduation.model.domain.type
 
 import org.neo4j.ogm.typeconversion.AttributeConverter
 

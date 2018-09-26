@@ -1,6 +1,5 @@
 package com.shouwn.graduation.config
 
-import com.shouwn.graduation.model.entity.User
 import org.neo4j.ogm.session.SessionFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
