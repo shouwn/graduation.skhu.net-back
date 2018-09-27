@@ -14,36 +14,36 @@ data class User constructor(
         var id: Long? = null,
 
         @Property(name = "nickname")
-        val nickname: String,
+        var nickname: String,
 
         @Property(name = "email")
-        val email: String,
+        var email: String,
 
         @Property(name = "username")
-        private val username: String,
+        private var username: String,
 
         @Property(name = "password")
-        private val password: String,
+        private var password: String,
 
         @Property(name = "accountNonExpired")
-        val accountNonExpired: Boolean = true,
+        var accountNonExpired: Boolean = true,
 
         @Property(name = "accountNonLocked")
-        val accountNonLocked: Boolean = true,
+        var accountNonLocked: Boolean = true,
 
         @Property(name = "credentialsNonExpired")
-        val credentialsNonExpired: Boolean = true,
+        var credentialsNonExpired: Boolean = true,
 
         @Property(name = "enabled")
-        val enabled: Boolean = true,
+        var enabled: Boolean = true,
 
         @Relationship(type = "HAS", direction = Relationship.OUTGOING)
-        private val authorities: MutableSet<Authority>
+        var authorities: MutableSet<Authority>
 
 ) : UserDetails {
 
-    override fun getAuthorities(): List<SimpleGrantedAuthority>
-            = authorities.asSequence().map { SimpleGrantedAuthority(it.authority.name) }.toList()
+    override fun getAuthorities(): MutableCollection<SimpleGrantedAuthority>
+            = authorities.asSequence().map { SimpleGrantedAuthority(it.authority.name) }.toMutableSet()
 
     override fun isEnabled(): Boolean = enabled
 
@@ -51,9 +51,17 @@ data class User constructor(
 
     override fun getPassword(): String = password
 
+    fun setPassword(password: String) {
+        this.password = password
+    }
+
     override fun isAccountNonExpired(): Boolean = accountNonExpired
 
     override fun isAccountNonLocked(): Boolean = accountNonLocked
 
     override fun getUsername(): String = username
+
+    fun setUsername(username: String) {
+        this.username = username
+    }
 }

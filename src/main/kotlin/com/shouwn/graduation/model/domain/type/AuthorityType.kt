@@ -17,10 +17,10 @@ enum class AuthorityType constructor(
     }
 }
 
-class AuthorityTypeConverter : AttributeConverter<AuthorityType, Int> {
-    override fun toGraphProperty(value: AuthorityType?): Int =
+class AuthorityTypeConverter : AttributeConverter<AuthorityType, Number> {
+    override fun toGraphProperty(value: AuthorityType?): Number =
             value?.value ?: throw IllegalStateException()
 
-    override fun toEntityAttribute(value: Int?): AuthorityType =
-            value?.let { AuthorityType.valueOf(it) } ?: throw IllegalStateException()
+    override fun toEntityAttribute(value: Number?): AuthorityType =
+            value?.let { AuthorityType.valueOf(it.toInt()) } ?: throw IllegalStateException()
 }
