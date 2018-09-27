@@ -11,7 +11,7 @@ import org.neo4j.ogm.annotation.typeconversion.Convert
 @NodeEntity
 data class Subject constructor(
         @Id @GeneratedValue
-        val id: Long,
+        var id: Long? = null,
 
         @Property
         @Convert(SubjectTypeConverter::class)

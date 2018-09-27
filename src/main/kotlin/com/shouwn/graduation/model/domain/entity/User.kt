@@ -8,39 +8,42 @@ import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 
-@NodeEntity
+@NodeEntity(label = "User")
 data class User constructor(
         @Id @GeneratedValue
-        val id: Long,
+        var id: Long? = null,
 
-        @Property
+        @Property(name = "nickname")
         val nickname: String,
 
-        @Property
+        @Property(name = "email")
         val email: String,
 
-        @Property
+        @Property(name = "username")
         private val username: String,
 
-        @Property
+        @Property(name = "password")
         private val password: String,
 
-        @Property
-        val accountNonExpired: Boolean,
+        @Property(name = "accountNonExpired")
+        val accountNonExpired: Boolean = true,
 
-        @Property
-        val accountNonLocked: Boolean,
+        @Property(name = "accountNonLocked")
+        val accountNonLocked: Boolean = true,
 
-        @Property
-        val credentialsNonExpired: Boolean,
+        @Property(name = "credentialsNonExpired")
+        val credentialsNonExpired: Boolean = true,
 
-        @Property
-        val enabled: Boolean,
+        @Property(name = "enabled")
+        val enabled: Boolean = true,
 
-        @Relationship(type = "element", direction = Relationship.OUTGOING)
+        @Relationship(type = "HAS", direction = Relationship.OUTGOING)
         private val authorities: MutableSet<Authority>
+
 ) : UserDetails {
-    override fun getAuthorities(): MutableCollection<out GrantedAuthority> = authorities.map { SimpleGrantedAuthority(it.authority.name) }.toList() // 수정 필요
+
+    override fun getAuthorities(): List<SimpleGrantedAuthority>
+            = authorities.asSequence().map { SimpleGrantedAuthority(it.authority.name) }.toList()
 
     override fun isEnabled(): Boolean = enabled
 

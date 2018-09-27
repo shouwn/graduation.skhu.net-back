@@ -28,7 +28,7 @@ class PersistenceContext{
 
     @Bean
     fun sessionFactory(): SessionFactory {
-        return SessionFactory(configuration(), "com.shouwn.graduation.domain.entity")
+        return SessionFactory(configuration(), "com.shouwn.graduation.model.domain.entity")
     }
 
     @Bean

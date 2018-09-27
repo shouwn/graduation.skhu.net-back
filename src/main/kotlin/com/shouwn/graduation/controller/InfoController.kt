@@ -16,4 +16,6 @@ class InfoController(
         return env.activeProfiles.firstOrNull()
     }
 
+    @GetMapping("hello")
+    fun hello(): String = "Hello World!"
 }

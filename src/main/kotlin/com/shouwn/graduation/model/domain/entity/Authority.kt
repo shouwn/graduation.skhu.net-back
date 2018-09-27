@@ -10,7 +10,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority
 
 data class Authority constructor(
         @Id @GeneratedValue
-        val id: Long,
+        var id: Long? = null,
 
         @Property
         @Convert(AuthorityTypeConverter::class)

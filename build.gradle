@@ -7,17 +7,24 @@ buildscript {
         mavenCentral()
     }
     dependencies {
+        classpath("org.jetbrains.kotlin:kotlin-noarg:${kotlinVersion}")
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}")
         classpath("org.jetbrains.kotlin:kotlin-allopen:${kotlinVersion}")
     }
 }
 
+apply plugin: "kotlin-noarg"
 apply plugin: 'kotlin'
 apply plugin: 'kotlin-spring'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
+
+noArg {
+    annotation("org.neo4j.ogm.annotation.NodeEntity")
+    annotation("org.neo4j.ogm.annotation.RelationshipEntity")
+}
 
 group = 'com.shouwn'
 version = '0.0.1-SNAPSHOT'
@@ -51,5 +58,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-actuator")
 //    runtime('mysql:mysql-connector-java')
     compileOnly('org.projectlombok:lombok')
+    testCompile("org.junit.jupiter:junit-jupiter-api:5.3.1")
+    testRuntime("org.junit.jupiter:junit-jupiter-engine:5.3.1")
     testCompile('org.springframework.boot:spring-boot-starter-test')
 }

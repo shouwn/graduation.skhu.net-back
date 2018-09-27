@@ -8,7 +8,7 @@ import org.neo4j.ogm.annotation.typeconversion.Convert
 @NodeEntity
 data class Requirement constructor(
         @Id @GeneratedValue
-        val id: Long,
+        var id: Long? = null,
 
         @Property
         val name: String, // 요건의 이름
