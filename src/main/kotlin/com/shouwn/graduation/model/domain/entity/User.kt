@@ -5,6 +5,7 @@ import com.shouwn.graduation.model.domain.type.AuthorityTypeConverter
 import org.neo4j.ogm.annotation.*
 import org.neo4j.ogm.annotation.typeconversion.Convert
 import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 
 @NodeEntity
@@ -36,10 +37,10 @@ data class User constructor(
         @Property
         val enabled: Boolean,
 
-        @Convert(AuthorityTypeConverter::class)
-        val authority: AuthorityType
+        @Relationship(type = "element", direction = Relationship.OUTGOING)
+        private val authorities: MutableSet<Authority>
 ) : UserDetails {
-    override fun getAuthorities(): MutableCollection<out GrantedAuthority> = authorities // 수정 필요
+    override fun getAuthorities(): MutableCollection<out GrantedAuthority> = authorities.map { SimpleGrantedAuthority(it.authority.name) }.toList() // 수정 필요
 
     override fun isEnabled(): Boolean = enabled
 
