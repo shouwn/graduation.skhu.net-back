@@ -43,7 +43,7 @@ data class User constructor(
 ) : UserDetails {
 
     override fun getAuthorities(): MutableCollection<SimpleGrantedAuthority>
-            = authorities.asSequence().map { SimpleGrantedAuthority(it.authority.name) }.toMutableSet()
+            = authorities.asSequence().map { SimpleGrantedAuthority(it.authority.role) }.toMutableSet()
 
     override fun isEnabled(): Boolean = enabled
 

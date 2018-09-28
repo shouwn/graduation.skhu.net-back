@@ -10,10 +10,10 @@ import org.springframework.stereotype.Service
 
 @Service
 class UserService @Autowired constructor(
-        val userRepository: UserRepository
+        private val userRepository: UserRepository
 ) : UserDetailsService{
     override fun loadUserByUsername(username: String): UserDetails
-            = userRepository.apply { print(userRepository) }.findByUsername(username) ?: throw IllegalStateException()
+            = userRepository.findByUsername(username) ?: throw IllegalStateException()
 
     fun login(username: String, password: String): User? =
         userRepository.findByUsername(username)?.let {

@@ -3,13 +3,17 @@ package com.shouwn.graduation.model.domain.type
 import org.neo4j.ogm.typeconversion.AttributeConverter
 
 enum class AuthorityType constructor(
-        val value: Int
+        val value: Int,
+        val role: String
 ){
-    ROLE_USER(0), // 회원 가입한 유저
-    ROLE_GUEST(1), // 회원 가입하지 않은 게스트
+    USER(0, AuthorityType.ROLE_USER), // 회원 가입한 유저
+    GUEST(1, AuthorityType.ROLE_GUEST), // 회원 가입하지 않은 게스트
     ;
 
     companion object {
+        const val ROLE_USER = "ROLE_USER"
+        const val ROLE_GUEST = "ROLE_GUEST"
+
         val map = AuthorityType.values().associate { it.value to it }
 
         fun valueOf(value: Int): AuthorityType =

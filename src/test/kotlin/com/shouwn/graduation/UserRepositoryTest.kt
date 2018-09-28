@@ -25,7 +25,7 @@ class UserRepositoryTest @Autowired constructor(
                 email = "test@gmail.com",
                 username = "test",
                 password = "test123",
-                authorities = hashSetOf(Authority(authority = AuthorityType.ROLE_GUEST))
+                authorities = hashSetOf(Authority(authority = AuthorityType.GUEST))
         )
     }
 
