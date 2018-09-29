@@ -15,6 +15,8 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.session.web.http.HeaderHttpSessionIdResolver
+import org.springframework.session.web.http.HttpSessionIdResolver
 
 @Configuration
 @EnableWebSecurity
@@ -38,8 +40,6 @@ class SecurityConfig @Autowired constructor(
 //                .antMatchers("/user").hasAuthority("ROLE_USER")
 //                .antMatchers("/guest").hasAuthority("ROLE_GUEST")
                 .anyRequest().authenticated()
-                .and()
-                .formLogin()
                 .and()
                 .logout()
     }

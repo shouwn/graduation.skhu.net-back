@@ -1,11 +1,12 @@
 package com.shouwn.graduation.model.domain.type
 
 import org.neo4j.ogm.typeconversion.AttributeConverter
+import java.io.Serializable
 
 enum class AuthorityType constructor(
         val value: Int,
         val role: String
-){
+) : Serializable{
     USER(0, AuthorityType.ROLE_USER), // 회원 가입한 유저
     GUEST(1, AuthorityType.ROLE_GUEST), // 회원 가입하지 않은 게스트
     ;

@@ -8,6 +8,7 @@ import org.neo4j.ogm.annotation.NodeEntity
 import org.neo4j.ogm.annotation.Property
 import org.neo4j.ogm.annotation.typeconversion.Convert
 import org.springframework.security.core.authority.SimpleGrantedAuthority
+import java.io.Serializable
 
 @NodeEntity(label = "Authority")
 data class Authority constructor(
@@ -17,4 +18,4 @@ data class Authority constructor(
         @Property(name = "authority")
         @Convert(AuthorityTypeConverter::class)
         var authority: AuthorityType
-)
+) : Serializable

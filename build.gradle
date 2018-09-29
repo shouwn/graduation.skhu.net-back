@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        kotlinVersion = '1.2.70'
+        kotlinVersion = '1.2.71'
         springBootVersion = '2.0.4.RELEASE'
     }
     repositories {
@@ -48,16 +48,23 @@ repositories {
 
 dependencies {
 //    compile('org.springframework.boot:spring-boot-starter-data-jpa')
+//    compile('org.springframework.session:spring-session')
+
+    compile('org.springframework.session:spring-session-data-redis')
+    compile('io.lettuce:lettuce-core')
+    compile('org.springframework.boot:spring-boot-starter-security')
+
 //    compile('org.springframework.boot:spring-boot-starter-data-redis')
     compile('org.springframework.boot:spring-boot-starter-web')
+    compile("org.springframework.boot:spring-boot-starter-actuator")
     compile('org.springframework.boot:spring-boot-starter-data-neo4j')
-    compile('org.springframework.boot:spring-boot-starter-security')
+
     compile('com.fasterxml.jackson.module:jackson-module-kotlin')
     compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     compile("org.jetbrains.kotlin:kotlin-reflect")
-    compile("org.springframework.boot:spring-boot-starter-actuator")
+
 //    runtime('mysql:mysql-connector-java')
-    compileOnly('org.projectlombok:lombok')
+
     testCompile("org.junit.jupiter:junit-jupiter-api:5.3.1")
     testCompile("org.junit.jupiter:junit-jupiter-params:5.3.1")
     testRuntime("org.junit.jupiter:junit-jupiter-engine:5.3.1")
