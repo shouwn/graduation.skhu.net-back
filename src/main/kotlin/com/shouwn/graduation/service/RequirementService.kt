@@ -6,6 +6,6 @@ import org.springframework.stereotype.Service
 
 @Service
 class RequirementService @Autowired constructor(
-        val requirementRepository: RequirementRepository
+        private val requirementRepository: RequirementRepository
 ){
 }

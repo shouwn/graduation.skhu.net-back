@@ -1,7 +1,6 @@
-package com.shouwn.graduation.model.domain
+package com.shouwn.graduation.model.domain.type
 
 import org.neo4j.ogm.typeconversion.AttributeConverter
-import org.neo4j.ogm.typeconversion.CompositeAttributeConverter
 
 enum class SatisfyingType(val value: Int){
     SUBJECT_ALL(0), // 하위 과목 모두 수강
@@ -24,5 +23,4 @@ class SatisfyingTypeConverter : AttributeConverter<SatisfyingType, Int> {
 
     override fun toEntityAttribute(value: Int?): SatisfyingType =
             value?.let { SatisfyingType.valueOf(it) } ?: throw IllegalStateException()
-
 }
