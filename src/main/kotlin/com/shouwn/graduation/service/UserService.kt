@@ -11,12 +11,5 @@ import org.springframework.stereotype.Service
 @Service
 class UserService @Autowired constructor(
         private val userRepository: UserRepository
-) : UserDetailsService{
-    override fun loadUserByUsername(username: String): UserDetails
-            = userRepository.findByUsername(username) ?: throw IllegalStateException()
-
-    fun login(username: String, password: String): User? =
-        userRepository.findByUsername(username)?.let {
-            if(it.password == Encryption.encrypt(password, Encryption.MD5)) it else null
-        }
+){
 }
