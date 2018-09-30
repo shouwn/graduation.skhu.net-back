@@ -1,5 +1,6 @@
 package com.shouwn.graduation.model.domain.entity
 
+import com.shouwn.graduation.model.domain.entity.audit.UserDateAudit
 import com.shouwn.graduation.model.domain.type.SubjectType
 import com.shouwn.graduation.model.domain.type.SubjectTypeConverter
 import org.neo4j.ogm.annotation.GeneratedValue
@@ -22,4 +23,4 @@ data class Subject constructor(
 
         @Property
         var value: Int // 만족될 경우 반환될 값을 나타냄 e.g.) 과목 학점
-)
+) : UserDateAudit()

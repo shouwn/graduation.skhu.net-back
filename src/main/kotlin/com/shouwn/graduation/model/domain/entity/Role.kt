@@ -1,6 +1,7 @@
 package com.shouwn.graduation.model.domain.entity
 
-import com.shouwn.graduation.model.domain.type.*
+import com.shouwn.graduation.model.domain.type.RoleName
+import com.shouwn.graduation.model.domain.type.RoleTypeConverter
 import org.neo4j.ogm.annotation.GeneratedValue
 import org.neo4j.ogm.annotation.Id
 import org.neo4j.ogm.annotation.NodeEntity

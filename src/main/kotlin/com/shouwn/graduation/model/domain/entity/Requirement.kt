@@ -1,5 +1,6 @@
 package com.shouwn.graduation.model.domain.entity
 
+import com.shouwn.graduation.model.domain.entity.audit.UserDateAudit
 import com.shouwn.graduation.model.domain.type.SatisfyingType
 import com.shouwn.graduation.model.domain.type.SatisfyingTypeConverter
 import org.neo4j.ogm.annotation.*
@@ -20,8 +21,8 @@ data class Requirement constructor(
         var require: Int, // 요건의 타입에 맞춘 요구 값을 나타냄
 
         @Relationship(type = "child", direction = Relationship.OUTGOING)
-        var children: Set<Requirement>, // 하위 요건
+        var children: Set<Requirement>?, // 하위 요건
 
         @Relationship(type = "element", direction = Relationship.OUTGOING)
-        var elements: Set<Subject> // 이 요건 아래에 과목이 있다면 과목과의 관계 표현
-)
+        var elements: Set<Subject>? // 이 요건 아래에 과목이 있다면 과목과의 관계 표현
+) : UserDateAudit()

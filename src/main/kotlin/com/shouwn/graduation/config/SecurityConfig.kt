@@ -1,10 +1,8 @@
 package com.shouwn.graduation.config
 
-import com.shouwn.graduation.model.domain.entity.User
 import com.shouwn.graduation.security.CustomUserDetailsService
 import com.shouwn.graduation.security.JwtAuthenticationEntryPoint
 import com.shouwn.graduation.security.JwtAuthenticationFilter
-import com.shouwn.graduation.service.UserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
