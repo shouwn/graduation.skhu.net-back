@@ -19,7 +19,10 @@ data class UserPrincipal constructor(
         @JsonIgnore
         private var password: String,
 
-        private var authorities: MutableCollection<out GrantedAuthority>
+        private var authorities: MutableCollection<out GrantedAuthority>,
+
+        @JsonIgnore
+        private var enabled: Boolean
 ) : UserDetails {
 
     companion object {
@@ -32,14 +35,15 @@ data class UserPrincipal constructor(
                         password = user.password,
                         authorities = user.roles.asSequence()
                                 .map { SimpleGrantedAuthority(it.role.name) }
-                                .toMutableList()
+                                .toMutableList(),
+                        enabled = user.enabled
                 )
     }
 
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> = authorities
     override fun getPassword(): String = password
     override fun getUsername(): String = username
-    override fun isEnabled(): Boolean = true
+    override fun isEnabled(): Boolean = enabled
     override fun isCredentialsNonExpired(): Boolean = true
     override fun isAccountNonExpired(): Boolean = true
     override fun isAccountNonLocked(): Boolean = true
