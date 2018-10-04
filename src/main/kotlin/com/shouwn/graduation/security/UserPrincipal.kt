@@ -22,7 +22,9 @@ data class UserPrincipal constructor(
         private var authorities: MutableCollection<out GrantedAuthority>,
 
         @JsonIgnore
-        private var enabled: Boolean
+        private var enabled: Boolean,
+
+        val entity: User
 ) : UserDetails {
 
     companion object {
@@ -36,7 +38,8 @@ data class UserPrincipal constructor(
                         authorities = user.roles.asSequence()
                                 .map { SimpleGrantedAuthority(it.role.name) }
                                 .toMutableList(),
-                        enabled = user.enabled
+                        enabled = user.enabled,
+                        entity = user
                 )
     }
 

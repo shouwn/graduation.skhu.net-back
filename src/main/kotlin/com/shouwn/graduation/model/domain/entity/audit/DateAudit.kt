@@ -14,10 +14,8 @@ import java.time.LocalDateTime
 abstract class DateAudit : Serializable {
 
     @CreatedDate
-    @Property
     var createdAt: LocalDateTime? = null
 
     @LastModifiedDate
-    @Property
     var updatedAt: LocalDateTime? = null
 }
