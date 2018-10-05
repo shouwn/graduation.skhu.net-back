@@ -11,11 +11,9 @@ data class Interview constructor(
         var id: Long? = null,
 
         @Property(name = "title")
-        @get: NotBlank
         var title: String,
 
         @Property(name = "content")
-        @get: NotBlank
         var content: String,
 
         @Relationship(type = "WRITE", direction = Relationship.INCOMING)

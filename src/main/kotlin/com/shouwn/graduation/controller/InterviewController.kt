@@ -1,5 +1,6 @@
 package com.shouwn.graduation.controller
 
+import com.shouwn.graduation.model.domain.dto.InterviewRequest
 import com.shouwn.graduation.model.domain.entity.Interview
 import com.shouwn.graduation.security.CurrentUser
 import com.shouwn.graduation.security.UserPrincipal
@@ -19,9 +20,24 @@ class InterviewController @Autowired constructor(
     @PostMapping("asker/{askerId}")
     fun postInterview(@PathVariable("askerId") askerId: Long,
                       @CurrentUser user: UserPrincipal,
-                      @RequestBody @Valid interview: Interview): ResponseEntity<*> =
+                      @RequestBody @Valid interviewRequest: InterviewRequest): ResponseEntity<*> =
             ResponseEntity
                     .status(HttpStatus.CREATED)
-                    .body(interviewService.saveInterview(user.entity, askerId, interview))
+                    .body(interviewService.saveInterview(user.entity, askerId, interviewRequest))
 
+    @GetMapping("asker/{askerId}")
+    fun findInterviewsByAsker(@PathVariable("askerId") askerId: Long) =
+            ResponseEntity.ok(interviewService.findInterviewByAsker(askerId))
+
+    @GetMapping("writer/{writerId}")
+    fun findInterviewsByWriter(@PathVariable("writerId") writerId: Long) =
+            ResponseEntity.ok(interviewService.findInterviewByWriter(writerId))
+
+    @PutMapping("update/{interviewId}")
+    fun updateInterview(@PathVariable interviewId: Long,
+                        @Valid @RequestBody interviewRequest: InterviewRequest,
+                        @CurrentUser user: UserPrincipal) =
+            ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(interviewService.updateInterview(interviewId, interviewRequest, user))
 }
