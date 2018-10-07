@@ -1,5 +1,6 @@
 package com.shouwn.graduation.model.domain.entity.audit
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import org.neo4j.ogm.annotation.Property
 import org.springframework.data.annotation.CreatedDate
@@ -13,11 +14,6 @@ import java.time.LocalDateTime
 )
 abstract class DateAudit : Serializable {
 
-    @CreatedDate
-    @Property
-    var createdAt: LocalDateTime? = null
-
     @LastModifiedDate
-    @Property
     var updatedAt: LocalDateTime? = null
 }

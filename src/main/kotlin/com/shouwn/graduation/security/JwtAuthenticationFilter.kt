@@ -26,8 +26,8 @@ class JwtAuthenticationFilter : OncePerRequestFilter() {
         try {
             val jwt = getJwtFromRequest(request)
 
-            if(jwt?.isNotBlank() == true && tokenProvider.validateToken(jwt)){
-                val userId = tokenProvider.getUserIdFromJWT(jwt)
+            if(!jwt.isNullOrBlank() && tokenProvider.validateToken(jwt)){
+                val userId = tokenProvider.getUserIdFromJWT(jwt!!)
 
                 val userDetails =  customUserDetailsService.loadUserById(userId)
                 val authentication = UsernamePasswordAuthenticationToken(userDetails, null, userDetails.authorities)
@@ -46,6 +46,6 @@ class JwtAuthenticationFilter : OncePerRequestFilter() {
     private fun getJwtFromRequest(request: HttpServletRequest): String? {
         val bearerToken = request.getHeader("Authorization")
 
-        return if(bearerToken?.isNotBlank() == true && bearerToken.startsWith("Bearer ")) bearerToken.substring(7) else null
+        return if(!bearerToken.isNullOrBlank()&& bearerToken.startsWith("Bearer ")) bearerToken.substring(7) else null
     }
 }

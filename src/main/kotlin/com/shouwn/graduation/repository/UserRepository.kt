@@ -12,14 +12,9 @@ interface UserRepository : Neo4jRepository<User, Long>{
     fun findByUsernameOrEmail(username: String, email: String): User?
 
     @Query("""
-                MATCH(u: User {name: {username}})
+                MATCH(u: User)
+                WHERE u.username = {username} OR u.email = {email}
                 RETURN COUNT(u) > 0
                 """)
-    fun existsByUsername(@Param("username") username: String): Boolean
-
-    @Query("""
-                MATCH(u: User {email: {email}})
-                RETURN COUNT(u) > 0
-                """)
-    fun existsByEmail(@Param("email") email: String): Boolean
+    fun existsByUsernameOrEmail(@Param("username") username: String, @Param("email") email: String): Boolean
 }
