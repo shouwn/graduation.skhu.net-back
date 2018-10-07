@@ -6,5 +6,4 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal
 @Retention(AnnotationRetention.RUNTIME)
 @MustBeDocumented
 @AuthenticationPrincipal
-annotation class CurrentUser {
-}
+annotation class CurrentUser

@@ -46,14 +46,9 @@ class AuthService @Autowired constructor(
     }
 
     fun registerUser(signUpRequest: SignUpRequest): URI {
-        if (userRepository.existsByUsername(signUpRequest.username))
+        if (userRepository.existsByUsernameOrEmail(signUpRequest.username, signUpRequest.email))
             throw ApiException(
-                    apiResponse = ApiResponse(false, "Username is already taken!"),
-                    status = HttpStatus.BAD_REQUEST)
-
-        if (userRepository.existsByEmail(signUpRequest.email))
-            throw ApiException(
-                    apiResponse = ApiResponse(false, "Email Address already in use!"),
+                    apiResponse = ApiResponse(false, "Username Or Email is already taken!"),
                     status = HttpStatus.BAD_REQUEST)
 
         val user = User(
@@ -62,7 +57,8 @@ class AuthService @Autowired constructor(
                 email = signUpRequest.email,
                 password = passwordEncoder.encode(signUpRequest.password),
                 roles = mutableSetOf(roleRepository.findByRole(RoleName.ROLE_USER)
-                        ?: throw AppException("User Role not Set."))
+                        ?: throw AppException("User Role not Set.")),
+                enabled = true
         )
 
         val result = userRepository.save(user)
