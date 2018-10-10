@@ -49,7 +49,7 @@ class AuthService @Autowired constructor(
         if (userRepository.existsByUsernameOrEmail(signUpRequest.username, signUpRequest.email))
             throw ApiException(
                     apiResponse = ApiResponse(false, "Username Or Email is already taken!"),
-                    status = HttpStatus.BAD_REQUEST)
+                    status = HttpStatus.CONFLICT)
 
         val user = User(
                 name = signUpRequest.name,
