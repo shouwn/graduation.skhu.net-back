@@ -54,8 +54,11 @@ class SecurityConfig @Autowired constructor(
                     .sessionCreationPolicy((SessionCreationPolicy.STATELESS))
                     .and()
                 .authorizeRequests()
-                    .antMatchers("/api/auth/**").permitAll()
+                    .antMatchers("/api/auth/**").permitAll() // for sign up, sign in
+                    .antMatchers("/profile").permitAll() // for get profile
+                    .antMatchers("/actuator/**").permitAll() // for health check
                     .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
                     .anyRequest().authenticated()
 
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter::class.java)
