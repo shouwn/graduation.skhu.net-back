@@ -2,6 +2,7 @@ package com.shouwn.graduation
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.shouwn.graduation.model.domain.dto.AuthenticationRequest
+import com.shouwn.graduation.model.domain.dto.LoginRequest
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -19,7 +20,7 @@ import org.springframework.web.context.WebApplicationContext
 
 @ExtendWith(SpringExtension::class)
 @SpringBootTest
-class UserControllerTest @Autowired constructor(
+class AuthControllerTest @Autowired constructor(
         private val wac: WebApplicationContext
 ) {
     private lateinit var mvc: MockMvc
@@ -34,13 +35,14 @@ class UserControllerTest @Autowired constructor(
 
     @Test
     fun loginTest() {
-        val request = AuthenticationRequest(username = "test", password = "test123")
+        val request = LoginRequest("tester", "test123")
 
-        mvc.perform(post("/user/login")
+        mvc.perform(post("/api/auth/signin")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(ObjectMapper().writeValueAsString(request)))
-                .andExpect(status().isOk)
+                .andExpect(status().isCreated)
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.username").value(request.username))
+                .andExpect(jsonPath("$.accessToken").isNotEmpty)
+                .andExpect(jsonPath("$.tokenType").value("Bearer"))
     }
 }
