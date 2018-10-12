@@ -37,8 +37,11 @@ class AuthService @Autowired constructor(
     private val logger = LoggerFactory.getLogger(AuthService::class.java)
     private val passwordEncoder: PasswordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder()
 
-    @Value("\${app.signCode}")
-    private lateinit var signCode: String
+    @Value("\${app.signCode.user}")
+    private lateinit var userSignCode: String
+
+    @Value("\${app.signCode.admin}")
+    private lateinit var adminSignCode: String
 
     fun authenticateUser(loginRequest: LoginRequest): JwtAuthenticationResponse {
         val authentication = authenticationManager.authenticate(
@@ -54,6 +57,8 @@ class AuthService @Autowired constructor(
     }
 
     fun registerUser(signUpRequest: SignUpRequest, role: RoleName): URI {
+        val signCode = if(role == RoleName.ROLE_USER) userSignCode else adminSignCode
+
         if(signUpRequest.code != signCode) {
             logger.error("Register Fail: ${signUpRequest.code} is not $signCode")
 
@@ -85,7 +90,7 @@ class AuthService @Autowired constructor(
 
         val result = userRepository.save(user)
 
-        logger.info("${signUpRequest.userNumber} ${signUpRequest.name} is registered successful!")
+        logger.info("$role ${signUpRequest.userNumber} ${signUpRequest.name} is registered successful!")
 
         return ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/users/{username}")

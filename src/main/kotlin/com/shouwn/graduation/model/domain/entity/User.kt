@@ -21,6 +21,7 @@ data class User constructor(
 
         var hint: String,
 
+        @JsonIgnore
         var hintAnswer: String,
 
         @JsonIgnore

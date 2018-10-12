@@ -27,16 +27,14 @@ class AuthController @Autowired constructor(
     }
 
     @PostMapping("user/signup")
-    fun registerUser(@Valid @RequestBody signUpRequest: SignUpRequest): ResponseEntity<*>{
-
-        return ResponseEntity.created(authService.registerUser(signUpRequest, RoleName.ROLE_USER))
-                .body(ApiResponse(true, "User registered successfully"))
-    }
+    fun registerUser(@Valid @RequestBody signUpRequest: SignUpRequest) =
+            ResponseEntity.created(authService.registerUser(signUpRequest, RoleName.ROLE_USER))
+                    .body(ApiResponse(true, "사용자 등록 성공"))
 
     @PostMapping("admin/signup")
     fun registerAdmin(@Valid @RequestBody signUpRequest: SignUpRequest): ResponseEntity<*>{
 
         return ResponseEntity.created(authService.registerUser(signUpRequest, RoleName.ROLE_ADMIN))
-                .body(ApiResponse(true, "Admin registered successfully"))
+                .body(ApiResponse(true, "관리자 등록 성공"))
     }
 }
