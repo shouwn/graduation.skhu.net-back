@@ -18,9 +18,9 @@ class CustomUserDetailsService @Autowired constructor(
 ): UserDetailsService{
 
     @Transactional
-    override fun loadUserByUsername(usernameOrEmail: String): UserDetails =
-            userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail)?.let { UserPrincipal.create(it) }
-                    ?: throw UsernameNotFoundException("User not found with username or email : $usernameOrEmail")
+    override fun loadUserByUsername(userNumberOrEmail: String): UserDetails =
+            userRepository.findByUserNumberOrEmail(userNumberOrEmail, userNumberOrEmail)?.let { UserPrincipal.create(it) }
+                    ?: throw UsernameNotFoundException("User not found with username or email : $userNumberOrEmail")
 
     fun loadUserById(id: Long): UserDetails =
             userRepository.findById(id).let {
