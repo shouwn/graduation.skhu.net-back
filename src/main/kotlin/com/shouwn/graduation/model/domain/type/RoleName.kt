@@ -7,8 +7,7 @@ enum class RoleName constructor(
         val value: String
 ) : Serializable{
     ROLE_USER("USER"), // 회원 가입한 유저
-    ROLE_GUEST("GUEST"), // 회원 가입하지 않은 게스트
-    ROLE_PROFESSOR("PROFESSOR")
+    ROLE_ADMIN("ADMIN")
     ;
 
     companion object {
