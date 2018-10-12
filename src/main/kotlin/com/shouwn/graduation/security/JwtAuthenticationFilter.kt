@@ -24,7 +24,7 @@ class JwtAuthenticationFilter : OncePerRequestFilter() {
 
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain) {
         try {
-            val jwt = getJwtFromRequest(request)
+            val jwt = jwtFromRequest(request)
 
             if(!jwt.isNullOrBlank() && tokenProvider.validateToken(jwt)){
                 val userId = tokenProvider.getUserIdFromJWT(jwt!!)
@@ -43,7 +43,7 @@ class JwtAuthenticationFilter : OncePerRequestFilter() {
         filterChain.doFilter(request, response)
     }
 
-    private fun getJwtFromRequest(request: HttpServletRequest): String? {
+    private fun jwtFromRequest(request: HttpServletRequest): String? {
         val bearerToken = request.getHeader("Authorization")
 
         return if(!bearerToken.isNullOrBlank()&& bearerToken.startsWith("Bearer ")) bearerToken.substring(7) else null

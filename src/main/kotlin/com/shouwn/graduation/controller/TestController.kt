@@ -17,25 +17,13 @@ class TestController @Autowired constructor(
     val requirementRepository: RequirementRepository
 ){
 
-    @Secured("ROLE_GUEST")
+    @Secured("ROLE_ADMIN")
     @GetMapping("guest/hello")
     fun hello(): String = "Hello Guest"
 
     @Secured("ROLE_USER")
     @GetMapping("user/hello")
     fun hello2(): String = "Hello User"
-
-    @Secured("ROLE_USER")
-    @GetMapping("add/requirement")
-    fun test(): Requirement{
-        return requirementRepository.save(Requirement(
-                name = "테스트",
-                satisfying = SatisfyingType.SUBJECT_ALL,
-                require = 10,
-                children = null,
-                elements = null
-        ))
-    }
 
     @GetMapping("currentUser")
     fun currentUser(@CurrentUser user: UserPrincipal): UserPrincipal = user

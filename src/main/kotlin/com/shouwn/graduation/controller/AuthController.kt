@@ -3,6 +3,7 @@ package com.shouwn.graduation.controller
 import com.shouwn.graduation.model.domain.dto.ApiResponse
 import com.shouwn.graduation.model.domain.dto.LoginRequest
 import com.shouwn.graduation.model.domain.dto.SignUpRequest
+import com.shouwn.graduation.model.domain.type.RoleName
 import com.shouwn.graduation.service.AuthService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -25,10 +26,15 @@ class AuthController @Autowired constructor(
         return ResponseEntity.status(HttpStatus.CREATED).body(authService.authenticateUser(loginRequest))
     }
 
-    @PostMapping("signup")
-    fun registerUser(@Valid @RequestBody signUpRequest: SignUpRequest): ResponseEntity<*>{
+    @PostMapping("user/signup")
+    fun registerUser(@Valid @RequestBody signUpRequest: SignUpRequest) =
+            ResponseEntity.created(authService.registerUser(signUpRequest, RoleName.ROLE_USER))
+                    .body(ApiResponse(true, "사용자 등록 성공"))
 
-        return ResponseEntity.created(authService.registerUser(signUpRequest))
-                .body(ApiResponse(true, "User registered successfully"))
+    @PostMapping("admin/signup")
+    fun registerAdmin(@Valid @RequestBody signUpRequest: SignUpRequest): ResponseEntity<*>{
+
+        return ResponseEntity.created(authService.registerUser(signUpRequest, RoleName.ROLE_ADMIN))
+                .body(ApiResponse(true, "관리자 등록 성공"))
     }
 }
