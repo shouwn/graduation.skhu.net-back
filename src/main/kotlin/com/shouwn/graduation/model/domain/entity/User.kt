@@ -10,25 +10,24 @@ data class User constructor(
         @Id @GeneratedValue
         var id: Long? = null,
 
-        @Property(name = "name")
+        var userNumber: String,
+
+        @JsonIgnore
+        var password: String,
+
         var name: String,
 
-        @Property(name = "email")
         var email: String,
 
-        @JsonIgnore
-        @Property(name = "username")
-        var username: String,
+        var hint: String,
+
+        var hintAnswer: String,
 
         @JsonIgnore
-        @Property(name = "password")
-        var password: String,
+        var enabled: Boolean,
 
         @JsonIgnore
         @Relationship(type = "HAS", direction = Relationship.OUTGOING)
-        var roles: MutableSet<Role>,
+        var roles: MutableSet<Role>
 
-        @JsonIgnore
-        @Property(name = "enabled")
-        var enabled: Boolean
 ) : DateAudit()

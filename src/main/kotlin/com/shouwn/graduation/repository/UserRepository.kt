@@ -9,12 +9,12 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface UserRepository : Neo4jRepository<User, Long>{
-    fun findByUsernameOrEmail(username: String, email: String): User?
+    fun findByUserNumberOrEmail(userNumber: String, email: String): User?
 
     @Query("""
                 MATCH(u: User)
-                WHERE u.username = {username} OR u.email = {email}
+                WHERE u.userNumber = {userNumber} OR u.email = {email}
                 RETURN COUNT(u) > 0
                 """)
-    fun existsByUsernameOrEmail(@Param("username") username: String, @Param("email") email: String): Boolean
+    fun existsByUserNumberOrEmail(@Param("userNumber") username: String, @Param("email") email: String): Boolean
 }
