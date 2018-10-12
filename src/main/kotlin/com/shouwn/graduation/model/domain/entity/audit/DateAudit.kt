@@ -13,6 +13,7 @@ import java.time.LocalDateTime
         allowGetters = true
 )
 abstract class DateAudit : Serializable {
+    var createdAt: LocalDateTime? = LocalDateTime.now()
 
     @LastModifiedDate
     var updatedAt: LocalDateTime? = null
