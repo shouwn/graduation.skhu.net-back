@@ -25,4 +25,5 @@ data class Requirement constructor(
 
         @Relationship(type = "element", direction = Relationship.OUTGOING)
         var elements: Set<Subject>? // 이 요건 아래에 과목이 있다면 과목과의 관계 표현
+
 ) : UserDateAudit()
