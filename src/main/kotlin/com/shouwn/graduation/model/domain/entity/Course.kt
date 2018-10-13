@@ -1,5 +1,7 @@
 package com.shouwn.graduation.model.domain.entity
 
+import com.shouwn.graduation.model.domain.type.SectionType
+import com.shouwn.graduation.model.domain.type.TermType
 import org.neo4j.ogm.annotation.*
 import java.time.LocalDateTime
 
@@ -9,23 +11,19 @@ data class Course constructor(
         @Id @GeneratedValue
         var id: Long? = null,
 
-        @Property
-        var term: LocalDateTime,
-
-        @Property
+        @Index(unique = true)
         var code: String,
 
-        @Property
+        @Index
         var name: String,
 
-        @Property
-        var type: String, // 이수구분 enum 예정
+        var section: SectionType, // 이수구분 enum 예정
 
-        @Property
         var credit: Int, // 학점
 
-        @Property
-        var grade: Int, // 성적 enum 예정
+        var term: TermType,
+
+        var enabled: Boolean, // 성적 enum 예정
 
         @Relationship(type = "REPLACE", direction = Relationship.OUTGOING)
         var replacement: Course

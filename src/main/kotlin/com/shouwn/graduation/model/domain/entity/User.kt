@@ -28,6 +28,9 @@ data class User constructor(
         @Relationship(type = "HAS", direction = Relationship.OUTGOING)
         var roles: MutableSet<Role>,
 
+        @Relationship(type = "ATTEND")
+        var attend: MutableSet<Attend>,
+
         @JsonIgnore
         @Property(name = "enabled")
         var enabled: Boolean
