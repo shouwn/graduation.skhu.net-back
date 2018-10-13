@@ -30,10 +30,6 @@ class SecurityConfig @Autowired constructor(
         val unauthorizedHandler: JwtAuthenticationEntryPoint
 ) : WebSecurityConfigurerAdapter(false){ // disableDefaults 가 뭐임?
 
-    override fun configure(web: WebSecurity) {
-        web.ignoring().antMatchers("/res/**")
-    }
-
     @Bean
     fun jwtAuthenticationFilter(): JwtAuthenticationFilter = JwtAuthenticationFilter()
 
@@ -54,8 +50,20 @@ class SecurityConfig @Autowired constructor(
                     .sessionCreationPolicy((SessionCreationPolicy.STATELESS))
                     .and()
                 .authorizeRequests()
-                    .antMatchers("/api/auth/**").permitAll()
+                    .antMatchers("/api/auth/**").permitAll() // for sign up, sign in
+                    .antMatchers("/profile").permitAll() // for get profile
+                    .antMatchers("/actuator/**").permitAll() // for health check
                     .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                    .antMatchers("/",
+                        "/favicon.ico",
+                        "/favicon.png",
+                        "/**/*.png",
+                        "/**/*.gif",
+                        "/**/*.svg",
+                        "/**/*.jpg",
+                        "/**/*.html",
+                        "/**/*.css",
+                        "/**/*.js").permitAll()
                     .anyRequest().authenticated()
 
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter::class.java)

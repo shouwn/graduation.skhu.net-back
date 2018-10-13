@@ -33,7 +33,7 @@ data class UserPrincipal constructor(
                         id = user.id!!,
                         name = user.name,
                         email = user.email,
-                        username = user.username,
+                        username = user.userNumber,
                         password = user.password,
                         authorities = user.roles.asSequence()
                                 .map { SimpleGrantedAuthority(it.role.name) }
