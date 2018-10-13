@@ -74,6 +74,8 @@ dependencies {
             'io.jsonwebtoken:jjwt-jackson:0.10.5'
 
     compile 'org.apache.poi:poi:3.17'
+    
+    compile 'org.apache.tika:tika-core:1.14'
 
     testCompile("org.junit.jupiter:junit-jupiter-api:5.3.1")
     testCompile("org.junit.jupiter:junit-jupiter-params:5.3.1")

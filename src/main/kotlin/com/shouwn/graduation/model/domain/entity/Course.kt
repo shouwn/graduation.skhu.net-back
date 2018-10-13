@@ -17,14 +17,15 @@ data class Course constructor(
         @Index
         var name: String,
 
-        var section: SectionType, // 이수구분 enum 예정
-
-        var credit: Int, // 학점
+        var credit: Double, // 학점
 
         var term: TermType,
 
         var enabled: Boolean, // 성적 enum 예정
 
         @Relationship(type = "REPLACE", direction = Relationship.OUTGOING)
-        var replacement: Course
+        var replacement: Course? = null,
+
+        @Relationship(type = "OPEN", direction = Relationship.INCOMING)
+        var party: Party
 )
