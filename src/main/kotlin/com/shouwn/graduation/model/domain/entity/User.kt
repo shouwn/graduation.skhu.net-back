@@ -29,9 +29,9 @@ data class User constructor(
 
         @JsonIgnore
         @Relationship(type = "HAS", direction = Relationship.OUTGOING)
-        var roles: MutableSet<Role>
+        var roles: MutableSet<Role>,
   
         @Relationship(type = "ATTEND")
-        var attend: MutableSet<Attend>,
+        var attend: MutableSet<Attend>? = null
   
 ) : DateAudit()

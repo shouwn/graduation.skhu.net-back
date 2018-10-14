@@ -28,4 +28,6 @@ data class Course constructor(
 
         @Relationship(type = "OPEN", direction = Relationship.INCOMING)
         var party: Party
-)
+){
+        var termInt = term.value
+}
