@@ -6,7 +6,7 @@ import java.io.Serializable
 enum class RoleName constructor(
         val value: String
 ) : Serializable{
-    ROLE_USER("USER"), // 회원 가입한 유저
+    ROLE_STUDENT("STUDENT"), // 회원 가입한 유저
     ROLE_ADMIN("ADMIN")
     ;
 

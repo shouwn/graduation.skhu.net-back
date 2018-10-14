@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
+import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
@@ -93,4 +94,12 @@ class AuthService @Autowired constructor(
                 .fromCurrentContextPath().path("/api/users/{username}")
                 .buildAndExpand(result.userNumber).toUri()
     }
+
+    fun findHintByUserNumberOrEmail(userNameOrEmail: String) =
+            userRepository.findByUserNumberOrEmail(userNameOrEmail, userNameOrEmail)?.hint
+                    ?: throw ApiException(
+                            status = HttpStatus.NOT_FOUND,
+                            apiResponse = ApiResponse(false,
+                                    "${userNameOrEmail}에 해당하는 유저가 없습니다.")
+                    )
 }
