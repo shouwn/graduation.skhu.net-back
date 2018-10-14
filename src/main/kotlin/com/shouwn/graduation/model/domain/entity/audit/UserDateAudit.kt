@@ -10,6 +10,7 @@ import org.springframework.data.annotation.LastModifiedBy
         allowGetters = true
 )
 abstract class UserDateAudit : DateAudit() {
+    var createdBy: Long? = null
 
     @LastModifiedBy
     var updatedBy: Long? = null

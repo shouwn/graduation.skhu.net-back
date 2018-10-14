@@ -1,5 +1,6 @@
 package com.shouwn.graduation.repository
 
+import com.shouwn.graduation.model.domain.dto.db.CourseDto
 import com.shouwn.graduation.model.domain.entity.Course
 import org.springframework.data.neo4j.annotation.Query
 import org.springframework.data.neo4j.repository.Neo4jRepository
@@ -12,10 +13,11 @@ interface CourseRepository : Neo4jRepository<Course, Long>{
         UNWIND courses AS course
         MERGE (c: Course { code: course.code })
         ON CREATE SET c.name = course.name, c.section = course.section, c.credit = course.credit,
-          c.term = course.termInt, c.enabled = course.enabled
-        ON MATCH SET c.name = course.name
-        MERGE (p: Party { name: course.party.name })
+          c.enabled = course.enabled, c.createdAt = course.createdAt, c.updatedAt = course.updatedAt,
+          c.createdBy = course.createdBy, c.updatedBy = course.updatedBy
+        ON MATCH SET c.name = course.name, c.updatedBy = course.updatedBy, c.updatedAt = course.updatedAt
+        MERGE (p: Party { name: course.party })
         MERGE (c) <-[:OPEN]- (p)
     """)
-    fun mergeCourse(@Param("courses") courses: List<Course>)
+    fun mergeCourse(@Param("courses") courses: List<CourseDto>)
 }

@@ -1,9 +1,9 @@
 package com.shouwn.graduation.service
 
-import com.shouwn.graduation.model.domain.dto.ApiResponse
-import com.shouwn.graduation.model.domain.dto.JwtAuthenticationResponse
-import com.shouwn.graduation.model.domain.dto.LoginRequest
-import com.shouwn.graduation.model.domain.dto.SignUpRequest
+import com.shouwn.graduation.model.domain.dto.response.ApiResponse
+import com.shouwn.graduation.model.domain.dto.response.JwtAuthenticationResponse
+import com.shouwn.graduation.model.domain.dto.request.LoginRequest
+import com.shouwn.graduation.model.domain.dto.request.SignUpRequest
 import com.shouwn.graduation.model.domain.entity.User
 import com.shouwn.graduation.model.domain.exception.ApiException
 import com.shouwn.graduation.model.domain.exception.AppException
@@ -15,17 +15,14 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.crypto.factory.PasswordEncoderFactories
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
-import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import java.net.URI
-import javax.validation.Valid
 
 @Service
 class AuthService @Autowired constructor(

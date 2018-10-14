@@ -1,4 +1,4 @@
-package com.shouwn.graduation.model.domain.dto
+package com.shouwn.graduation.model.domain.dto.response
 
 data class AuthenticationToken (
         var username: String,

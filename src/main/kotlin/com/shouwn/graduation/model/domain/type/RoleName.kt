@@ -11,7 +11,7 @@ enum class RoleName constructor(
     ;
 
     companion object {
-        val map = RoleName.values().associate { it.value to it }
+        private val map = RoleName.values().associate { it.value to it }
 
         fun valueOfRole(value: String): RoleName =
                 map[value] ?: throw IllegalStateException("$value 에 해당하는 타입이 없습니다.")

@@ -1,8 +1,8 @@
 package com.shouwn.graduation.controller
 
-import com.shouwn.graduation.model.domain.dto.ApiResponse
-import com.shouwn.graduation.model.domain.dto.LoginRequest
-import com.shouwn.graduation.model.domain.dto.SignUpRequest
+import com.shouwn.graduation.model.domain.dto.response.ApiResponse
+import com.shouwn.graduation.model.domain.dto.request.LoginRequest
+import com.shouwn.graduation.model.domain.dto.request.SignUpRequest
 import com.shouwn.graduation.model.domain.type.RoleName
 import com.shouwn.graduation.service.AuthService
 import org.springframework.beans.factory.annotation.Autowired
