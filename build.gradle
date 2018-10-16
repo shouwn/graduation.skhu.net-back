@@ -57,7 +57,8 @@ dependencies {
 //    compile('org.springframework.boot:spring-boot-starter-data-redis')
     compile('org.springframework.boot:spring-boot-starter-web')
     compile("org.springframework.boot:spring-boot-starter-actuator")
-    compile('org.springframework.boot:spring-boot-starter-data-neo4j')
+//    compile('org.springframework.boot:spring-boot-starter-data-neo4j')
+    compile('org.springframework.data:spring-data-neo4j:5.1.1.RELEASE')
 
     compile('com.fasterxml.jackson.module:jackson-module-kotlin')
     compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
