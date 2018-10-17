@@ -41,4 +41,24 @@ data class Course constructor(
 
         var updatedAt: LocalDateTime = LocalDateTime.now()
 
-) : Serializable
+) : Serializable {
+        data class StorageValue constructor(
+                var code: String,
+
+                var name: String,
+
+                var credit: Double, // 학점
+
+                var enabled: Boolean, // 성적 enum 예정
+
+                var party: String,
+
+                var createdBy: Long,
+
+                var updatedBy: Long,
+
+                var createdAt: String = LocalDateTime.now().toString(),
+
+                var updatedAt: String
+        )
+}

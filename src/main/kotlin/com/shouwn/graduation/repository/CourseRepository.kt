@@ -1,6 +1,5 @@
 package com.shouwn.graduation.repository
 
-import com.shouwn.graduation.model.domain.dto.db.CourseDto
 import com.shouwn.graduation.model.domain.entity.Course
 import org.springframework.data.neo4j.annotation.Query
 import org.springframework.data.neo4j.repository.Neo4jRepository
@@ -19,5 +18,5 @@ interface CourseRepository : Neo4jRepository<Course, Long>{
         MERGE (p: Party { name: course.party })
         MERGE (c) <-[:OPEN]- (p)
     """)
-    fun mergeCourse(@Param("courses") courses: List<CourseDto>)
+    fun mergeCourse(@Param("courses") courses: List<Course.StorageValue>)
 }

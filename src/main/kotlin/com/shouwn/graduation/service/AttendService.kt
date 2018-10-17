@@ -1,6 +1,5 @@
 package com.shouwn.graduation.service
 
-import com.shouwn.graduation.model.domain.dto.db.AttendDto
 import com.shouwn.graduation.model.domain.entity.Attend
 import com.shouwn.graduation.model.domain.type.GradeType
 import com.shouwn.graduation.model.domain.type.SectionType
@@ -20,7 +19,7 @@ class AttendService @Autowired constructor(
 ){
     fun addAttendFromFile(user: UserPrincipal, file: InputStream){
 
-        val attendList = arrayListOf<AttendDto>()
+        val attendList = arrayListOf<Attend.StorageValue>()
 
         val sheet = WorkbookFactory.create(file).getSheetAt(0)
         val rows = sheet.physicalNumberOfRows
@@ -33,7 +32,7 @@ class AttendService @Autowired constructor(
             val row = sheet.getRow(rowIndex)
 
             if(row != null){
-                attendList.add(AttendDto(
+                attendList.add(Attend.StorageValue(
                         year = row.getCell(1).numericCellValue.toInt(),
                         term = TermType.labelOf(row.getCell(2).value()).value,
                         courseCode =  row.getCell(3).value(),

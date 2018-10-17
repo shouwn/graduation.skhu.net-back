@@ -1,6 +1,5 @@
 package com.shouwn.graduation.repository
 
-import com.shouwn.graduation.model.domain.dto.db.AttendDto
 import com.shouwn.graduation.model.domain.entity.Attend
 import org.springframework.data.neo4j.annotation.Query
 import org.springframework.data.neo4j.repository.Neo4jRepository
@@ -20,5 +19,5 @@ interface AttendRepository : Neo4jRepository<Attend, Long> {
         ON MATCH SET a.year = attend.year, a.term = attend.term, a.grade = attend.grade,
           a.section = attend.section, a.updatedBy = attend.updatedBy, a.updatedAt = attend.updatedAt
     """)
-    fun mergeAttend(@Param("attends") attends: List<AttendDto>)
+    fun mergeAttend(@Param("attends") attends: List<Attend.StorageValue>)
 }
