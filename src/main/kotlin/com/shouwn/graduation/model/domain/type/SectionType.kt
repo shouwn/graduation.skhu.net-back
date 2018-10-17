@@ -1,9 +1,13 @@
 package com.shouwn.graduation.model.domain.type
 
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonFormat
+import com.fasterxml.jackson.annotation.JsonProperty
 import org.neo4j.ogm.typeconversion.AttributeConverter
 
 // R: 필수 / S: 선택
 
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 enum class SectionType(val value: Long, val labelShort: String, val labelLong: String){
     LIBERAL_R(0, "교필", "교양필수"),
     LIBERAL_S(1, "교선", "교양선택"),
@@ -26,6 +30,10 @@ enum class SectionType(val value: Long, val labelShort: String, val labelLong: S
 
         fun valueOfLabelLong(value: String): SectionType =
                 mapLabelLong[value] ?: throw IllegalStateException("$value 에 해당하는 타입이 없습니다.")
+
+//        @JsonCreator
+//        fun getInstance(@JsonProperty("sectionValue") value: Long): SectionType =
+//                SectionType.valueOf(value)
     }
 }
 

@@ -1,7 +1,11 @@
 package com.shouwn.graduation.model.domain.type
 
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonFormat
+import com.fasterxml.jackson.annotation.JsonProperty
 import org.neo4j.ogm.typeconversion.AttributeConverter
 
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 enum class GradeType(val value: Long, val grade: Double, val label: String){
     AP(0,4.5, "A+"),
     A(1,4.0, "A0"),
@@ -25,6 +29,10 @@ enum class GradeType(val value: Long, val grade: Double, val label: String){
 
         fun labelOf(value: String): GradeType =
                 mapLabel[value] ?: throw IllegalStateException("$value 에 해당하는 타입이 없습니다.")
+
+//        @JsonCreator
+//        fun getInstance(@JsonProperty("gradeValue") value: Long): GradeType =
+//                valueOf(value)
     }
 }
 

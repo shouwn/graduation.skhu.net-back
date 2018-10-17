@@ -1,7 +1,11 @@
 package com.shouwn.graduation.model.domain.type
 
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonFormat
+import com.fasterxml.jackson.annotation.JsonProperty
 import org.neo4j.ogm.typeconversion.AttributeConverter
 
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 enum class SatisfyingType(val value: Long){
     SUBJECT_ALL(0), // 하위 과목 모두 수강
     SUBJECT_OVER(1), // 하위 과목 몇 점 이상 수강
@@ -14,6 +18,10 @@ enum class SatisfyingType(val value: Long){
 
         fun valueOf(value: Long): SatisfyingType =
                 map[value] ?: throw IllegalStateException("$value 에 해당하는 타입이 없습니다.")
+
+//        @JsonCreator
+//        fun getInstance(@JsonProperty("satisfyingValue") value: Long): SatisfyingType =
+//                SatisfyingType.valueOf(value)
     }
 }
 

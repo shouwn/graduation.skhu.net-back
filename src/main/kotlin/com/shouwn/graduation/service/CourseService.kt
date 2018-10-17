@@ -29,7 +29,7 @@ class CourseService @Autowired constructor(
             if(row != null) {
                 courseList.add(Course.StorageValue(
                         code = row.getCell(2).value(),
-                        party = row.getCell(3).value(),
+                        partyName = row.getCell(3).value().trim().split(" ").last(),
                         name = row.getCell(4).value(),
                         credit = row.getCell(5).numericCellValue,
                         enabled = true,

@@ -1,5 +1,6 @@
 package com.shouwn.graduation.service
 
+import com.shouwn.graduation.model.domain.dto.request.AttendRequest
 import com.shouwn.graduation.model.domain.entity.Attend
 import com.shouwn.graduation.model.domain.type.GradeType
 import com.shouwn.graduation.model.domain.type.SectionType
@@ -34,10 +35,10 @@ class AttendService @Autowired constructor(
             if(row != null){
                 attendList.add(Attend.StorageValue(
                         year = row.getCell(1).numericCellValue.toInt(),
-                        term = TermType.labelOf(row.getCell(2).value()).value,
+                        term = TermType.labelOf(row.getCell(2).value()),
                         courseCode =  row.getCell(3).value(),
-                        section = SectionType.valueOfLabelShort(row.getCell(5).value()).value,
-                        grade = GradeType.labelOf(row.getCell(7).value()).value,
+                        section = SectionType.valueOfLabelShort(row.getCell(5).value()),
+                        grade = GradeType.labelOf(row.getCell(7).value()),
                         userNumber = user.username,
                         createdBy = user.id,
                         updatedBy = user.id,
@@ -48,4 +49,7 @@ class AttendService @Autowired constructor(
 
         attendRepository.mergeAttend(attendList)
     }
+
+    fun updateAttend(user: UserPrincipal, request: AttendRequest) =
+            attendRepository.
 }

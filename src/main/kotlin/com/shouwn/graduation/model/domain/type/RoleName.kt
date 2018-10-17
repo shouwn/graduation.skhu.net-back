@@ -1,8 +1,12 @@
 package com.shouwn.graduation.model.domain.type
 
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonFormat
+import com.fasterxml.jackson.annotation.JsonProperty
 import org.neo4j.ogm.typeconversion.AttributeConverter
 import java.io.Serializable
 
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 enum class RoleName constructor(
         val value: String
 ) : Serializable{

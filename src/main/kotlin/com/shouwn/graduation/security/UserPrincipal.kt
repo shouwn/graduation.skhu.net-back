@@ -35,9 +35,7 @@ data class UserPrincipal constructor(
                         email = user.email,
                         username = user.userNumber,
                         password = user.password,
-                        authorities = user.roles.asSequence()
-                                .map { SimpleGrantedAuthority(it.role.name) }
-                                .toMutableList(),
+                        authorities = mutableListOf(SimpleGrantedAuthority(user.role.name)),
                         enabled = user.enabled,
                         entity = user
                 )

@@ -11,11 +11,10 @@ import java.time.LocalDateTime
 data class Attend constructor(
 
         @Id @GeneratedValue
-        var relationshipId: Long? = null,
+        var id: Long? = null,
 
         var year: Int,
 
-        @Property(name = "term")
         @Convert(TermTypeConverter::class)
         var term: TermType,
 
@@ -43,15 +42,15 @@ data class Attend constructor(
         data class StorageValue constructor(
                 var year: Int,
 
-                var term: Long,
+                var term: TermType,
 
-                var grade: Long,
+                var grade: GradeType,
 
                 var userNumber: String,
 
                 var courseCode: String,
 
-                var section: Long,
+                var section: SectionType,
 
                 var createdBy: Long,
 

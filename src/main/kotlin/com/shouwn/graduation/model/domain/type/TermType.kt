@@ -1,7 +1,11 @@
 package com.shouwn.graduation.model.domain.type
 
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonFormat
+import com.fasterxml.jackson.annotation.JsonProperty
 import org.neo4j.ogm.typeconversion.AttributeConverter
 
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 enum class TermType(val value: Long, val label: String){
     FIRST(0, "1학기"),
     SECOND(1, "2학기"),
@@ -22,6 +26,10 @@ enum class TermType(val value: Long, val label: String){
 
         fun labelOf(label: String): TermType =
                 mapLabel[label] ?: throw IllegalStateException("$label 에 해당하는 타입이 없습니다.")
+
+//        @JsonCreator
+//        fun getInstance(@JsonProperty("termValue") value: Long): TermType =
+//                TermType.valueOf(value)
     }
 }
 

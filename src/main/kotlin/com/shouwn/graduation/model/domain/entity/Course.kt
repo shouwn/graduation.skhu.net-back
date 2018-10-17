@@ -23,9 +23,9 @@ data class Course constructor(
         @Index
         var name: String,
 
-        var credit: Double, // 학점
+        var credit: Double,
 
-        var enabled: Boolean, // 성적 enum 예정
+        var enabled: Boolean,
 
         @Relationship(type = "REPLACE", direction = Relationship.OUTGOING)
         var replacement: Course? = null,
@@ -47,11 +47,11 @@ data class Course constructor(
 
                 var name: String,
 
-                var credit: Double, // 학점
+                var credit: Double,
 
-                var enabled: Boolean, // 성적 enum 예정
+                var enabled: Boolean,
 
-                var party: String,
+                var partyName: String,
 
                 var createdBy: Long,
 

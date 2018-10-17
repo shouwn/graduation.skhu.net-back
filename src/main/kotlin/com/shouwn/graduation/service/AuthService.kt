@@ -6,16 +6,13 @@ import com.shouwn.graduation.model.domain.dto.request.LoginRequest
 import com.shouwn.graduation.model.domain.dto.request.SignUpRequest
 import com.shouwn.graduation.model.domain.entity.User
 import com.shouwn.graduation.model.domain.exception.ApiException
-import com.shouwn.graduation.model.domain.exception.AppException
 import com.shouwn.graduation.model.domain.type.RoleName
-import com.shouwn.graduation.repository.RoleRepository
 import com.shouwn.graduation.repository.UserRepository
 import com.shouwn.graduation.security.JwtTokenProvider
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
-import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
@@ -29,7 +26,6 @@ import java.net.URI
 class AuthService @Autowired constructor(
         private val authenticationManager: AuthenticationManager,
         private val userRepository: UserRepository,
-        private val roleRepository: RoleRepository,
         private val tokenProvider: JwtTokenProvider
 ) {
     private val logger = LoggerFactory.getLogger(AuthService::class.java)
@@ -55,7 +51,7 @@ class AuthService @Autowired constructor(
     }
 
     fun registerUser(signUpRequest: SignUpRequest, role: RoleName): URI {
-        val signCode = if(role == RoleName.ROLE_USER) userSignCode else adminSignCode
+        val signCode = if(role == RoleName.ROLE_STUDENT) userSignCode else adminSignCode
 
         if(signUpRequest.code != signCode) {
             logger.error("Register Fail: ${signUpRequest.code} is not $signCode")
@@ -75,13 +71,12 @@ class AuthService @Autowired constructor(
         }
 
         val user = User(
-                roles = mutableSetOf(roleRepository.findByRole(role)
-                        ?: throw AppException("Role not Set.").apply { logger.error("${role}이 DB에 없습니다.") }),
+                role = role,
                 userNumber = signUpRequest.userNumber,
                 password = passwordEncoder.encode(signUpRequest.password),
                 name = signUpRequest.name,
                 email = signUpRequest.email,
-                enabled = role == RoleName.ROLE_USER,
+                enabled = role == RoleName.ROLE_STUDENT,
                 hint = signUpRequest.hint,
                 hintAnswer = signUpRequest.hintAnswer
         )

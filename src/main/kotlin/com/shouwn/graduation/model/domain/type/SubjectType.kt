@@ -1,7 +1,11 @@
 package com.shouwn.graduation.model.domain.type
 
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonFormat
+import com.fasterxml.jackson.annotation.JsonProperty
 import org.neo4j.ogm.typeconversion.AttributeConverter
 
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 enum class SubjectType constructor(val value: Long){
     CATEGORY(0), // 범주에 충족되는 과목
     SPECIFY(1) // 특정 과목
@@ -12,6 +16,10 @@ enum class SubjectType constructor(val value: Long){
 
         fun valueOf(value: Long): SubjectType =
                 map[value] ?: throw IllegalStateException("$value 에 해당하는 타입이 없습니다.")
+
+//        @JsonCreator
+//        fun getInstance(@JsonProperty("subjectValue") value: Long): SubjectType =
+//                SubjectType.valueOf(value)
     }
 }
 

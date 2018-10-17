@@ -1,9 +1,11 @@
 package com.shouwn.graduation.controller
 
+import com.shouwn.graduation.model.domain.dto.request.AttendRequest
 import com.shouwn.graduation.model.domain.dto.response.ApiResponse
 import com.shouwn.graduation.model.domain.dto.request.LoginRequest
 import com.shouwn.graduation.model.domain.dto.request.SignUpRequest
 import com.shouwn.graduation.model.domain.type.RoleName
+import com.shouwn.graduation.model.domain.type.SectionType
 import com.shouwn.graduation.service.AuthService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -38,4 +40,11 @@ class AuthController @Autowired constructor(
     @GetMapping("user/{userNumberOrEmail}/hint")
     fun findHint(@PathVariable("userNumberOrEmail") userNumberOrEmail: String) =
             ResponseEntity.ok(authService.findHintByUserNumberOrEmail(userNumberOrEmail))
+
+    @PostMapping("test")
+    fun test(@RequestBody request: AttendRequest) =
+            request
+
+    @GetMapping("test2")
+    fun test2() = SectionType.values()
 }
