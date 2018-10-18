@@ -31,18 +31,10 @@ data class Course constructor(
         var replacement: Course? = null,
 
         @Relationship(type = "OPEN", direction = Relationship.INCOMING)
-        var party: Party,
+        var party: Party
 
-        var createdBy: Long,
-
-        var updatedBy: Long,
-
-        var createdAt: LocalDateTime = LocalDateTime.now(),
-
-        var updatedAt: LocalDateTime = LocalDateTime.now()
-
-) : Serializable {
-        data class StorageValue constructor(
+) : UserDateAudit() {
+        data class StorageDto constructor(
                 var code: String,
 
                 var name: String,
@@ -51,14 +43,6 @@ data class Course constructor(
 
                 var enabled: Boolean,
 
-                var partyName: String,
-
-                var createdBy: Long,
-
-                var updatedBy: Long,
-
-                var createdAt: String = LocalDateTime.now().toString(),
-
-                var updatedAt: String
-        )
+                var partyName: String
+        ): UserDateAudit()
 }

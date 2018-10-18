@@ -22,7 +22,7 @@ enum class RoleName constructor(
     }
 }
 
-class RoleTypeConverter : AttributeConverter<RoleName, String> {
+class RoleNameConverter : AttributeConverter<RoleName, String> {
     override fun toGraphProperty(value: RoleName?): String =
             value?.value ?: throw IllegalStateException()
 

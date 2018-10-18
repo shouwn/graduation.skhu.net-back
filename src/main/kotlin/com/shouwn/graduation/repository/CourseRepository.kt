@@ -18,5 +18,5 @@ interface CourseRepository : Neo4jRepository<Course, Long>{
         MERGE (p: Party { name: course.party })
         MERGE (c) <-[:OPEN]- (p)
     """)
-    fun mergeCourse(@Param("courses") courses: List<Course.StorageValue>)
+    fun mergeCourse(@Param("courses") courses: List<Course.StorageDto>)
 }

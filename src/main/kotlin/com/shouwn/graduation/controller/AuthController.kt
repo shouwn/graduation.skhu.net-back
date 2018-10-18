@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.time.LocalDateTime
 import javax.validation.Valid
 
 @RestController
@@ -46,5 +47,5 @@ class AuthController @Autowired constructor(
             request
 
     @GetMapping("test2")
-    fun test2() = SectionType.values()
+    fun test2() = LocalDateTime.now()!!
 }

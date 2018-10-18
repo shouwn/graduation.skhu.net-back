@@ -5,15 +5,14 @@ import com.shouwn.graduation.model.domain.type.SectionType
 import com.shouwn.graduation.model.domain.type.TermType
 
 data class AttendRequest constructor(
-        var id: Long? = null,
 
         var year: Int,
 
-        var term: TermType,
+        var term: Long,
 
-        var grade: GradeType,
+        var grade: Long,
 
-        var section: SectionType,
+        var section: Long,
 
-        var courseId: Long
+        var courseCode: String
 )

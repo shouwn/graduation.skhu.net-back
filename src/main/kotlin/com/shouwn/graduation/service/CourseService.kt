@@ -3,7 +3,7 @@ package com.shouwn.graduation.service
 import com.shouwn.graduation.model.domain.entity.Course
 import com.shouwn.graduation.repository.CourseRepository
 import com.shouwn.graduation.security.UserPrincipal
-import com.shouwn.graduation.utils.value
+import com.shouwn.graduation.utils.toValueString
 import org.apache.poi.ss.usermodel.WorkbookFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -16,7 +16,7 @@ class CourseService @Autowired constructor(
 ){
     fun addCourseFromFile(user: UserPrincipal, file: InputStream){
 
-        val courseList = arrayListOf<Course.StorageValue>()
+        val courseList = arrayListOf<Course.StorageDto>()
 
         val sheet = WorkbookFactory.create(file).getSheetAt(0)
         val rows = sheet.physicalNumberOfRows
@@ -27,16 +27,13 @@ class CourseService @Autowired constructor(
             val row = sheet.getRow(rowIndex)
 
             if(row != null) {
-                courseList.add(Course.StorageValue(
-                        code = row.getCell(2).value(),
-                        partyName = row.getCell(3).value().trim().split(" ").last(),
-                        name = row.getCell(4).value(),
+                courseList.add(Course.StorageDto(
+                        code = row.getCell(2).toValueString(),
+                        partyName = row.getCell(3).toValueString().trim().split(" ").last(),
+                        name = row.getCell(4).toValueString(),
                         credit = row.getCell(5).numericCellValue,
-                        enabled = true,
-                        createdBy = user.id,
-                        updatedBy = user.id,
-                        updatedAt = LocalDateTime.now().toString()
-                ))
+                        enabled = true
+                ).apply { createUserDateAudit(user.id) })
             }
         }
 

@@ -7,7 +7,8 @@ import com.shouwn.graduation.model.domain.type.SectionType
 import com.shouwn.graduation.model.domain.type.TermType
 import com.shouwn.graduation.repository.AttendRepository
 import com.shouwn.graduation.security.UserPrincipal
-import com.shouwn.graduation.utils.value
+import com.shouwn.graduation.utils.logger
+import com.shouwn.graduation.utils.toValueString
 import org.apache.poi.ss.usermodel.WorkbookFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -18,9 +19,11 @@ import java.time.LocalDateTime
 class AttendService @Autowired constructor(
         val attendRepository: AttendRepository
 ){
+    private val logger = logger()
+
     fun addAttendFromFile(user: UserPrincipal, file: InputStream){
 
-        val attendList = arrayListOf<Attend.StorageValue>()
+        val attendList = arrayListOf<Attend.StorageDto>()
 
         val sheet = WorkbookFactory.create(file).getSheetAt(0)
         val rows = sheet.physicalNumberOfRows
@@ -33,23 +36,25 @@ class AttendService @Autowired constructor(
             val row = sheet.getRow(rowIndex)
 
             if(row != null){
-                attendList.add(Attend.StorageValue(
+
+                attendList.add(Attend.StorageDto(
                         year = row.getCell(1).numericCellValue.toInt(),
-                        term = TermType.labelOf(row.getCell(2).value()),
-                        courseCode =  row.getCell(3).value(),
-                        section = SectionType.valueOfLabelShort(row.getCell(5).value()),
-                        grade = GradeType.labelOf(row.getCell(7).value()),
-                        userNumber = user.username,
-                        createdBy = user.id,
-                        updatedBy = user.id,
-                        updatedAt = LocalDateTime.now().toString()
-                ))
+                        term = TermType.labelOf(row.getCell(2).toValueString()).value,
+                        courseCode =  row.getCell(3).toValueString(),
+                        section = SectionType.valueOfLabelShort(row.getCell(5).toValueString()).value,
+                        grade = GradeType.labelOf(row.getCell(7).toValueString()).value
+                ).apply { createUserDateAudit(user.id) })
             }
         }
-
-        attendRepository.mergeAttend(attendList)
+        attendRepository.mergeAttend(user.id, attendList)
     }
 
-    fun updateAttend(user: UserPrincipal, request: AttendRequest) =
-            attendRepository.
+    fun updateAttend(user: UserPrincipal, attendId: Long, request: AttendRequest) =
+            attendRepository.updateAttend(user.id, attendId, request.let { Attend.StorageDto(
+                    year = it.year,
+                    term = it.term,
+                    grade = it.grade,
+                    section = it.section,
+                    courseCode = it.courseCode
+            ).apply { updateUserDateAudit(user.id) } })
 }

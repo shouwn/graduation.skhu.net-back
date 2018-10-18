@@ -3,7 +3,7 @@ package com.shouwn.graduation.utils
 import org.apache.poi.ss.usermodel.Cell
 import java.lang.IllegalArgumentException
 
-fun Cell.value(): String =
+fun Cell.toValueString(): String =
         when(this.cellType){
             Cell.CELL_TYPE_NUMERIC -> this.numericCellValue.toString()
             Cell.CELL_TYPE_STRING -> this.stringCellValue

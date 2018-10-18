@@ -1,6 +1,7 @@
 package com.shouwn.graduation.model.domain.entity
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import com.shouwn.graduation.model.domain.entity.audit.UserDateAudit
 import com.shouwn.graduation.model.domain.type.*
 import org.neo4j.ogm.annotation.*
 import org.neo4j.ogm.annotation.typeconversion.Convert
@@ -29,35 +30,17 @@ data class Attend constructor(
         var user: User,
 
         @EndNode
-        var course: Course,
-
-        var createdBy: Long,
-
-        var updatedBy: Long,
-
-        var createdAt: LocalDateTime = LocalDateTime.now(),
-
-        var updatedAt: LocalDateTime = LocalDateTime.now()
-) : Serializable {
-        data class StorageValue constructor(
+        var course: Course
+) : UserDateAudit() {
+        data class StorageDto constructor(
                 var year: Int,
 
-                var term: TermType,
+                var term: Long,
 
-                var grade: GradeType,
+                var grade: Long,
 
-                var userNumber: String,
+                var section: Long,
 
-                var courseCode: String,
-
-                var section: SectionType,
-
-                var createdBy: Long,
-
-                var updatedBy: Long,
-
-                var createdAt: String = LocalDateTime.now().toString(),
-
-                var updatedAt: String
-        )
+                var courseCode: String
+        ): UserDateAudit()
 }
