@@ -28,9 +28,5 @@ class AdminController @Autowired constructor(
                      @CurrentUser user: UserPrincipal): ResponseEntity<Any> =
             adminService.userSetEnable(id, user).let { ResponseEntity.noContent().build() }
 
-    @PostMapping("courses")
-    fun addCoursesFromFile(file: MultipartFile,
-                           @CurrentUser user: UserPrincipal) =
-            ResponseEntity.status(HttpStatus.CREATED).apply { courseService.addCourseFromFile(user, file.inputStream) }
-                    .body("과목 추가 완료")
+
 }

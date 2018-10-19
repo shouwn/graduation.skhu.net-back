@@ -14,7 +14,7 @@ import java.time.LocalDateTime
 class CourseService @Autowired constructor(
         val courseRepository: CourseRepository
 ){
-    fun addCourseFromFile(user: UserPrincipal, file: InputStream){
+    fun addCourseFromFile(user: UserPrincipal, file: InputStream): List<Course>{
 
         val courseList = arrayListOf<Course.StorageDto>()
 
@@ -29,7 +29,7 @@ class CourseService @Autowired constructor(
             if(row != null) {
                 courseList.add(Course.StorageDto(
                         code = row.getCell(2).toValueString(),
-                        partyName = row.getCell(3).toValueString().trim().split(" ").last(),
+                        partyName = row.getCell(3).toValueString().trim(),
                         name = row.getCell(4).toValueString(),
                         credit = row.getCell(5).numericCellValue,
                         enabled = true
@@ -37,7 +37,7 @@ class CourseService @Autowired constructor(
             }
         }
 
-        courseRepository.mergeCourse(courseList)
+        return courseRepository.mergeCourse(courseList)
     }
 
 

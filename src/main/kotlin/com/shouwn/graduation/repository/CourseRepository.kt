@@ -11,12 +11,11 @@ interface CourseRepository : Neo4jRepository<Course, Long>{
         WITH {courses} AS courses
         UNWIND courses AS course
         MERGE (c: Course { code: course.code })
-        ON CREATE SET c.name = course.name, c.section = course.section, c.credit = course.credit,
-          c.enabled = course.enabled, c.createdAt = course.createdAt, c.updatedAt = course.updatedAt,
-          c.createdBy = course.createdBy, c.updatedBy = course.updatedBy
+        ON CREATE SET c += course
         ON MATCH SET c.name = course.name, c.updatedBy = course.updatedBy, c.updatedAt = course.updatedAt
-        MERGE (p: Party { name: course.party })
-        MERGE (c) <-[:OPEN]- (p)
+        MERGE (p: Party { name: course.partyName })
+        MERGE path = (c) <-[:OPEN]- (p)
+        RETURN path
     """)
-    fun mergeCourse(@Param("courses") courses: List<Course.StorageDto>)
+    fun mergeCourse(@Param("courses") courses: List<Course.StorageDto>): List<Course>
 }
