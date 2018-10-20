@@ -47,5 +47,6 @@ class AuthController @Autowired constructor(
             request
 
     @GetMapping("test2")
-    fun test2() = LocalDateTime.now()!!
+    fun test2() =
+            ResponseEntity.ok(LocalDateTime.now()!!)
 }

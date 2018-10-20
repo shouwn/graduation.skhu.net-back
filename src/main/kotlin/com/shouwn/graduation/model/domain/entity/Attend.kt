@@ -31,16 +31,4 @@ data class Attend constructor(
 
         @EndNode
         var course: Course
-) : UserDateAudit() {
-        data class StorageDto constructor(
-                var year: Int,
-
-                var term: Long,
-
-                var grade: Long,
-
-                var section: Long,
-
-                var courseCode: String
-        ): UserDateAudit()
-}
+) : UserDateAudit()

@@ -33,16 +33,4 @@ data class Course constructor(
         @Relationship(type = "OPEN", direction = Relationship.INCOMING)
         var party: Party
 
-) : UserDateAudit() {
-        data class StorageDto constructor(
-                var code: String,
-
-                var name: String,
-
-                var credit: Double,
-
-                var enabled: Boolean,
-
-                var partyName: String
-        ): UserDateAudit()
-}
+) : UserDateAudit()

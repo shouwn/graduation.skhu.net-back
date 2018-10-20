@@ -11,6 +11,7 @@ import com.shouwn.graduation.utils.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class PartyService @Autowired constructor(
@@ -18,6 +19,7 @@ class PartyService @Autowired constructor(
 ){
     private val logger = logger()
 
+    @Transactional
     fun saveParty(user: UserPrincipal, request: PartyRequest) =
             if(partyRepository.existByName(request.name))
                 throw ApiException(
@@ -38,6 +40,7 @@ class PartyService @Autowired constructor(
             partyRepository.findAll()
                     .apply { logger.info("${user.id}가 소속 목록을 조회") }
 
+    @Transactional
     fun updateParty(user: UserPrincipal, partyId: Long, request: PartyRequest): Party {
         val old = partyRepository.findById(partyId)
 
@@ -67,6 +70,5 @@ class PartyService @Autowired constructor(
         ).apply { updateUserDateAudit(user.id) })
                 .apply { logger.info("${user.id}가 ${oldName}을 ${this.name}으로 이름 변경") }
     }
-
 
 }

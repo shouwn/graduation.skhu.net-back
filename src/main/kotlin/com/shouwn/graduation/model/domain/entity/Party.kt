@@ -13,8 +13,9 @@ data class Party constructor(
         var id: Long? = null,
 
         @Index(unique = true)
-        var name: String,
+        var name: String? = null,
 
         @Convert(BelongTypeConverter::class)
-        var belong: BelongType
+        var belong: BelongType? = null
+
 ) : UserDateAudit()
