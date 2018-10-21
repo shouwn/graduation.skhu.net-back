@@ -15,6 +15,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Isolation
 import org.springframework.transaction.annotation.Transactional
 import java.io.InputStream
 import java.time.LocalDateTime
@@ -57,7 +58,7 @@ class CourseService @Autowired constructor(
 
                 courseList.add(Course(
                         code = row.getCell(2).toValueString(),
-                        party = Party(id = partyId),
+                        parties = setOf(Party(id = partyId)),
                         name = row.getCell(4).toValueString(),
                         credit = row.getCell(5).numericCellValue,
                         enabled = true
@@ -69,7 +70,7 @@ class CourseService @Autowired constructor(
                 .apply { logger.info("${user.info()} 가 과목 데이터를 파일을 이용하여 저장함") }
     }
 
-    @Transactional
+    //    @Transactional // 트랜젝션 거니까 return 할 때 이전에 있던 데이터 가져오는 문제가 생김 버그인 것 같음
     fun updateCourse(user: UserPrincipal, courseId: Long, request: CourseRequest): Course {
         val optionalCourse = courseRepository.findById(courseId)
 
@@ -84,31 +85,41 @@ class CourseService @Autowired constructor(
 
         val course = optionalCourse.get()
                 .copy(
-                        code = request.code,
                         name = request.name,
                         credit = request.credit,
                         enabled = request.enabled
-                )
+                ).apply { updateUserDateAudit(user.id) }
 
-        if(course.party?.id == request.partyId)
-            return courseRepository.save(course)
-                    .apply { logger.info("${user.info()} 가 ${course.id} 과목을 수정함") }
+        if(course.parties!!.asSequence().map { it.id }.toSet() == request.partyIds)
+            return courseRepository.update(
+                    courseId = course.id!!,
+                    courseName = course.name!!,
+                    courseCredit = course.credit!!,
+                    courseEnabled = course.enabled!!,
+                    updatedAt = course.updatedAt.toString(),
+                    updatedBy = course.updatedBy!!
+            ).apply { logger.info("${user.info()} 가 ${course.id} 과목을 수정함") }
 
-        println(course.party?.id)
+        val party = partyRepository.findAllById(request.partyIds).associate { it.id to it }
 
-        val party = partyRepository.findById(request.partyId)
+        for(partyId in request.partyIds)
+            if(!party.containsKey(partyId))
+                throw ApiException(
+                        status = HttpStatus.PRECONDITION_FAILED,
+                        apiResponse = ApiResponse(
+                                success = false,
+                                message = "아이디가 ${partyId}인 소속이 없습니다."
+                        )
+                ).apply { logger.error("${user.info()} 가 존재하지 않는 $partyId 소속으로 ${courseId}를 변경하려고 시도") }
 
-        if(!party.isPresent)
-            throw ApiException(
-                    status = HttpStatus.PRECONDITION_FAILED,
-                    apiResponse = ApiResponse(
-                            success = false,
-                            message = "아이디가 ${request.partyId}인 소속이 없습니다."
-                    )
-            ).apply { logger.error("${user.info()} 가 존재하지 않는 ${request.partyId} 소속으로 ${courseId}를 변경하려고 시도") }
-
-        return courseRepository.updateCourse(request.partyId, course)
-                .apply { logger.info("${user.info()} 가 ${course.id} 과목을 수정함") }
+        return courseRepository.update(
+                partyIds = request.partyIds,
+                courseId = course.id!!,
+                courseName = course.name!!,
+                courseCredit = course.credit!!,
+                courseEnabled = course.enabled!!,
+                updatedAt = course.updatedAt.toString(),
+                updatedBy = course.updatedBy!!
+        ).apply { logger.info("${user.info()} 가 ${course.id} 과목을 수정함") }
     }
-
 }

@@ -31,6 +31,6 @@ data class Course constructor(
         var replacement: Course? = null,
 
         @Relationship(type = "OPEN", direction = Relationship.INCOMING)
-        var party: Party? = null
+        var parties: Set<Party>? = null
 
 ) : UserDateAudit()
