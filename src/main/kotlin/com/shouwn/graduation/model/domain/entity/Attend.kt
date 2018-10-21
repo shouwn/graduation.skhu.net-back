@@ -27,8 +27,8 @@ data class Attend constructor(
 
         @JsonIgnore
         @StartNode
-        var user: User,
+        var user: User? = null,
 
         @EndNode
-        var course: Course
+        var course: Course? = null
 ) : UserDateAudit()

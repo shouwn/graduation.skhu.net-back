@@ -45,7 +45,7 @@ class AuthService @Autowired constructor(
 
         val jwt = tokenProvider.generateToken(authentication)
 
-        logger.info("${loginRequest.userNumberOrEmail} is login successful!")
+        logger.info("사용자 번호 ${loginRequest.userNumberOrEmail} 가 로그인하였습니다.")
 
         return JwtAuthenticationResponse(jwt)
     }
@@ -83,7 +83,8 @@ class AuthService @Autowired constructor(
 
         val result = userRepository.save(user)
 
-        logger.info("$role ${signUpRequest.userNumber} ${signUpRequest.name} is registered successful!")
+        logger.info("권한: $role ${signUpRequest.userNumber}, 사용자 번호: ${signUpRequest.userNumber}, " +
+                "사용자 이름: ${signUpRequest.name} 회원 등록")
 
         return ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/users/{username}")

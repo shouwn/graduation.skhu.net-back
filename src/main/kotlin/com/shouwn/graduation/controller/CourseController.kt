@@ -1,5 +1,6 @@
 package com.shouwn.graduation.controller
 
+import com.shouwn.graduation.model.domain.dto.request.CourseRequest
 import com.shouwn.graduation.security.CurrentUser
 import com.shouwn.graduation.security.UserPrincipal
 import com.shouwn.graduation.service.CourseService
@@ -21,4 +22,11 @@ class CourseController @Autowired constructor(
                            @RequestBody file: MultipartFile) =
             ResponseEntity.status(HttpStatus.CREATED)
                     .body(courseService.addCourseFromFile(user, file.inputStream))
+
+    @PutMapping("{courseId}")
+    @Secured("ROLE_ADMIN")
+    fun updateCourse(@CurrentUser user: UserPrincipal,
+                     @PathVariable("courseId") courseId: Long,
+                     @RequestBody courseRequest: CourseRequest) =
+            ResponseEntity.ok(courseService.updateCourse(user, courseId, courseRequest))
 }

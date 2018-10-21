@@ -8,11 +8,11 @@ data class AttendRequest constructor(
 
         var year: Int,
 
-        var term: Long,
+        var term: TermType,
 
-        var grade: Long,
+        var grade: GradeType,
 
-        var section: Long,
+        var section: SectionType,
 
         var courseCode: String
 )

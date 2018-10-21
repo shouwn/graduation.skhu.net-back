@@ -21,16 +21,16 @@ data class Course constructor(
         var code: String,
 
         @Index
-        var name: String,
+        var name: String? = null,
 
-        var credit: Double,
+        var credit: Double? = null,
 
-        var enabled: Boolean,
+        var enabled: Boolean? = null,
 
         @Relationship(type = "REPLACE", direction = Relationship.OUTGOING)
         var replacement: Course? = null,
 
         @Relationship(type = "OPEN", direction = Relationship.INCOMING)
-        var party: Party
+        var party: Party? = null
 
 ) : UserDateAudit()

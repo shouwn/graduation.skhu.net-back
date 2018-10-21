@@ -21,8 +21,8 @@ import java.time.LocalDateTime
 
 @Service
 class CourseService @Autowired constructor(
-        val courseRepository: CourseRepository,
-        val partyRepository: PartyRepository
+        private val courseRepository: CourseRepository,
+        private val partyRepository: PartyRepository
 ){
     private val logger = logger()
 
@@ -35,13 +35,29 @@ class CourseService @Autowired constructor(
 
         // TODO(엑셀 서식 체크)
 
+        val partyMap = partyRepository.findAll().associate { it.name to it }
+
         for(rowIndex in 1..rows){
             val row = sheet.getRow(rowIndex)
 
             if(row != null) {
+                val partyName = row.getCell(3).toValueString().trim()
+
+                val partyId =
+                        if (partyMap.containsKey(partyName))
+                            partyMap[partyName]!!.id
+                        else
+                            throw ApiException(
+                                    status = HttpStatus.PRECONDITION_FAILED,
+                                    apiResponse = ApiResponse(
+                                            success = false,
+                                            message = "${partyName}에 해당하는 개설 소속이 없습니다."
+                                    )
+                            )
+
                 courseList.add(Course(
                         code = row.getCell(2).toValueString(),
-                        party = Party(name = row.getCell(3).toValueString().trim()),
+                        party = Party(id = partyId),
                         name = row.getCell(4).toValueString(),
                         credit = row.getCell(5).numericCellValue,
                         enabled = true
@@ -67,14 +83,18 @@ class CourseService @Autowired constructor(
             ).apply { logger.error("${user.info()} 가 존재하지 않는 과목을 수정하려고 시도함") }
 
         val course = optionalCourse.get()
+                .copy(
+                        code = request.code,
+                        name = request.name,
+                        credit = request.credit,
+                        enabled = request.enabled
+                )
 
-        if(course.party.id == request.partyId)
-            return courseRepository.save(course.copy(
-                    code = request.code,
-                    name = request.name,
-                    credit = request.credit,
-                    enabled = request.enabled
-            )).apply { logger.info("${user.info()} 가 ") }
+        if(course.party?.id == request.partyId)
+            return courseRepository.save(course)
+                    .apply { logger.info("${user.info()} 가 ${course.id} 과목을 수정함") }
+
+        println(course.party?.id)
 
         val party = partyRepository.findById(request.partyId)
 
@@ -87,7 +107,8 @@ class CourseService @Autowired constructor(
                     )
             ).apply { logger.error("${user.info()} 가 존재하지 않는 ${request.partyId} 소속으로 ${courseId}를 변경하려고 시도") }
 
-
+        return courseRepository.updateCourse(request.partyId, course)
+                .apply { logger.info("${user.info()} 가 ${course.id} 과목을 수정함") }
     }
 
 }
