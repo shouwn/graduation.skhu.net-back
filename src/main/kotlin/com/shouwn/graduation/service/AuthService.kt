@@ -1,37 +1,31 @@
 package com.shouwn.graduation.service
 
-import com.shouwn.graduation.model.domain.dto.ApiResponse
-import com.shouwn.graduation.model.domain.dto.JwtAuthenticationResponse
-import com.shouwn.graduation.model.domain.dto.LoginRequest
-import com.shouwn.graduation.model.domain.dto.SignUpRequest
+import com.shouwn.graduation.model.domain.dto.response.ApiResponse
+import com.shouwn.graduation.model.domain.dto.response.JwtAuthenticationResponse
+import com.shouwn.graduation.model.domain.dto.request.LoginRequest
+import com.shouwn.graduation.model.domain.dto.request.SignUpRequest
 import com.shouwn.graduation.model.domain.entity.User
 import com.shouwn.graduation.model.domain.exception.ApiException
-import com.shouwn.graduation.model.domain.exception.AppException
 import com.shouwn.graduation.model.domain.type.RoleName
-import com.shouwn.graduation.repository.RoleRepository
 import com.shouwn.graduation.repository.UserRepository
 import com.shouwn.graduation.security.JwtTokenProvider
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.crypto.factory.PasswordEncoderFactories
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
-import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import java.net.URI
-import javax.validation.Valid
 
 @Service
 class AuthService @Autowired constructor(
         private val authenticationManager: AuthenticationManager,
         private val userRepository: UserRepository,
-        private val roleRepository: RoleRepository,
         private val tokenProvider: JwtTokenProvider
 ) {
     private val logger = LoggerFactory.getLogger(AuthService::class.java)
@@ -51,13 +45,13 @@ class AuthService @Autowired constructor(
 
         val jwt = tokenProvider.generateToken(authentication)
 
-        logger.info("${loginRequest.userNumberOrEmail} is login successful!")
+        logger.info("사용자 번호 ${loginRequest.userNumberOrEmail} 가 로그인하였습니다.")
 
         return JwtAuthenticationResponse(jwt)
     }
 
     fun registerUser(signUpRequest: SignUpRequest, role: RoleName): URI {
-        val signCode = if(role == RoleName.ROLE_USER) userSignCode else adminSignCode
+        val signCode = if(role == RoleName.ROLE_STUDENT) userSignCode else adminSignCode
 
         if(signUpRequest.code != signCode) {
             logger.error("Register Fail: ${signUpRequest.code} is not $signCode")
@@ -77,23 +71,31 @@ class AuthService @Autowired constructor(
         }
 
         val user = User(
-                roles = mutableSetOf(roleRepository.findByRole(role)
-                        ?: throw AppException("Role not Set.").apply { logger.error("${role}이 DB에 없습니다.") }),
+                role = role,
                 userNumber = signUpRequest.userNumber,
                 password = passwordEncoder.encode(signUpRequest.password),
                 name = signUpRequest.name,
                 email = signUpRequest.email,
-                enabled = role == RoleName.ROLE_USER,
+                enabled = role == RoleName.ROLE_STUDENT,
                 hint = signUpRequest.hint,
                 hintAnswer = signUpRequest.hintAnswer
         )
 
         val result = userRepository.save(user)
 
-        logger.info("$role ${signUpRequest.userNumber} ${signUpRequest.name} is registered successful!")
+        logger.info("권한: $role ${signUpRequest.userNumber}, 사용자 번호: ${signUpRequest.userNumber}, " +
+                "사용자 이름: ${signUpRequest.name} 회원 등록")
 
         return ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/users/{username}")
                 .buildAndExpand(result.userNumber).toUri()
     }
+
+    fun findHintByUserNumberOrEmail(userNameOrEmail: String) =
+            userRepository.findByUserNumberOrEmail(userNameOrEmail, userNameOrEmail)?.hint
+                    ?: throw ApiException(
+                            status = HttpStatus.NOT_FOUND,
+                            apiResponse = ApiResponse(false,
+                                    "${userNameOrEmail}에 해당하는 유저가 없습니다.")
+                    )
 }

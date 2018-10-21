@@ -1,6 +1,6 @@
 package com.shouwn.graduation.model.domain.exception
 
-import com.shouwn.graduation.model.domain.dto.ApiResponse
+import com.shouwn.graduation.model.domain.dto.response.ApiResponse
 import org.springframework.http.HttpStatus
 import java.lang.RuntimeException
 

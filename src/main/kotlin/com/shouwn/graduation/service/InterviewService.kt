@@ -1,7 +1,7 @@
 package com.shouwn.graduation.service
 
-import com.shouwn.graduation.model.domain.dto.ApiResponse
-import com.shouwn.graduation.model.domain.dto.InterviewRequest
+import com.shouwn.graduation.model.domain.dto.response.ApiResponse
+import com.shouwn.graduation.model.domain.dto.request.InterviewRequest
 import com.shouwn.graduation.model.domain.entity.Interview
 import com.shouwn.graduation.model.domain.entity.User
 import com.shouwn.graduation.model.domain.exception.ApiException

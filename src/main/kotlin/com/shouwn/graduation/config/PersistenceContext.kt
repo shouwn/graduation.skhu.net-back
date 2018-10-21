@@ -1,5 +1,6 @@
 package com.shouwn.graduation.config
 
+import com.fasterxml.jackson.databind.SerializationFeature
 import org.neo4j.ogm.session.SessionFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean

@@ -2,6 +2,7 @@ package basic
 
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import java.time.LocalDateTime
 
 class KotlinBasic{
 
@@ -12,5 +13,34 @@ class KotlinBasic{
         Assertions.assertTrue(s1[0].isNullOrBlank())
         Assertions.assertTrue(s1[1].isNullOrBlank())
         Assertions.assertTrue(s1[2].isNullOrBlank())
+    }
+
+    @Test
+    fun localDateTime(){
+        println(LocalDateTime.now())
+    }
+
+    @Test
+    fun regexTest(){
+        val regex1 = "교양계.*".toRegex()
+        val regex2 = "[^(교양계)].*".toRegex()
+
+        Assertions.assertTrue(regex1.matches("교양계 교양필수"))
+        Assertions.assertTrue(regex2.matches("공학계 소프트웨어공학과"))
+
+        Assertions.assertFalse(regex2.matches("교양계 교양필수"))
+        Assertions.assertFalse(regex1.matches("공학계 소프트웨어공학과"))
+
+    }
+
+    @Test
+    fun alsoVsApply(){
+        println("TEST").apply {
+            println("let!!!!")
+        }
+
+        println("TEST").also {
+            println("also!!!!")
+        }
     }
 }
