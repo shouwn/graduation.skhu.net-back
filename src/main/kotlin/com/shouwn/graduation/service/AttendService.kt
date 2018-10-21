@@ -40,10 +40,12 @@ class AttendService @Autowired constructor(
                 attendList.add(Attend(
                         year = row.getCell(1).numericCellValue.toInt(),
                         term = TermType.labelOf(row.getCell(2).toValueString()),
-                        course = Course(code = row.getCell(3).toValueString()),
                         section = SectionType.valueOfLabelShort(row.getCell(5).toValueString()),
                         grade = GradeType.labelOf(row.getCell(7).toValueString())
-                ).apply { createUserDateAudit(user.id) })
+                ).apply {
+                    createUserDateAudit(user.id)
+                    course = Course(code = row.getCell(3).toValueString())
+                })
             }
         }
 
@@ -55,7 +57,9 @@ class AttendService @Autowired constructor(
                     year = it.year,
                     term = it.term,
                     grade = it.grade,
-                    section = it.section,
-                    course = Course(code = it.courseCode)
-            ).apply { updateUserDateAudit(user.id) } })
+                    section = it.section
+            ).apply {
+                updateUserDateAudit(user.id)
+                course = Course(code = it.courseCode)
+            } })
 }

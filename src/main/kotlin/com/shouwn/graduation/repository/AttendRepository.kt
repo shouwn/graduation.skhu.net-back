@@ -12,10 +12,12 @@ interface AttendRepository : Neo4jRepository<Attend, Long> {
 //    a.section = attend.section.value, a.updatedBy = attend.updatedBy, a.updatedAt = attend.updatedAt
 
     @Query("""
-        MATCH (u: User) -[r: ATTEND]-> ()
+        OPTIONAL MATCH (u) -[r: ATTEND]-> ()
         WHERE id(u) = {userId}
-        DELETE r WITH *, {attends} AS attends
+        DELETE r WITH {attends} AS attends
         UNWIND attends AS attend
+        MATCH (u: User)
+        WHERE id(u) = {userId}
         MATCH (c: Course { code: attend.course.code })
         CREATE p = (u) -[a: ATTEND]-> (c)
         SET a.year = attend.year, a.term = attend.term.value, a.grade = attend.grade.value,

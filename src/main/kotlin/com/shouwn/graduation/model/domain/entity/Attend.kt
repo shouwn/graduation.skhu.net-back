@@ -23,12 +23,13 @@ data class Attend constructor(
         var grade: GradeType,
 
         @Convert(SectionTypeConverter::class)
-        var section: SectionType,
+        var section: SectionType
+) : UserDateAudit() {
 
         @JsonIgnore
         @StartNode
-        var user: User? = null,
+        var user: User? = null
 
         @EndNode
         var course: Course? = null
-) : UserDateAudit()
+}
