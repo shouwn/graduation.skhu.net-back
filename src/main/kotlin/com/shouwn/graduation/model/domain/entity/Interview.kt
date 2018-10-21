@@ -10,10 +10,8 @@ data class Interview constructor(
         @Id @GeneratedValue
         var id: Long? = null,
 
-        @Property(name = "title")
         var title: String,
 
-        @Property(name = "content")
         var content: String,
 
         @Relationship(type = "WRITE", direction = Relationship.INCOMING)

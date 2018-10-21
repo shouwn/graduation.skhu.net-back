@@ -16,8 +16,10 @@ data class Requirement constructor(
         @Convert(SatisfyingTypeConverter::class)
         var satisfying: SatisfyingType, // 이 요건이 만족되기 위한 조건이 무엇인지 나타냄
 
+        @Index
         var need: Long, // 요건의 타입에 맞춘 요구 값을 나타냄
 
+        @Index
         var clazz: Long, // 요건이 해당되는 학번을 가르킴 e.g.) 2013 이면 2013 ~
 
         @Relationship(type = "APPLY", direction = Relationship.OUTGOING)
@@ -27,6 +29,6 @@ data class Requirement constructor(
         var subs: Set<Requirement>?, // 하위 요건
 
         @Relationship(type = "REQUIRE", direction = Relationship.OUTGOING)
-        var subjects: Set<Subject>? // 이 요건 아래에 과목이 있다면 과목과의 관계 표현
+        var courses: Set<Course>? // 이 요건 아래에 과목이 있다면 과목과의 관계 표현
 
 ) : UserDateAudit()

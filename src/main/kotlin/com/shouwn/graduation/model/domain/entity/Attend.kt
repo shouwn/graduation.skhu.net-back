@@ -24,6 +24,7 @@ data class Attend constructor(
 
         @Convert(SectionTypeConverter::class)
         var section: SectionType
+
 ) : UserDateAudit() {
 
         @JsonIgnore

@@ -25,6 +25,7 @@ data class Course constructor(
 
         var credit: Double? = null,
 
+        @Index
         var enabled: Boolean? = null,
 
         @Relationship(type = "REPLACE", direction = Relationship.OUTGOING)
