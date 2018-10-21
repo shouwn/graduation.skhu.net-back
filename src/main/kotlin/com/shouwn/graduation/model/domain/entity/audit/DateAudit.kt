@@ -8,13 +8,18 @@ import org.springframework.data.annotation.LastModifiedDate
 import java.io.Serializable
 import java.time.LocalDateTime
 
-@JsonIgnoreProperties(
-        value = ["createdAt", "updatedAt"],
-        allowGetters = true
-)
 abstract class DateAudit : Serializable {
-    var createdAt: LocalDateTime? = LocalDateTime.now()
+    var createdAt: LocalDateTime? = null
 
-    @LastModifiedDate
     var updatedAt: LocalDateTime? = null
+
+    fun createDateAudit(){
+        val now = LocalDateTime.now()
+        createdAt = now
+        updatedAt = now
+    }
+
+    fun updateDateAudit(){
+        updatedAt = LocalDateTime.now()
+    }
 }

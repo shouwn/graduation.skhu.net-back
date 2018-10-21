@@ -1,7 +1,6 @@
 package com.shouwn.graduation.controller
 
-import com.shouwn.graduation.model.domain.dto.InterviewRequest
-import com.shouwn.graduation.model.domain.entity.Interview
+import com.shouwn.graduation.model.domain.dto.request.InterviewRequest
 import com.shouwn.graduation.security.CurrentUser
 import com.shouwn.graduation.security.UserPrincipal
 import com.shouwn.graduation.service.InterviewService
