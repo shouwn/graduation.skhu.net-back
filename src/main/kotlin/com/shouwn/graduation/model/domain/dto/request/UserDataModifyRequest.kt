@@ -19,7 +19,7 @@ data class UserDataModifyRequest (
 
         @get:NotBlank
         @get:Size(max = 50)
-        var hint: String,
+        var hint: Long,
 
         @get:NotBlank
         @get:Size(max = 50)

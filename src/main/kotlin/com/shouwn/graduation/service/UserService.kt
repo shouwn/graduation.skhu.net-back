@@ -5,18 +5,21 @@ import com.shouwn.graduation.repository.UserRepository
 import com.shouwn.graduation.security.UserPrincipal
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
 
 @Service
 class UserService @Autowired constructor(
         private val userRepository: UserRepository
 ){
     fun modifyUserData(user: UserPrincipal, request: UserDataModifyRequest) =
-            userRepository.save(user.entity.copy(
+            userRepository.updateUser(
+                    userId = user.id,
                     password = request.password,
                     name = request.name,
                     email = request.email,
                     hint = request.hint,
-                    hintAnswer = request.hintAnswer
-            ))
+                    hintAnswer = request.hintAnswer,
+                    updatedAt = LocalDateTime.now().toString()
+            )
 
 }

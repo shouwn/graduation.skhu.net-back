@@ -17,20 +17,21 @@ data class Course constructor(
         @Id @GeneratedValue
         var id: Long? = null,
 
-        @Index(unique = true)
-        var code: String,
+        @Index(unique = true) // 유니크 조건
+        var code: String, // 강의 코드
+
+        @Index // 인덱스 설정
+        var name: String? = null, // 강의 이름
+
+        var credit: Double? = null, // 학점
 
         @Index
-        var name: String? = null,
-
-        var credit: Double? = null,
-
-        var enabled: Boolean? = null,
+        var enabled: Boolean? = null, // 폐강인지 아닌지 표현
 
         @Relationship(type = "REPLACE", direction = Relationship.OUTGOING)
-        var replacement: Course? = null,
+        var replacement: Course? = null, // 대체 과목을 표현
 
         @Relationship(type = "OPEN", direction = Relationship.INCOMING)
-        var party: Party? = null
+        var parties: Set<Party>? = null // 어떤 소속에서 개설 되었는지 표현
 
 ) : UserDateAudit()

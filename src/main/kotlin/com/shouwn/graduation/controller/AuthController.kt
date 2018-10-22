@@ -1,5 +1,6 @@
 package com.shouwn.graduation.controller
 
+import com.shouwn.graduation.model.domain.Hint
 import com.shouwn.graduation.model.domain.dto.request.AttendRequest
 import com.shouwn.graduation.model.domain.dto.response.ApiResponse
 import com.shouwn.graduation.model.domain.dto.request.LoginRequest
@@ -42,11 +43,7 @@ class AuthController @Autowired constructor(
     fun findHint(@PathVariable("userNumberOrEmail") userNumberOrEmail: String) =
             ResponseEntity.ok(authService.findHintByUserNumberOrEmail(userNumberOrEmail))
 
-    @PostMapping("test")
-    fun test(@RequestBody request: AttendRequest) =
-            request
-
-    @GetMapping("test2")
-    fun test2() =
-            ResponseEntity.ok(LocalDateTime.now()!!)
+    @GetMapping("hints")
+    fun hintList() =
+            ResponseEntity.ok(Hint.values())
 }

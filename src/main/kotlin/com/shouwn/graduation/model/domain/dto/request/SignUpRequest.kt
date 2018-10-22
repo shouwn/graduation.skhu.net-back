@@ -21,9 +21,7 @@ data class SignUpRequest constructor(
         @get:Size(max = 40)
         var email: String,
 
-        @get:NotBlank
-        @get:Size(max = 50)
-        var hint: String,
+        var hint: Long,
 
         @get:NotBlank
         @get:Size(max = 50)

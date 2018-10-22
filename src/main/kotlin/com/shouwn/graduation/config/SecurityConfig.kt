@@ -51,6 +51,7 @@ class SecurityConfig @Autowired constructor(
                     .and()
                 .authorizeRequests()
                     .antMatchers("/api/auth/**").permitAll() // for sign up, sign in
+                    .antMatchers("/api/parties/belong/**").permitAll() // for find party belong type
                     .antMatchers("/profile").permitAll() // for get profile
                     .antMatchers("/actuator/**").permitAll() // for health check
                     .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()

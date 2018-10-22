@@ -24,7 +24,9 @@ class InterviewService @Autowired constructor(
                     content = interviewRequest.content,
                     writer = writer,
                     asker = userRepository.findById(askerId).get()
-            ).let { interviewRepository.save(it) }
+            )
+                    .apply { createUserDateAudit(writer.id!!) }
+                    .let { interviewRepository.save(it) }
 
     fun findInterviewByAsker(askerId: Long) =
             interviewRepository.findAllByAskerId(askerId)

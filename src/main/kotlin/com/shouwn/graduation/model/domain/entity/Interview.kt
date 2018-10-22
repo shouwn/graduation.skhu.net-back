@@ -10,16 +10,14 @@ data class Interview constructor(
         @Id @GeneratedValue
         var id: Long? = null,
 
-        @Property(name = "title")
-        var title: String,
+        var title: String, // 메모의 제목
 
-        @Property(name = "content")
-        var content: String,
+        var content: String, // 메모 내용
 
         @Relationship(type = "WRITE", direction = Relationship.INCOMING)
-        var writer: User?,
+        var writer: User?, // 작성자와의 관계
 
-        @Relationship(type = "ASK", direction = Relationship.INCOMING)
-        var asker: User?
+        @Relationship(type = "ASK", direction = Relationship.OUTGOING)
+        var asker: User? // 작성 대상인 학생과의 관계
 
 ) : UserDateAudit()

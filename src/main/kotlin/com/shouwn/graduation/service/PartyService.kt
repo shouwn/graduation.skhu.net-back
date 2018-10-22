@@ -32,7 +32,7 @@ class PartyService @Autowired constructor(
             else
                 partyRepository.save(Party(
                         name = request.name,
-                        belong = BelongType.patternOf(request.name)
+                        belong = request.belong
                 ).apply { createUserDateAudit(user.id) })
                         .also { logger.info("${user.id}가 ${request.name} 소속을 만듬") }
 
@@ -66,9 +66,23 @@ class PartyService @Autowired constructor(
 
         return partyRepository.updateById(partyId, Party(
                 name = request.name,
-                belong = BelongType.patternOf(request.name)
+                belong = request.belong
         ).apply { updateUserDateAudit(user.id) })
                 .apply { logger.info("${user.id}가 ${oldName}을 ${this.name}으로 이름 변경") }
     }
 
+    fun findPartiesByBelongValue(belongValue: Long) =
+            partyRepository.findAllByBelong(belongValue.let {
+                try {
+                    BelongType.valueOf(it)
+                } catch (e: IllegalStateException){
+                    throw ApiException(
+                            status = HttpStatus.NOT_FOUND,
+                            apiResponse = ApiResponse(
+                                    success = false,
+                                    message = "${it}에 해당하는 소속 범주가 없습니다."
+                            )
+                    )
+                }
+            })
 }

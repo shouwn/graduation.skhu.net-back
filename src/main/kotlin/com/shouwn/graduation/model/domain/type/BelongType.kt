@@ -4,16 +4,14 @@ import com.fasterxml.jackson.annotation.JsonFormat
 import org.neo4j.ogm.typeconversion.AttributeConverter
 
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
-enum class BelongType(val value: Long, val regex: Regex){
-    MAJOR(0, "[^(교양계)].*".toRegex()),
-    GENERAL(1, "교양계.*".toRegex())
+enum class BelongType(val value: Long, val label: String){
+    MAJOR(0, "학과"),
+    GENERAL(1, "교양"),
+    UNDERGRADUATE(2, "학부")
     ;
 
     companion object {
         private val map = BelongType.values().associate { it.value to it }
-
-        fun patternOf(value: String) =
-                if(MAJOR.regex.matches(value)) MAJOR else GENERAL
 
         fun valueOf(value: Long): BelongType =
                 map[value] ?: throw IllegalStateException("$value 에 해당하는 타입이 없습니다.")
