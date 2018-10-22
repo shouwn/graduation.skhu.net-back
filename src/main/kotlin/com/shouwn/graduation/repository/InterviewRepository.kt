@@ -8,14 +8,14 @@ import org.springframework.data.repository.query.Param
 interface InterviewRepository : Neo4jRepository<Interview, Long> {
 
     @Query("""
-        MATCH p = (a) -[:ASK]-> (i: Interview) <-[:WRITE]- (b)
+        MATCH p = (a) <-[:ASK]- (i: Interview) <-[:WRITE]- (b)
         WHERE id(a) = {askerId}
         RETURN p
     """)
     fun findAllByAskerId(@Param("askerId") askerId: Long): List<Interview>
 
     @Query("""
-        MATCH p = (a) -[:ASK]-> (i: Interview) <-[:WRITE]- (b)
+        MATCH p = (a) <-[:ASK]- (i: Interview) <-[:WRITE]- (b)
         WHERE id(b) = {writerId}
         RETURN p
     """)

@@ -9,5 +9,5 @@ data class CourseRequest (
 
         var enabled: Boolean,
 
-        var partyId: Long
+        var partyIds: Set<Long>
 )

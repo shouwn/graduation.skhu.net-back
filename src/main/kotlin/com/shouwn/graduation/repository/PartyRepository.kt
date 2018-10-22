@@ -1,6 +1,7 @@
 package com.shouwn.graduation.repository
 
 import com.shouwn.graduation.model.domain.entity.Party
+import com.shouwn.graduation.model.domain.type.BelongType
 import org.springframework.data.neo4j.annotation.Query
 import org.springframework.data.neo4j.repository.Neo4jRepository
 import org.springframework.data.repository.query.Param
@@ -22,4 +23,6 @@ interface PartyRepository : Neo4jRepository<Party, Long> {
         RETURN p
     """)
     fun updateById(@Param("partyId") partyId: Long, party: Party): Party
+
+    fun findAllByBelong(belong: BelongType): List<Party>
 }

@@ -11,18 +11,18 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 
 @RestController
-@RequestMapping("api/attend")
+@RequestMapping("api/attends")
 class AttendController @Autowired constructor(
         val attendService: AttendService
 ){
 
-    @PostMapping("attends")
+    @PostMapping
     fun addAttendFromFile(@CurrentUser user: UserPrincipal,
                           @RequestBody file: MultipartFile) =
             ResponseEntity.status(HttpStatus.CREATED)
                     .body(attendService.addAttendFromFile(user, file.inputStream))
 
-    @PutMapping("")
+    @PutMapping("{attendId}")
     fun updateAttend(@CurrentUser user: UserPrincipal,
                      @PathVariable("attendId") attendId: Long,
                      @RequestBody attendRequest: AttendRequest) =
