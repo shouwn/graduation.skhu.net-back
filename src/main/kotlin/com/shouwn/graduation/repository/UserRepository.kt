@@ -15,7 +15,7 @@ interface UserRepository : Neo4jRepository<User, Long>{
         MATCH(u: User)
         WHERE u.userNumber = {userNumber} OR u.email = {email}
         RETURN COUNT(u) > 0
-                """)
+    """)
     fun existsByUserNumberOrEmail(@Param("userNumber") username: String, @Param("email") email: String): Boolean
 
     fun findAllByEnabled(enabled: Boolean): List<User>

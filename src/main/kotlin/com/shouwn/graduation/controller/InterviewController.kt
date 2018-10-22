@@ -7,16 +7,18 @@ import com.shouwn.graduation.service.InterviewService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.annotation.Secured
 import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
 @RestController
-@RequestMapping("api/interview")
+@RequestMapping("api/interviews")
 class InterviewController @Autowired constructor(
         val interviewService: InterviewService
 ){
 
     @PostMapping("asker/{askerId}")
+    @Secured("ROLE_ADMIN")
     fun postInterview(@PathVariable("askerId") askerId: Long,
                       @CurrentUser user: UserPrincipal,
                       @RequestBody @Valid interviewRequest: InterviewRequest): ResponseEntity<*> =
@@ -24,11 +26,11 @@ class InterviewController @Autowired constructor(
                     .status(HttpStatus.CREATED)
                     .body(interviewService.saveInterview(user.entity, askerId, interviewRequest))
 
-    @GetMapping("asker/{askerId}")
+    @GetMapping("ask/{askerId}")
     fun findInterviewsByAsker(@PathVariable("askerId") askerId: Long) =
             ResponseEntity.ok(interviewService.findInterviewByAsker(askerId))
 
-    @GetMapping("writer/{writerId}")
+    @GetMapping("write/{writerId}")
     fun findInterviewsByWriter(@PathVariable("writerId") writerId: Long) =
             ResponseEntity.ok(interviewService.findInterviewByWriter(writerId))
 

@@ -70,5 +70,4 @@ class PartyService @Autowired constructor(
         ).apply { updateUserDateAudit(user.id) })
                 .apply { logger.info("${user.id}가 ${oldName}을 ${this.name}으로 이름 변경") }
     }
-
 }

@@ -1,7 +1,6 @@
 package com.shouwn.graduation.model.domain.entity
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.shouwn.graduation.model.domain.entity.audit.DateAudit
 import com.shouwn.graduation.model.domain.type.RoleName
 import com.shouwn.graduation.model.domain.type.RoleNameConverter
@@ -13,28 +12,36 @@ data class User constructor(
         @Id @GeneratedValue
         var id: Long? = null,
 
-        var userNumber: String,
+        @Index(unique = true)
+        var userNumber: String, // 교직원 혹은 학생 번호
 
         @JsonIgnore
-        var password: String,
+        var password: String, // 비밀번호
 
-        var name: String,
+        @Index
+        var name: String, // 사용자 이름
 
-        var email: String,
+        var email: String, // 사용자 비밀번호
 
-        var hint: String,
-
-        @JsonIgnore
-        var hintAnswer: String,
+        var hint: String, // 사용자 비밀번호 찾기 힌트
 
         @JsonIgnore
-        var enabled: Boolean,
+        var hintAnswer: String, // 사용자 비밀번호 찾기 힌트에 대한 답변
+
+        @JsonIgnore
+        var enabled: Boolean, // 사용자가 승인 되었는지 나타내는 속성
 
         @JsonIgnore
         @Convert(RoleNameConverter::class)
-        var role: RoleName,
+        var role: RoleName, // 사용자의 권한
 
         @Relationship(type = "ATTEND", direction = Relationship.OUTGOING)
-        var attend: MutableSet<Attend>? = null
+        var attend: MutableSet<Attend>? = null,
+
+        @Relationship(type = "SELECT", direction = Relationship.OUTGOING)
+        var requirement: Requirement? = null,
+
+        @Relationship(type = "BELONG", direction = Relationship.OUTGOING)
+        var parties: Set<Party>? = null // IT 융합부에 소속되면서 소프트웨어공학과에 소속된다면?
   
 ) : DateAudit()
