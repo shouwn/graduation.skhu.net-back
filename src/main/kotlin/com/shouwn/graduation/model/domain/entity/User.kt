@@ -23,7 +23,7 @@ data class User constructor(
 
         var email: String, // 사용자 비밀번호
 
-        var hint: String, // 사용자 비밀번호 찾기 힌트
+        var hint: Long, // 사용자 비밀번호 찾기 힌트
 
         @JsonIgnore
         var hintAnswer: String, // 사용자 비밀번호 찾기 힌트에 대한 답변

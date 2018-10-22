@@ -26,4 +26,19 @@ interface UserRepository : Neo4jRepository<User, Long>{
         SET n.enabled = true
     """)
     fun userSetEnable(@Param("id") id: Long)
+
+    @Query("""
+        MATCH (u: User)
+        WHERE ID(u) = {userId}
+        SET u.name = {name}, u.password = {password}, u.email = {email},
+          u.hint = {hint}, u.hintAnswer = {hintAnswer}, u.updatedAt = {updatedAt}
+        RETURN u
+    """)
+    fun updateUser(@Param("userId") userId: Long,
+                   @Param("name") name: String,
+                   @Param("password") password: String,
+                   @Param("email") email: String,
+                   @Param("hint") hint: Long,
+                   @Param("hintAnswer") hintAnswer: String,
+                   @Param("updatedAt") updatedAt: String): User
 }

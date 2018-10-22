@@ -1,11 +1,14 @@
 package com.shouwn.graduation.controller
 
 import com.shouwn.graduation.model.domain.dto.request.PartyRequest
+import com.shouwn.graduation.model.domain.dto.response.ApiResponse
+import com.shouwn.graduation.model.domain.exception.ApiException
 import com.shouwn.graduation.model.domain.type.BelongType
 import com.shouwn.graduation.security.CurrentUser
 import com.shouwn.graduation.security.UserPrincipal
 import com.shouwn.graduation.service.PartyService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.annotation.Secured
 import org.springframework.web.bind.annotation.*
@@ -38,5 +41,5 @@ class PartyController @Autowired constructor(
 
     @GetMapping("belong/{belongValue}")
     fun findPartiesByBelong(@PathVariable("belongValue") belongValue: Long) =
-            ResponseEntity.ok(partyService.findPartiesByBelongType(BelongType.valueOf(belongValue)))
+            ResponseEntity.ok(partyService.findPartiesByBelongValue(belongValue))
 }
