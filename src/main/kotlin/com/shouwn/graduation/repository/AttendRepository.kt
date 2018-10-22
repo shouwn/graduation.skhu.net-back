@@ -12,15 +12,13 @@ interface AttendRepository : Neo4jRepository<Attend, Long> {
 //    a.section = attend.section.value, a.updatedBy = attend.updatedBy, a.updatedAt = attend.updatedAt
 
     @Query("""
-        OPTIONAL MATCH (u) -[r: ATTEND]-> ()
-        WHERE id(u) = {userId}
-        DELETE r WITH {attends} AS attends
+        WITH {attends} AS attends
         UNWIND attends AS attend
         MATCH (u: User)
         WHERE id(u) = {userId}
         MATCH (c: Course { code: attend.course.code })
         CREATE p = (u) -[a: ATTEND]-> (c)
-        SET a.year = attend.year, a.term = attend.term.value, a.grade = attend.grade.value,
+        SET a.year = attend.year, a.term = attend.term.value, a.grade = attend.grade.value, a.type = attend.type.value,
           a.section = attend.section.value, a.createdAt = attend.createdAt, a.createdBy = attend.createdBy,
           a.updatedBy = attend.updatedBy, a.updatedAt = attend.updatedAt WITH *
         RETURN p
@@ -29,19 +27,33 @@ interface AttendRepository : Neo4jRepository<Attend, Long> {
                     @Param("attends") attends: List<Attend>): List<Attend>
 
     @Query("""
-        WITH {attend} AS attend
         MATCH (u: User)
+        WHERE id(u) = {userId}
         MATCH (c: Course)
-        MATCH () -[old:ATTEND]-> ()
-        WHERE id(u) = {userId} AND c.code = attend.course.code AND id(old) = {attendId}
+        WHERE id(c) = {courseId}
+        MATCH (u) -[old:ATTEND]-> (c)
+        WHERE id(old) = {attendId}
         CREATE p = (u) -[a:ATTEND]-> (c)
-        SET a = old, a.year = attend.year, a.term = attend.term.value, a.grade = attend.grade.value,
-          a.section = attend.section.value, a.updatedBy = attend.updatedBy, a.updatedAt = attend.updatedAt,
+        SET a = old, a.year = {year}, a.term = {term}, a.grade = {grade}, a.type = {type},
+          a.section = {section}, a.updatedBy = {updatedBy}, a.updatedAt = {updatedAt},
           a.createdAt = old.createdAt, a.createdBy = old.createdBy WITH *
         DELETE old WITH *
         RETURN p
     """)
-    fun updateAttend(@Param("userId") userId: Long,
-                     @Param("attendId") attendId: Long,
-                     @Param("attend") attend: Attend): Attend
+    fun updateAttend(@Param("attendId") attendId: Long,
+                     @Param("courseId") courseId: Long,
+                     @Param("year") year: Long,
+                     @Param("term") term: Long,
+                     @Param("grade") grade: Long,
+                     @Param("section") section: Long,
+                     @Param("type") type: Long,
+                     @Param("updatedBy") updatedBy: Long,
+                     @Param("updatedAt") updatedAt: String): Attend
+
+    @Query("""
+        MATCH (u) -[r:ATTEND]-> ()
+        WHERE id(u) = {userId}
+        DELETE r
+    """)
+    fun deleteAllByUserId(@Param("userId") userId: Long)
 }

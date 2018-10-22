@@ -11,6 +11,7 @@ data class Requirement constructor(
         @Id @GeneratedValue
         var id: Long? = null,
 
+        @Index
         var name: String, // 요건의 이름
 
         @Convert(SatisfyingTypeConverter::class)
