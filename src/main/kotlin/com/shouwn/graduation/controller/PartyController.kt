@@ -1,6 +1,7 @@
 package com.shouwn.graduation.controller
 
 import com.shouwn.graduation.model.domain.dto.request.PartyRequest
+import com.shouwn.graduation.model.domain.type.BelongType
 import com.shouwn.graduation.security.CurrentUser
 import com.shouwn.graduation.security.UserPrincipal
 import com.shouwn.graduation.service.PartyService
@@ -30,4 +31,12 @@ class PartyController @Autowired constructor(
                     @PathVariable("partyId") partyId: Long,
                     @RequestBody partyRequest: PartyRequest) =
             ResponseEntity.ok(partyService.updateParty(user, partyId, partyRequest))
+
+    @GetMapping("belong")
+    fun belongType() =
+            ResponseEntity.ok(BelongType.values())
+
+    @GetMapping("belong/{belongValue}")
+    fun findPartiesByBelong(@PathVariable("belongValue") belongValue: Long) =
+            ResponseEntity.ok(partyService.findPartiesByBelongType(BelongType.valueOf(belongValue)))
 }
