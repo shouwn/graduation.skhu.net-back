@@ -85,4 +85,26 @@ class PartyService @Autowired constructor(
                     )
                 }
             })
+
+    fun findPartiesByPartyIds(ids: List<Long>): Set<Party> =
+            partyRepository.findAllById(ids).apply {
+                if(this.count() == 0)
+                    throw ApiException(
+                            status = HttpStatus.PRECONDITION_FAILED,
+                            apiResponse = ApiResponse(
+                                    success = false,
+                                    message = "${ids}에 해당하는 소속이 없습니다."
+                            )
+                    )
+
+                this.filter { it.id !in ids  }
+                        .forEach { throw ApiException(
+                                status = HttpStatus.PRECONDITION_FAILED,
+                                apiResponse = ApiResponse(
+                                        success = false,
+                                        message = "${it.id}에 해당하는 소속이 없습니다."
+                                )
+                        ) }
+            }.toSet()
+
 }

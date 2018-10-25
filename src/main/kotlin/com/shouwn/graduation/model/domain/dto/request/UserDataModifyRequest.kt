@@ -21,6 +21,8 @@ data class UserDataModifyRequest (
         @get:Size(max = 50)
         var hint: Long,
 
+        var parties: List<Long>,
+
         @get:NotBlank
         @get:Size(max = 50)
         var hintAnswer: String

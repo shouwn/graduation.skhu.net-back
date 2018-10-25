@@ -7,10 +7,7 @@ import com.shouwn.graduation.security.UserPrincipal
 import com.shouwn.graduation.service.UserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("api/user")
@@ -21,4 +18,8 @@ class UserController @Autowired constructor(
     fun modifyUserData(@CurrentUser user: UserPrincipal,
                        @RequestBody userDataModifyRequest: UserDataModifyRequest) =
             ResponseEntity.ok(userService.modifyUserData(user, userDataModifyRequest))
+
+    @GetMapping
+    fun findUserData(@CurrentUser user: UserPrincipal) =
+            ResponseEntity.ok(user.entity.apply { println(this) })
 }

@@ -35,9 +35,11 @@ data class User constructor(
         @Convert(RoleNameConverter::class)
         var role: RoleName, // 사용자의 권한
 
+        @JsonIgnore
         @Relationship(type = "ATTEND", direction = Relationship.OUTGOING)
         var attend: MutableSet<Attend>? = null,
 
+        @JsonIgnore
         @Relationship(type = "SELECT", direction = Relationship.OUTGOING)
         var requirement: Requirement? = null,
 
