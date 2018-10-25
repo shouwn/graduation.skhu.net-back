@@ -27,12 +27,17 @@ class JwtTokenProvider constructor(
     fun generateToken(authentication: Authentication): String {
         val userPrincipal = authentication.principal as UserPrincipal
 
+        return generateToken(userPrincipal.id.toString())
+    }
+
+    fun generateToken(id: String): String {
+
         val now = Date()
 
         val expiryDateTime = Date(now.time + jwtExpirationMs)
 
         return Jwts.builder()
-                .setSubject(userPrincipal.id.toString())
+                .setSubject(id)
                 .setIssuedAt(now)
                 .setExpiration(expiryDateTime)
                 .signWith(secretKey)

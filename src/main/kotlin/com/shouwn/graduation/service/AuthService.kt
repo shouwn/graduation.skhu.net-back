@@ -68,16 +68,11 @@ class AuthService @Autowired constructor(
                     status = HttpStatus.FORBIDDEN,
                     apiResponse = ApiResponse(
                             success = false,
-                            message = "${request.hintAnswer}가 올바르지 않습니다."
+                            message = "답변이 올바르지 않습니다."
                     )
             )
 
-        val authentication = authenticationManager.authenticate(
-                UsernamePasswordAuthenticationToken(user.userNumber, user.password))
-
-        SecurityContextHolder.getContext().authentication = authentication
-
-        val jwt = tokenProvider.generateToken(authentication)
+        val jwt = tokenProvider.generateToken(user.id.toString())
 
         logger.info("사용자 번호 ${user.userNumber} 가 비밀번호 찾기를 통해 로그인하였습니다.")
 
