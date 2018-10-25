@@ -1,18 +1,16 @@
 package com.shouwn.graduation.controller
 
 import com.shouwn.graduation.model.domain.Hint
-import com.shouwn.graduation.model.domain.dto.request.AttendRequest
-import com.shouwn.graduation.model.domain.dto.response.ApiResponse
+import com.shouwn.graduation.model.domain.dto.request.ForgotRequest
 import com.shouwn.graduation.model.domain.dto.request.LoginRequest
 import com.shouwn.graduation.model.domain.dto.request.SignUpRequest
+import com.shouwn.graduation.model.domain.dto.response.ApiResponse
 import com.shouwn.graduation.model.domain.type.RoleName
-import com.shouwn.graduation.model.domain.type.SectionType
 import com.shouwn.graduation.service.AuthService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import java.time.LocalDateTime
 import javax.validation.Valid
 
 @RestController
@@ -24,7 +22,8 @@ class AuthController @Autowired constructor(
     @PostMapping("signin")
     fun authenticateUser(@Valid @RequestBody loginRequest: LoginRequest): ResponseEntity<*>{
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(authService.authenticateUser(loginRequest))
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(authService.authenticateUser(loginRequest))
     }
 
     @PostMapping("student/signup")
@@ -46,4 +45,8 @@ class AuthController @Autowired constructor(
     @GetMapping("hints")
     fun hintList() =
             ResponseEntity.ok(Hint.values())
+
+    @PostMapping("user/hintAnswer")
+    fun signinByHintAnswer(@RequestBody forgotRequest: ForgotRequest) =
+            ResponseEntity.ok(authService.authenticateUserByHint(forgotRequest))
 }
