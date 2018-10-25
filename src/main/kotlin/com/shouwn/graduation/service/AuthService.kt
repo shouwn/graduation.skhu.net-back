@@ -6,6 +6,7 @@ import com.shouwn.graduation.model.domain.dto.request.LoginRequest
 import com.shouwn.graduation.model.domain.dto.request.SignUpRequest
 import com.shouwn.graduation.model.domain.entity.User
 import com.shouwn.graduation.model.domain.exception.ApiException
+import com.shouwn.graduation.model.domain.type.BelongType
 import com.shouwn.graduation.model.domain.type.RoleName
 import com.shouwn.graduation.repository.UserRepository
 import com.shouwn.graduation.security.JwtTokenProvider
@@ -19,6 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.crypto.factory.PasswordEncoderFactories
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import java.net.URI
 
@@ -26,7 +28,8 @@ import java.net.URI
 class AuthService @Autowired constructor(
         private val authenticationManager: AuthenticationManager,
         private val userRepository: UserRepository,
-        private val tokenProvider: JwtTokenProvider
+        private val tokenProvider: JwtTokenProvider,
+        private val partyService: PartyService
 ) {
     private val logger = LoggerFactory.getLogger(AuthService::class.java)
     private val passwordEncoder: PasswordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder()
@@ -50,6 +53,7 @@ class AuthService @Autowired constructor(
         return JwtAuthenticationResponse(jwt)
     }
 
+    @Transactional
     fun registerUser(signUpRequest: SignUpRequest, role: RoleName): URI {
         val signCode = if(role == RoleName.ROLE_STUDENT) userSignCode else adminSignCode
 
@@ -70,6 +74,18 @@ class AuthService @Autowired constructor(
                     status = HttpStatus.CONFLICT)
         }
 
+        var parties = partyService.findPartiesByPartyIds(signUpRequest.parties)
+                .apply { filter { it.belong == BelongType.GENERAL }
+                        .forEach { _ ->
+                            throw ApiException(
+                                status = HttpStatus.PRECONDITION_FAILED,
+                                apiResponse = ApiResponse(
+                                        success = false,
+                                        message = "교양 소속으로는 선택할 수 없습니다."
+                                )
+                        ) }
+                }
+
         val user = User(
                 role = role,
                 userNumber = signUpRequest.userNumber,
@@ -79,7 +95,10 @@ class AuthService @Autowired constructor(
                 enabled = role == RoleName.ROLE_STUDENT,
                 hint = signUpRequest.hint,
                 hintAnswer = signUpRequest.hintAnswer
-        )
+        ).apply {
+            this.parties = parties
+            createDateAudit()
+        }
 
         val result = userRepository.save(user)
 
