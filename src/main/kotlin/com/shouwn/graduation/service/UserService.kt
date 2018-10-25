@@ -1,15 +1,20 @@
 package com.shouwn.graduation.service
 
 import com.shouwn.graduation.model.domain.dto.request.UserDataModifyRequest
+import com.shouwn.graduation.model.domain.dto.response.ApiResponse
+import com.shouwn.graduation.model.domain.exception.ApiException
+import com.shouwn.graduation.model.domain.type.BelongType
 import com.shouwn.graduation.repository.UserRepository
 import com.shouwn.graduation.security.UserPrincipal
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
 @Service
 class UserService @Autowired constructor(
-        private val userRepository: UserRepository
+        private val userRepository: UserRepository,
+        private val partyService: PartyService
 ){
     fun modifyUserData(user: UserPrincipal, request: UserDataModifyRequest) =
             userRepository.updateUser(
@@ -19,7 +24,18 @@ class UserService @Autowired constructor(
                     email = request.email,
                     hint = request.hint,
                     hintAnswer = request.hintAnswer,
-                    updatedAt = LocalDateTime.now().toString()
+                    updatedAt = LocalDateTime.now().toString(),
+                    parties = partyService.findPartiesByPartyIds(request.parties)
+                            .apply { filter { it.belong == BelongType.GENERAL }
+                                    .forEach { _ ->
+                                        throw ApiException(
+                                                status = HttpStatus.PRECONDITION_FAILED,
+                                                apiResponse = ApiResponse(
+                                                        success = false,
+                                                        message = "교양 소속으로는 선택할 수 없습니다."
+                                                )
+                                        ) }
+                                println(this)
+                            }
             )
-
 }

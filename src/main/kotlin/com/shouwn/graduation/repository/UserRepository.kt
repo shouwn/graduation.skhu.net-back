@@ -1,5 +1,6 @@
 package com.shouwn.graduation.repository
 
+import com.shouwn.graduation.model.domain.entity.Party
 import com.shouwn.graduation.model.domain.entity.User
 import com.sun.org.apache.xpath.internal.XPath.MATCH
 import org.springframework.data.neo4j.annotation.Query
@@ -31,8 +32,14 @@ interface UserRepository : Neo4jRepository<User, Long>{
         MATCH (u: User)
         WHERE ID(u) = {userId}
         SET u.name = {name}, u.password = {password}, u.email = {email},
-          u.hint = {hint}, u.hintAnswer = {hintAnswer}, u.updatedAt = {updatedAt}
-        RETURN u
+          u.hint = {hint}, u.hintAnswer = {hintAnswer}, u.updatedAt = {updatedAt} WITH u
+        OPTIONAL MATCH (u) -[r:BELONG]-> ()
+        DELETE r WITH u, {parties} AS parties
+        UNWIND parties AS party
+        MATCH (target: Party)
+        WHERE ID(target) = party.id
+        CREATE p = (u) -[r:BELONG]-> (target)
+        RETURN p
     """)
     fun updateUser(@Param("userId") userId: Long,
                    @Param("name") name: String,
@@ -40,5 +47,6 @@ interface UserRepository : Neo4jRepository<User, Long>{
                    @Param("email") email: String,
                    @Param("hint") hint: Long,
                    @Param("hintAnswer") hintAnswer: String,
-                   @Param("updatedAt") updatedAt: String): User
+                   @Param("updatedAt") updatedAt: String,
+                   @Param("parties") parties: Set<Party>): User
 }
