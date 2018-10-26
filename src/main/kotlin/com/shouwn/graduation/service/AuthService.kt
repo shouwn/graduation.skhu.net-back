@@ -1,5 +1,6 @@
 package com.shouwn.graduation.service
 
+import com.shouwn.graduation.model.domain.dto.request.ForgotRequest
 import com.shouwn.graduation.model.domain.dto.response.ApiResponse
 import com.shouwn.graduation.model.domain.dto.response.JwtAuthenticationResponse
 import com.shouwn.graduation.model.domain.dto.request.LoginRequest
@@ -49,6 +50,31 @@ class AuthService @Autowired constructor(
         val jwt = tokenProvider.generateToken(authentication)
 
         logger.info("사용자 번호 ${loginRequest.userNumberOrEmail} 가 로그인하였습니다.")
+
+        return JwtAuthenticationResponse(jwt)
+    }
+
+    fun authenticateUserByHint(request: ForgotRequest): JwtAuthenticationResponse {
+        val user = userRepository.findByUserNumberOrEmail(request.userNumberOrEmail, request.userNumberOrEmail) ?: throw ApiException(
+                status = HttpStatus.NOT_FOUND,
+                apiResponse = ApiResponse(
+                        success = false,
+                        message = "${request.userNumberOrEmail}에 해당하는 유저가 없습니다."
+                )
+        )
+
+        if(user.hintAnswer != request.hintAnswer)
+            throw ApiException(
+                    status = HttpStatus.FORBIDDEN,
+                    apiResponse = ApiResponse(
+                            success = false,
+                            message = "답변이 올바르지 않습니다."
+                    )
+            )
+
+        val jwt = tokenProvider.generateToken(user.id.toString())
+
+        logger.info("사용자 번호 ${user.userNumber} 가 비밀번호 찾기를 통해 로그인하였습니다.")
 
         return JwtAuthenticationResponse(jwt)
     }
