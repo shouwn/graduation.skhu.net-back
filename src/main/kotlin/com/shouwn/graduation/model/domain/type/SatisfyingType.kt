@@ -7,14 +7,18 @@ import org.neo4j.ogm.typeconversion.AttributeConverter
 
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 enum class SatisfyingType(val value: Long){
-    SUBJECT_ALL(0), // 하위 과목 모두 수강
-    SUBJECT_OVER(1), // 하위 과목 몇 점 이상 수강
-    CHILDREN_ALL(2), // 하위 자식 요건들 모두 충족
-    CHILDREN_OVER(3), // 하위 자식 요건들 몇 개 이상 충족
+    COURSE_CREDIT(0), // 하위 과목 몇 점 이상 수강
+    COURSE_COUNT(1), // 하위 과목 몇 개 이상 수강 (중복 가능)
+    CHILDREN(2), // 하위 자식 요건들 충족
+    GENERAL(3), // 교양
+    MAJOR(4), // 전공
+    MINOR(5) // 부전공
     ;
 
     companion object {
         private val map = SatisfyingType.values().associate { it.value to it }
+
+        val COURSE_SET = setOf(COURSE_COUNT, COURSE_CREDIT)
 
         fun valueOf(value: Long): SatisfyingType =
                 map[value] ?: throw IllegalStateException("$value 에 해당하는 타입이 없습니다.")
