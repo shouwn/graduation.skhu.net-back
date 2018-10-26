@@ -49,4 +49,13 @@ interface UserRepository : Neo4jRepository<User, Long>{
                    @Param("hintAnswer") hintAnswer: String,
                    @Param("updatedAt") updatedAt: String,
                    @Param("parties") parties: Set<Party>): User
+
+    @Query("""
+        MATCH (u: User)
+        WHERE ID(u) = {userId}
+        SET u.password = {password}, u.updatedAt = {updatedAt}
+    """)
+    fun modifyPassword(@Param("userId") userId: Long,
+                       @Param("password") password: String,
+                       @Param("updatedAt") updatedAt: String)
 }

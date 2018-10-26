@@ -1,5 +1,6 @@
 package com.shouwn.graduation.controller
 
+import com.shouwn.graduation.model.domain.dto.request.PasswordModifyRequest
 import com.shouwn.graduation.model.domain.dto.request.UserDataModifyRequest
 import com.shouwn.graduation.repository.UserRepository
 import com.shouwn.graduation.security.CurrentUser
@@ -22,4 +23,9 @@ class UserController @Autowired constructor(
     @GetMapping
     fun findUserData(@CurrentUser user: UserPrincipal) =
             ResponseEntity.ok(user.entity.apply { println(this) })
+
+    @PutMapping("password")
+    fun modifyPassword(@CurrentUser user: UserPrincipal,
+                       @RequestBody passwordModifyRequest: PasswordModifyRequest) =
+            ResponseEntity.ok(userService.modifyPassword(user, passwordModifyRequest).let { "비밀번호 변경 완료" })
 }
