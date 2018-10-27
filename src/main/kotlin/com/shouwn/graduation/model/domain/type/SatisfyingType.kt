@@ -12,7 +12,8 @@ enum class SatisfyingType(val value: Long){
     CHILDREN(2), // 하위 자식 요건들 충족
     GENERAL(3), // 교양
     MAJOR(4), // 전공
-    MINOR(5) // 부전공
+    MINOR(5), // 부전공
+    ALL(6) // 총 학점
     ;
 
     companion object {

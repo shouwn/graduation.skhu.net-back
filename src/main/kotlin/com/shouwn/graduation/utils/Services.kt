@@ -13,7 +13,7 @@ fun <T>findAllById(neo4jRepository: Neo4jRepository<out T, Long>,
                         status = HttpStatus.PRECONDITION_FAILED,
                         apiResponse = ApiResponse(
                                 success = false,
-                                message = "$ids 중 해당하지 않는 소속이 있습니다."
+                                message = "$ids 중 해당하지 않는 id가 있습니다."
                         )
                 )
         }

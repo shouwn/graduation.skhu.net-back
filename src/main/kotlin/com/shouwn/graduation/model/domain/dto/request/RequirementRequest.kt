@@ -9,9 +9,9 @@ data class RequirementRequest (
 
         val need: Long,
 
-        val clazz: Long,
+        val clazz: Long?,
 
-        val party: Long,
+        val party: Long?,
 
         val target: Set<Long>
 )

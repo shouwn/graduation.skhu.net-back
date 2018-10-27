@@ -29,8 +29,8 @@ class RequirementService @Autowired constructor(
                 name = request.name,
                 satisfying = request.satisfyingType,
                 need = request.need,
-                clazz = request.clazz,
-                party = partyService.findPartiesByPartyIds(listOf(request.party)).first()
+                clazz = request.clazz ?: 9999,
+                party = request.party?.let { partyService.findPartiesByPartyIds(listOf(it)).first() }
         ).apply { createUserDateAudit(userId) }
 
         when(requirement.satisfying){
@@ -106,6 +106,12 @@ class RequirementService @Autowired constructor(
             SatisfyingType.MINOR -> {
                 if(attends.asSequence().filter { it.section in SectionType.MINOR_SET }
                                 .map { it.course!!.credit }
+                                .reduce { acc, d -> d?.let { acc?.plus(it) } }!! >= requirement.need)
+                    1
+                else 0
+            }
+            SatisfyingType.ALL -> {
+                if(courses.asSequence().map { it!!.credit }
                                 .reduce { acc, d -> d?.let { acc?.plus(it) } }!! >= requirement.need)
                     1
                 else 0
