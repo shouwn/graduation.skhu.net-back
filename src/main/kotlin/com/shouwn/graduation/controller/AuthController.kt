@@ -3,9 +3,12 @@ package com.shouwn.graduation.controller
 import com.shouwn.graduation.model.domain.Hint
 import com.shouwn.graduation.model.domain.dto.request.ForgotRequest
 import com.shouwn.graduation.model.domain.dto.request.LoginRequest
+import com.shouwn.graduation.model.domain.dto.request.PasswordConfirmRequest
 import com.shouwn.graduation.model.domain.dto.request.SignUpRequest
 import com.shouwn.graduation.model.domain.dto.response.ApiResponse
 import com.shouwn.graduation.model.domain.type.RoleName
+import com.shouwn.graduation.security.CurrentUser
+import com.shouwn.graduation.security.UserPrincipal
 import com.shouwn.graduation.service.AuthService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -49,4 +52,9 @@ class AuthController @Autowired constructor(
     @PostMapping("user/hintAnswer")
     fun signinByHintAnswer(@RequestBody forgotRequest: ForgotRequest) =
             ResponseEntity.ok(authService.authenticateUserByHint(forgotRequest))
+
+    @PostMapping("user/password")
+    fun checkUserPassword(@CurrentUser user: UserPrincipal,
+                          @RequestBody request: PasswordConfirmRequest) =
+            ResponseEntity.ok(authService.checkPassword(user, request).let { "비밀번호 확인 완료" })
 }

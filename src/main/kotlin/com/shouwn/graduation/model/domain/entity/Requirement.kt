@@ -22,15 +22,16 @@ data class Requirement constructor(
 
         var clazzMin: Long,
 
-        var clazzMax: Long, // 요건이 해당되는 학번을 가르킴 e.g.) 2013 이면 ~ 2013
+        var clazzMax: Long // 요건이 해당되는 학번을 가르킴 e.g.) 2013 이면 ~ 2013
 
-        @Relationship(type = "APPLY", direction = Relationship.OUTGOING)
-        var party: Party?, // 요건을 만족해야 하는 소속이 어디인가를 나타냄
+) : UserDateAudit() {
 
-        @Relationship(type = "SUB", direction = Relationship.OUTGOING)
-        var subs: Set<Requirement>? = null, // 하위 요건
+    @Relationship(type = "APPLY", direction = Relationship.OUTGOING)
+    var party: Party? = null // 요건을 만족해야 하는 소속이 어디인가를 나타냄
 
-        @Relationship(type = "REQUIRE", direction = Relationship.OUTGOING)
-        var courses: Set<Course>? = null // 이 요건 아래에 과목이 있다면 과목과의 관계 표현
+    @Relationship(type = "SUB", direction = Relationship.OUTGOING)
+    var subs: Set<Requirement>? = null // 하위 요건
 
-) : UserDateAudit()
+    @Relationship(type = "REQUIRE", direction = Relationship.OUTGOING)
+    var courses: Set<Course>? = null // 이 요건 아래에 과목이 있다면 과목과의 관계 표현
+}

@@ -4,6 +4,7 @@ import com.shouwn.graduation.model.domain.dto.request.ForgotRequest
 import com.shouwn.graduation.model.domain.dto.response.ApiResponse
 import com.shouwn.graduation.model.domain.dto.response.JwtAuthenticationResponse
 import com.shouwn.graduation.model.domain.dto.request.LoginRequest
+import com.shouwn.graduation.model.domain.dto.request.PasswordConfirmRequest
 import com.shouwn.graduation.model.domain.dto.request.SignUpRequest
 import com.shouwn.graduation.model.domain.entity.User
 import com.shouwn.graduation.model.domain.exception.ApiException
@@ -11,6 +12,7 @@ import com.shouwn.graduation.model.domain.type.BelongType
 import com.shouwn.graduation.model.domain.type.RoleName
 import com.shouwn.graduation.repository.UserRepository
 import com.shouwn.graduation.security.JwtTokenProvider
+import com.shouwn.graduation.security.UserPrincipal
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -30,16 +32,24 @@ class AuthService @Autowired constructor(
         private val authenticationManager: AuthenticationManager,
         private val userRepository: UserRepository,
         private val tokenProvider: JwtTokenProvider,
-        private val partyService: PartyService
+        private val partyService: PartyService,
+        private val passwordEncoder: PasswordEncoder
 ) {
     private val logger = LoggerFactory.getLogger(AuthService::class.java)
-    private val passwordEncoder: PasswordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder()
 
     @Value("\${app.signCode.user}")
     private lateinit var userSignCode: String
 
     @Value("\${app.signCode.admin}")
     private lateinit var adminSignCode: String
+
+    fun checkPassword(user: UserPrincipal, request: PasswordConfirmRequest){
+
+        val authentication = authenticationManager.authenticate(
+                UsernamePasswordAuthenticationToken(user.entity.userNumber, request.password))
+
+        SecurityContextHolder.getContext().authentication = authentication
+    }
 
     fun authenticateUser(loginRequest: LoginRequest): JwtAuthenticationResponse {
         val authentication = authenticationManager.authenticate(

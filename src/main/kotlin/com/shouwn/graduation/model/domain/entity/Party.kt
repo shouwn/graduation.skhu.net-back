@@ -16,9 +16,9 @@ data class Party constructor(
         var name: String? = null, // 소속 이름
 
         @Convert(BelongTypeConverter::class)
-        var belong: BelongType? = null, // 교양에 포함 되는지, 전공에 포함되는지 나타내는 속성
+        var belong: BelongType? = null // 교양에 포함 되는지, 전공에 포함되는지 나타내는 속성
 
-        @Relationship(type = "ACCEPT", direction = Relationship.OUTGOING)
-        var acceptCourses: List<Course>? = null // 전공 인정 목록
-
-) : UserDateAudit()
+) : UserDateAudit() {
+    @Relationship(type = "ACCEPT", direction = Relationship.OUTGOING)
+    var acceptCourses: List<Course>? = null // 전공 인정 목록
+}
