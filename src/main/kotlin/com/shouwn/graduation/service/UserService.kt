@@ -20,6 +20,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
+import kotlin.streams.toList
 
 @Service
 class UserService @Autowired constructor(
@@ -105,9 +106,6 @@ class UserService @Autowired constructor(
         } catch (e: UnsupportedOperationException){
             0.0
         }
-        println(firstYear)
-        println(secondYear)
-        println(thirdYear)
 
         if(grade < firstYear!!)
             return 1
@@ -119,5 +117,21 @@ class UserService @Autowired constructor(
             return 3
 
         return 4
+    }
+
+
+    fun findUserByNotEnabled(): List<User> =
+            userRepository.findAllByEnabled(false).stream()
+                    .sorted(Comparator.comparing(User::userNumber))
+                    .toList()
+
+    fun userSetEnable(id: Long, user: UserPrincipal) {
+        logger.info("${user.id} 에 의해 $id 유저 활성화")
+
+        userRepository.userSetEnable(id)
+    }
+
+    fun deleteUser(userId: Long) {
+        userRepository.deleteById(userId)
     }
 }
