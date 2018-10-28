@@ -59,10 +59,12 @@ class CourseService @Autowired constructor(
 
                 courseList.add(Course(
                         code = row.getCell(2).toValueString(),
-                        parties = setOf(Party(id = partyId)),
                         name = row.getCell(4).toValueString(),
                         enabled = true
-                ).apply { createUserDateAudit(user.id) })
+                ).apply {
+                    createUserDateAudit(user.id)
+                    parties = setOf(Party(id = partyId))
+                })
             }
         }
 

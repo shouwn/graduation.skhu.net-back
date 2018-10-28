@@ -31,17 +31,18 @@ data class User constructor(
         var enabled: Boolean, // 사용자가 승인 되었는지 나타내는 속성
 
         @Convert(RoleNameConverter::class)
-        var role: RoleName, // 사용자의 권한
+        var role: RoleName // 사용자의 권한
 
-        @JsonIgnore
-        @Relationship(type = "ATTEND", direction = Relationship.OUTGOING)
-        var attends: MutableSet<Attend>? = null,
+) : DateAudit() {
 
-        @JsonIgnore
-        @Relationship(type = "SELECT", direction = Relationship.OUTGOING)
-        var requirement: Requirement? = null,
+    @JsonIgnore
+    @Relationship(type = "ATTEND", direction = Relationship.OUTGOING)
+    var attends: MutableSet<Attend>? = null
 
-        @Relationship(type = "BELONG", direction = Relationship.OUTGOING)
-        var parties: Set<Party>? = null // IT 융합부에 소속되면서 소프트웨어공학과에 소속된다면?
-  
-) : DateAudit()
+    @JsonIgnore
+    @Relationship(type = "SELECT", direction = Relationship.OUTGOING)
+    var requirement: Requirement? = null
+
+    @Relationship(type = "BELONG", direction = Relationship.OUTGOING)
+    var parties: Set<Party>? = null // IT 융합부에 소속되면서 소프트웨어공학과에 소속된다면?
+}

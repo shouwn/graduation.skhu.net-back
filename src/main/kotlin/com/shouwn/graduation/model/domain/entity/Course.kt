@@ -24,12 +24,13 @@ data class Course constructor(
         var name: String? = null, // 강의 이름
 
         @Index
-        var enabled: Boolean? = null, // 폐강인지 아닌지 표현
+        var enabled: Boolean? = null // 폐강인지 아닌지 표현
+) : UserDateAudit(){
 
         @Relationship(type = "REPLACE", direction = Relationship.OUTGOING)
-        var replacement: Course? = null, // 대체 과목을 표현
+        var replacement: Course? = null // 대체 과목을 표현
 
         @Relationship(type = "OPEN", direction = Relationship.INCOMING)
         var parties: Set<Party>? = null // 어떤 소속에서 개설 되었는지 표현
 
-) : UserDateAudit()
+}

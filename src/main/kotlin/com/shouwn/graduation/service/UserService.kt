@@ -3,6 +3,7 @@ package com.shouwn.graduation.service
 import com.shouwn.graduation.model.domain.dto.request.PasswordModifyRequest
 import com.shouwn.graduation.model.domain.dto.request.UserDataModifyRequest
 import com.shouwn.graduation.model.domain.dto.response.ApiResponse
+import com.shouwn.graduation.model.domain.entity.Attend
 import com.shouwn.graduation.model.domain.exception.ApiException
 import com.shouwn.graduation.model.domain.type.BelongType
 import com.shouwn.graduation.repository.UserRepository
@@ -58,5 +59,6 @@ class UserService @Autowired constructor(
 
     fun findUsersById(ids: Iterable<Long>) =
             findAllById(userRepository, ids)
+
 
 }

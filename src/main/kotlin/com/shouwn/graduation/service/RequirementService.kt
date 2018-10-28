@@ -35,9 +35,11 @@ class RequirementService @Autowired constructor(
                 satisfying = request.satisfyingType,
                 need = request.need,
                 clazzMin = request.clazzMin ?: 0,
-                clazzMax = request.clazzMax ?: 9999,
-                party = request.party?.let { partyService.findPartiesByPartyIds(listOf(it)).first() }
-        ).apply { createUserDateAudit(userId) }
+                clazzMax = request.clazzMax ?: 9999
+        ).apply {
+            createUserDateAudit(userId)
+            party = request.party?.let { partyService.findPartiesByPartyIds(listOf(it)).first() }
+        }
 
         when(requirement.satisfying){
             in SatisfyingType.COURSE_SET ->

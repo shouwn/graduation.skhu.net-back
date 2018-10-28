@@ -28,4 +28,5 @@ class UserController @Autowired constructor(
     fun modifyPassword(@CurrentUser user: UserPrincipal,
                        @RequestBody passwordModifyRequest: PasswordModifyRequest) =
             ResponseEntity.ok(userService.modifyPassword(user, passwordModifyRequest).let { "비밀번호 변경 완료" })
+
 }
