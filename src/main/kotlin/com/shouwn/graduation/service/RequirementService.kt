@@ -86,47 +86,32 @@ class RequirementService @Autowired constructor(
 
         return try { when(requirement.satisfying){
             SatisfyingType.COURSE_CREDIT -> {
-                if(attends.filterCredit { it.course in requirement.courses!! }
-                                .reduce { acc, d -> acc + d } >= requirement.need)
-                    logger.info("${requirement.name} 합격").let { 1 }
-                else
-                    logger.info("${requirement.name} 불합격").let { 0 }
+                check(attends.filterCredit { it.course in requirement.courses!! }
+                                .reduce { acc, d -> acc + d } >= requirement.need, requirement.name)
             }
             SatisfyingType.COURSE_COUNT -> {
-                if(attends.asSequence().filter { it.course in requirement.courses!! }
-                        .count() >= requirement.need)
-                    1
-                else 0
+                check(attends.asSequence().filter { it.course in requirement.courses!! }
+                        .count() >= requirement.need, requirement.name)
             }
             SatisfyingType.CHILDREN -> {
-                if(requirement.subs!!.asSequence().map { this.isMeet(it, attends, user) }
-                                .reduce { acc, i -> acc + i } >= requirement.need)
-                    1
-                else 0
+                check(requirement.subs!!.asSequence().map { this.isMeet(it, attends, user) }
+                                .reduce { acc, i -> acc + i } >= requirement.need, requirement.name)
             }
             SatisfyingType.GENERAL -> {
-                if(attends.filterCredit { it.section in SectionType.GENERAL_SET }
-                                .reduce { acc, d -> acc + d } >= requirement.need)
-                    1
-                else 0
+                check(attends.filterCredit { it.section in SectionType.GENERAL_SET }
+                                .reduce { acc, d -> acc + d } >= requirement.need, requirement.name)
             }
             SatisfyingType.MAJOR -> {
-                if(attends.filterCredit { it.section in SectionType.MAJOR_SET }
-                                .reduce { acc, d -> acc + d } >= requirement.need)
-                    1
-                else 0
+                check(attends.filterCredit { it.section in SectionType.MAJOR_SET }
+                                .reduce { acc, d -> acc + d } >= requirement.need, requirement.name)
             }
             SatisfyingType.MINOR -> {
-                if(attends.filterCredit { it.section in SectionType.MINOR_SET }
-                                .reduce { acc, d -> acc + d } >= requirement.need)
-                    1
-                else 0
+                check(attends.filterCredit { it.section in SectionType.MINOR_SET }
+                                .reduce { acc, d -> acc + d } >= requirement.need, requirement.name)
             }
             SatisfyingType.ALL -> {
-                if(attends.filterCredit { true }
-                                .reduce { acc, d -> acc + d } >= requirement.need)
-                    1
-                else 0
+                check(attends.filterCredit { true }
+                                .reduce { acc, d -> acc + d } >= requirement.need, requirement.name)
             }
         }}
         catch (e: UnsupportedOperationException) {
@@ -141,6 +126,10 @@ class RequirementService @Autowired constructor(
             this.asSequence().filter(predicate)
                     .map { it.credit }
 
-//    private fun
+    private fun check(bool: Boolean, requirementName: String) =
+            if(bool)
+                logger.info("$requirementName 합격").let { 1 }
+            else
+                logger.info("$requirementName 불합격").let { 0 }
 
 }
