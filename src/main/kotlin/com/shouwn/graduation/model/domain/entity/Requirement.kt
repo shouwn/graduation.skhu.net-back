@@ -20,8 +20,9 @@ data class Requirement constructor(
         @Index
         var need: Long, // 요건의 타입에 맞춘 요구 값을 나타냄
 
-        @Index
-        var clazz: Long, // 요건이 해당되는 학번을 가르킴 e.g.) 2013 이면 ~ 2013
+        var clazzMin: Long,
+
+        var clazzMax: Long, // 요건이 해당되는 학번을 가르킴 e.g.) 2013 이면 ~ 2013
 
         @Relationship(type = "APPLY", direction = Relationship.OUTGOING)
         var party: Party?, // 요건을 만족해야 하는 소속이 어디인가를 나타냄

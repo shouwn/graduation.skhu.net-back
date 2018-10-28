@@ -30,13 +30,12 @@ data class User constructor(
         @JsonIgnore
         var enabled: Boolean, // 사용자가 승인 되었는지 나타내는 속성
 
-        @JsonIgnore
         @Convert(RoleNameConverter::class)
         var role: RoleName, // 사용자의 권한
 
         @JsonIgnore
         @Relationship(type = "ATTEND", direction = Relationship.OUTGOING)
-        var attend: MutableSet<Attend>? = null,
+        var attends: MutableSet<Attend>? = null,
 
         @JsonIgnore
         @Relationship(type = "SELECT", direction = Relationship.OUTGOING)
