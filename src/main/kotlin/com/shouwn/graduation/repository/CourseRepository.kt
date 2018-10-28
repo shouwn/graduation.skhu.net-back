@@ -14,7 +14,7 @@ interface CourseRepository : Neo4jRepository<Course, Long>{
         ON CREATE SET c.code = course.code, c.name = course.name, c.credit = course.credit,
           c.enabled = course.enabled, c.createdBy = course.createdBy, c.createdAt = course.createdAt,
           c.updatedBy = course.updatedBy, c.updatedAt = course.updatedAt
-        ON MATCH SET c.name = course.name, c.updatedBy = course.updatedBy, c.updatedAt = course.updatedAt WITH *
+        ON MATCH SET c.name = course.name, c.credit = course.credit, c.updatedBy = course.updatedBy, c.updatedAt = course.updatedAt WITH *
         MATCH (p: Party)
         WHERE id(p) = HEAD(course.parties).id
         MERGE path = (c) <-[:OPEN]- (p)

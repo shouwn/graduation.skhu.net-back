@@ -25,7 +25,6 @@ data class User constructor(
 
         var hint: Long, // 사용자 비밀번호 찾기 힌트
 
-        @JsonIgnore
         var hintAnswer: String, // 사용자 비밀번호 찾기 힌트에 대한 답변
 
         @JsonIgnore

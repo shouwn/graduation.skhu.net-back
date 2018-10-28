@@ -7,6 +7,7 @@ import com.shouwn.graduation.model.domain.exception.ApiException
 import com.shouwn.graduation.model.domain.type.BelongType
 import com.shouwn.graduation.repository.PartyRepository
 import com.shouwn.graduation.security.UserPrincipal
+import com.shouwn.graduation.utils.findAllById
 import com.shouwn.graduation.utils.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -86,25 +87,6 @@ class PartyService @Autowired constructor(
                 }
             })
 
-    fun findPartiesByPartyIds(ids: List<Long>): Set<Party> =
-            partyRepository.findAllById(ids).apply {
-                if(this.count() == 0)
-                    throw ApiException(
-                            status = HttpStatus.PRECONDITION_FAILED,
-                            apiResponse = ApiResponse(
-                                    success = false,
-                                    message = "${ids}에 해당하는 소속이 없습니다."
-                            )
-                    )
-
-                this.filter { it.id !in ids  }
-                        .forEach { throw ApiException(
-                                status = HttpStatus.PRECONDITION_FAILED,
-                                apiResponse = ApiResponse(
-                                        success = false,
-                                        message = "${it.id}에 해당하는 소속이 없습니다."
-                                )
-                        ) }
-            }.toSet()
-
+    fun findPartiesByPartyIds(ids: Iterable<Long>): Set<Party> =
+            findAllById(partyRepository, ids).toSet()
 }

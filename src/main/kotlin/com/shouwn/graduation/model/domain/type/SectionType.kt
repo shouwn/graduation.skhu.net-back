@@ -9,8 +9,8 @@ import org.neo4j.ogm.typeconversion.AttributeConverter
 
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 enum class SectionType(val value: Long, val labelShort: String, val labelLong: String){
-    LIBERAL_R(0, "교필", "교양필수"),
-    LIBERAL_S(1, "교선", "교양선택"),
+    GENERAL_R(0, "교필", "교양필수"),
+    GENERAL_S(1, "교선", "교양선택"),
     MAJOR_R(2, "전필", "전공필수"),
     MAJOR_S(3, "전선", "전공선택"),
     MINOR_R(4, "부필", "부전공필수"),
@@ -22,7 +22,11 @@ enum class SectionType(val value: Long, val labelShort: String, val labelLong: S
         private val mapLabelShort = SectionType.values().associate { it.labelShort to it }
         private val mapLabelLong = SectionType.values().associate { it.labelLong to it }
 
-        fun valueOf(value: Long): SectionType =
+        val MAJOR_SET = setOf(MAJOR_R, MAJOR_S)
+        val MINOR_SET = setOf(MINOR_R, MAJOR_S)
+        val GENERAL_SET = setOf(GENERAL_R, GENERAL_S)
+
+       fun valueOf(value: Long): SectionType =
                 map[value] ?: throw IllegalStateException("$value 에 해당하는 타입이 없습니다.")
 
         fun valueOfLabelShort(value: String): SectionType =

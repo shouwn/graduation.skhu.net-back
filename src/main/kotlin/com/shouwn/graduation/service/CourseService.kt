@@ -8,6 +8,7 @@ import com.shouwn.graduation.model.domain.exception.ApiException
 import com.shouwn.graduation.repository.CourseRepository
 import com.shouwn.graduation.repository.PartyRepository
 import com.shouwn.graduation.security.UserPrincipal
+import com.shouwn.graduation.utils.findAllById
 import com.shouwn.graduation.utils.info
 import com.shouwn.graduation.utils.logger
 import com.shouwn.graduation.utils.toValueString
@@ -122,4 +123,7 @@ class CourseService @Autowired constructor(
                 updatedBy = course.updatedBy!!
         ).apply { logger.info("${user.info()} 가 ${course.id} 과목을 수정함") }
     }
+
+    fun findCoursesByIds(ids: Iterable<Long>) =
+            findAllById(courseRepository, ids).toSet()
 }
