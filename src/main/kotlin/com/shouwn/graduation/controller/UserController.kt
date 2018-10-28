@@ -8,6 +8,7 @@ import com.shouwn.graduation.security.UserPrincipal
 import com.shouwn.graduation.service.UserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.annotation.Secured
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -28,5 +29,10 @@ class UserController @Autowired constructor(
     fun modifyPassword(@CurrentUser user: UserPrincipal,
                        @RequestBody passwordModifyRequest: PasswordModifyRequest) =
             ResponseEntity.ok(userService.modifyPassword(user, passwordModifyRequest).let { "비밀번호 변경 완료" })
+
+    @GetMapping("student")
+    @Secured("ROLE_STUDENT")
+    fun findSelfStudentData(@CurrentUser user: UserPrincipal) =
+            ResponseEntity.ok(userService.student(user.entity))
 
 }
