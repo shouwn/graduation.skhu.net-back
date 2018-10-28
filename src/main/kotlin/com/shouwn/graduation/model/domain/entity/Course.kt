@@ -23,8 +23,6 @@ data class Course constructor(
         @Index // 인덱스 설정
         var name: String? = null, // 강의 이름
 
-        var credit: Double? = null, // 학점
-
         @Index
         var enabled: Boolean? = null, // 폐강인지 아닌지 표현
 

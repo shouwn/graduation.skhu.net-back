@@ -9,7 +9,9 @@ data class RequirementRequest (
 
         val need: Long,
 
-        val clazz: Long?,
+        val clazzMin: Long?,
+
+        val clazzMax: Long?,
 
         val party: Long?,
 

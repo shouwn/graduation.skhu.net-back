@@ -8,10 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.annotation.Secured
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("api/requirement")
@@ -25,4 +22,8 @@ class RequirementController @Autowired constructor(
                        @RequestBody requirementRequest: RequirementRequest) =
             ResponseEntity.status(HttpStatus.CREATED)
                     .body(requirementService.addRequirement(user.entity.id!!, requirementRequest).let { "요건 생성 완료" })
+
+    @GetMapping("users/{userId}")
+    fun checkGraduate(@PathVariable("userId") userId: Long) =
+            ResponseEntity.ok(requirementService.checkGraduation(userId))
 }
