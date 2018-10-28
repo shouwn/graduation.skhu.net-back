@@ -34,10 +34,10 @@ class UserService @Autowired constructor(
     @Value("\${year.second}")
     private var secondYear: Long? = null
 
-    @Value("\${year.second}")
+    @Value("\${year.third}")
     private var thirdYear: Long? = null
 
-    @Value("\${year.second}")
+    @Value("\${year.fourth}")
     private var fourthYear: Long? = null
 
     private val logger = logger()
@@ -105,6 +105,10 @@ class UserService @Autowired constructor(
         } catch (e: UnsupportedOperationException){
             0.0
         }
+        println(firstYear)
+        println(secondYear)
+        println(thirdYear)
+
         if(grade < firstYear!!)
             return 1
 
