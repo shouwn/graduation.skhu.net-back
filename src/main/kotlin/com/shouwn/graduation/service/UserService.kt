@@ -7,6 +7,7 @@ import com.shouwn.graduation.model.domain.exception.ApiException
 import com.shouwn.graduation.model.domain.type.BelongType
 import com.shouwn.graduation.repository.UserRepository
 import com.shouwn.graduation.security.UserPrincipal
+import com.shouwn.graduation.utils.findAllById
 import com.shouwn.graduation.utils.info
 import com.shouwn.graduation.utils.logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -54,5 +55,8 @@ class UserService @Autowired constructor(
                     passwordEncoder.encode(request.password),
                     LocalDateTime.now().toString()
             ).apply { logger.info("${user.info()} 가 비밀번호를 변경") }
+
+    fun findUsersById(ids: Iterable<Long>) =
+            findAllById(userRepository, ids)
 
 }

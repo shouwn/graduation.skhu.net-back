@@ -45,8 +45,10 @@ class AttendService @Autowired constructor(
                 attendList.add(Attend(
                         year = row.getCell(1).numericCellValue.toLong(),
                         term = TermType.labelOf(row.getCell(2).toValueString()),
+                        name = row.getCell(4).toValueString(),
                         section = SectionType.valueOfLabelShort(row.getCell(5).toValueString()),
                         grade = GradeType.labelOf(row.getCell(7).toValueString()),
+                        credit = row.getCell(6).numericCellValue,
                         type = AttendType.DONE
                 ).apply {
                     createUserDateAudit(user.id)
@@ -55,7 +57,7 @@ class AttendService @Autowired constructor(
             }
         }
 
-        return attendRepository.mergeAttend(user.id, attendList)
+        return attendRepository.addAttend(user.id, attendList)
     }
 
     fun updateAttend(user: UserPrincipal, attendId: Long, request: AttendRequest) =
@@ -64,6 +66,8 @@ class AttendService @Autowired constructor(
                     courseId = request.courseId,
                     year = request.year,
                     term = request.term.value,
+                    name = request.name,
+                    credit = request.credit,
                     grade = request.grade.value,
                     section = request.section.value,
                     type = request.type.value,

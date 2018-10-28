@@ -18,12 +18,13 @@ interface AttendRepository : Neo4jRepository<Attend, Long> {
         WHERE id(u) = {userId}
         MATCH (c: Course { code: attend.course.code })
         CREATE p = (u) -[a: ATTEND]-> (c)
-        SET a.year = attend.year, a.term = attend.term.value, a.grade = attend.grade.value, a.type = attend.type.value,
+        SET a.year = attend.year, a.term = attend.term.value, a.grade = attend.grade.value,
+          a.type = attend.type.value, a.name = attend.name, a.credit = attend.credit,
           a.section = attend.section.value, a.createdAt = attend.createdAt, a.createdBy = attend.createdBy,
           a.updatedBy = attend.updatedBy, a.updatedAt = attend.updatedAt WITH *
         RETURN p
     """)
-    fun mergeAttend(@Param("userId") userId: Long,
+    fun addAttend(@Param("userId") userId: Long,
                     @Param("attends") attends: List<Attend>): List<Attend>
 
     @Query("""
@@ -36,6 +37,7 @@ interface AttendRepository : Neo4jRepository<Attend, Long> {
         CREATE p = (u) -[a:ATTEND]-> (c)
         SET a = old, a.year = {year}, a.term = {term}, a.grade = {grade}, a.type = {type},
           a.section = {section}, a.updatedBy = {updatedBy}, a.updatedAt = {updatedAt},
+          a.credit = {credit}, a.name = {name},
           a.createdAt = old.createdAt, a.createdBy = old.createdBy WITH *
         DELETE old WITH *
         RETURN p
@@ -43,6 +45,8 @@ interface AttendRepository : Neo4jRepository<Attend, Long> {
     fun updateAttend(@Param("attendId") attendId: Long,
                      @Param("courseId") courseId: Long,
                      @Param("year") year: Long,
+                     @Param("name") name: String,
+                     @Param("credit") credit: Double,
                      @Param("term") term: Long,
                      @Param("grade") grade: Long,
                      @Param("section") section: Long,

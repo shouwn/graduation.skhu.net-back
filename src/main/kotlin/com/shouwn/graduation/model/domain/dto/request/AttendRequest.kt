@@ -13,6 +13,10 @@ data class AttendRequest constructor(
 
         var grade: GradeType,
 
+        var name: String,
+
+        var credit: Double,
+
         var section: SectionType,
 
         var type: AttendType,

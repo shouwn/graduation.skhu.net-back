@@ -61,7 +61,6 @@ class CourseService @Autowired constructor(
                         code = row.getCell(2).toValueString(),
                         parties = setOf(Party(id = partyId)),
                         name = row.getCell(4).toValueString(),
-                        credit = row.getCell(5).numericCellValue,
                         enabled = true
                 ).apply { createUserDateAudit(user.id) })
             }
@@ -87,7 +86,6 @@ class CourseService @Autowired constructor(
         val course = optionalCourse.get()
                 .copy(
                         name = request.name,
-                        credit = request.credit,
                         enabled = request.enabled
                 ).apply { updateUserDateAudit(user.id) }
 
@@ -95,7 +93,6 @@ class CourseService @Autowired constructor(
             return courseRepository.update(
                     courseId = course.id!!,
                     courseName = course.name!!,
-                    courseCredit = course.credit!!,
                     courseEnabled = course.enabled!!,
                     updatedAt = course.updatedAt.toString(),
                     updatedBy = course.updatedBy!!
@@ -117,7 +114,6 @@ class CourseService @Autowired constructor(
                 partyIds = request.partyIds,
                 courseId = course.id!!,
                 courseName = course.name!!,
-                courseCredit = course.credit!!,
                 courseEnabled = course.enabled!!,
                 updatedAt = course.updatedAt.toString(),
                 updatedBy = course.updatedBy!!

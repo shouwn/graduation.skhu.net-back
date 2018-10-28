@@ -16,11 +16,15 @@ data class Attend constructor(
 
         var year: Long, // 몇 년도에 수강했는지 표현
 
+        var name: String,
+
         @Convert(TermTypeConverter::class)
         var term: TermType, // 무슨 학기에 수강했는지 표현
 
         @Convert(GradeTypeConverter::class)
         var grade: GradeType, // 성적
+
+        var credit: Double,
 
         @Convert(SectionTypeConverter::class)
         var section: SectionType, // 이수 구분

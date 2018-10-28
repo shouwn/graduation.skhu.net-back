@@ -27,6 +27,4 @@ class AdminController @Autowired constructor(
     fun confirmAdmin(@PathVariable("id") id: Long,
                      @CurrentUser user: UserPrincipal): ResponseEntity<Any> =
             adminService.userSetEnable(id, user).let { ResponseEntity.noContent().build() }
-
-
 }

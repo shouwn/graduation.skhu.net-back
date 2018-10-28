@@ -11,7 +11,7 @@ interface CourseRepository : Neo4jRepository<Course, Long>{
         WITH {courses} AS courses
         UNWIND courses AS course
         MERGE (c: Course { code: course.code })
-        ON CREATE SET c.code = course.code, c.name = course.name, c.credit = course.credit,
+        ON CREATE SET c.code = course.code, c.name = course.name,
           c.enabled = course.enabled, c.createdBy = course.createdBy, c.createdAt = course.createdAt,
           c.updatedBy = course.updatedBy, c.updatedAt = course.updatedAt
         ON MATCH SET c.name = course.name, c.credit = course.credit, c.updatedBy = course.updatedBy, c.updatedAt = course.updatedAt WITH *
@@ -27,7 +27,7 @@ interface CourseRepository : Neo4jRepository<Course, Long>{
         UNWIND partyIds AS partyId
         MATCH (c: Course)
         WHERE id(c) = {courseId}
-        SET c.name = {courseName}, c.credit = {courseCredit}, c.enabled = {courseEnabled},
+        SET c.name = {courseName}, c.enabled = {courseEnabled},
           c.updatedBy = {updatedBy}, c.updatedAt = {updatedAt} WITH *
         MATCH (c) <-[r:OPEN]- ()
         DELETE r WITH *
@@ -39,7 +39,6 @@ interface CourseRepository : Neo4jRepository<Course, Long>{
     fun update(@Param("partyIds") partyIds: Set<Long>,
                @Param("courseId") courseId: Long,
                @Param("courseName") courseName: String,
-               @Param("courseCredit") courseCredit: Double,
                @Param("courseEnabled") courseEnabled: Boolean,
                @Param("updatedBy") updatedBy: Long,
                @Param("updatedAt") updatedAt: String): Course
@@ -47,13 +46,12 @@ interface CourseRepository : Neo4jRepository<Course, Long>{
     @Query("""
         MATCH (c: Course)
         WHERE id(c) = {courseId}
-        SET c.name = {courseName}, c.credit = {courseCredit}, c.enabled = {courseEnabled},
+        SET c.name = {courseName}, c.enabled = {courseEnabled},
           c.updatedBy = {updatedBy}, c.updatedAt = {updatedAt} WITH *
         RETURN (c) <-[:OPEN]- ()
     """)
     fun update(@Param("courseId") courseId: Long,
                @Param("courseName") courseName: String,
-               @Param("courseCredit") courseCredit: Double,
                @Param("courseEnabled") courseEnabled: Boolean,
                @Param("updatedBy") updatedBy: Long,
                @Param("updatedAt") updatedAt: String): Course
