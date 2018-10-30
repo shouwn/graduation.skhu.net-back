@@ -86,10 +86,12 @@ class CourseService @Autowired constructor(
             ).apply { logger.error("${user.info()} 가 존재하지 않는 과목을 수정하려고 시도함") }
 
         val course = optionalCourse.get()
-                .copy(
-                        name = request.name,
-                        enabled = request.enabled
-                ).apply { updateUserDateAudit(user.id) }
+                .let {
+                    it.copy(
+                            name = request.name,
+                            enabled = request.enabled
+                    ).apply { updateUserDateAudit(user.id, it) }
+                }
 
         if(course.parties!!.asSequence().map { it.id }.toSet() == request.partyIds)
             return courseRepository.update(

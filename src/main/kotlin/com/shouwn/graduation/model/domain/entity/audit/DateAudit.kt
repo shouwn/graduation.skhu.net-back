@@ -20,6 +20,11 @@ abstract class DateAudit : Serializable {
     }
 
     fun updateDateAudit(){
-        updatedAt = LocalDateTime.now()
+        this.updatedAt = LocalDateTime.now()
+    }
+
+    fun updateDateAudit(before: DateAudit){
+        this.createdAt = before.createdAt
+        this.updatedAt = LocalDateTime.now()
     }
 }
