@@ -23,7 +23,7 @@ class UserController @Autowired constructor(
 
     @GetMapping
     fun findUserData(@CurrentUser user: UserPrincipal) =
-            ResponseEntity.ok(user.entity.apply { println(this) })
+            ResponseEntity.ok(user.entity)
 
     @PutMapping("password")
     fun modifyPassword(@CurrentUser user: UserPrincipal,

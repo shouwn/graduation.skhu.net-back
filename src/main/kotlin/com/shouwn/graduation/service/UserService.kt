@@ -1,9 +1,10 @@
 package com.shouwn.graduation.service
 
+import com.shouwn.graduation.model.domain.dto.UserData
 import com.shouwn.graduation.model.domain.dto.request.PasswordModifyRequest
 import com.shouwn.graduation.model.domain.dto.request.UserDataModifyRequest
 import com.shouwn.graduation.model.domain.dto.response.ApiResponse
-import com.shouwn.graduation.model.domain.dto.response.StudentReponse
+import com.shouwn.graduation.model.domain.dto.response.UserResponse
 import com.shouwn.graduation.model.domain.entity.Attend
 import com.shouwn.graduation.model.domain.entity.User
 import com.shouwn.graduation.model.domain.exception.ApiException
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import java.awt.print.Pageable
 import java.time.LocalDateTime
 import kotlin.streams.toList
 
@@ -76,21 +78,16 @@ class UserService @Autowired constructor(
     fun findUsersById(ids: Iterable<Long>) =
             findAllById(userRepository, ids)
 
-    fun student(user: User) =
-            user.apply {
-                if(user.role != RoleName.ROLE_STUDENT)
-                    throw ApiException(
-                            status = HttpStatus.PRECONDITION_FAILED,
-                            apiResponse = ApiResponse(
-                                    success = false,
-                                    message = "${user.id}는 학생이 아닙니다."
-                            )
-                    )
-            }.let {
-                StudentReponse(
+    fun userData(user: User) =
+            user.let {
+                UserData(
                         id = it.id!!,
                         userNumber = it.userNumber,
-                        year = calStudentYearByAttends(it.attends!!),
+                        credit =
+                        if(it.attends?.isEmpty() == true) 0.0
+                        else it.attends!!.asSequence()
+                                .map { attend -> attend.credit }
+                                .reduce { acc, d ->  acc + d },
                         name = it.name,
                         email = it.email,
                         role = it.role,
@@ -98,26 +95,13 @@ class UserService @Autowired constructor(
                 )
             }
 
-    fun calStudentYearByAttends(attends: MutableSet<Attend>): Long {
-        val grade: Double = try{
-            attends.asSequence()
-                    .map { it.credit }
-                    .reduce { acc, d ->  acc + d }
-        } catch (e: UnsupportedOperationException){
-            0.0
-        }
-
-        if(grade < firstYear!!)
-            return 1
-
-        if(grade < secondYear!!)
-            return 2
-
-        if(grade < thirdYear!!)
-            return 3
-
-        return 4
-    }
+    private fun calStudentYearByAttends(credit: Double): Long  =
+            when {
+                credit < firstYear!! -> 1
+                credit < secondYear!! -> 2
+                credit < thirdYear!! -> 3
+                else -> 4
+            }.toLong()
 
 
     fun findUserByNotEnabled(): List<User> =
@@ -134,4 +118,9 @@ class UserService @Autowired constructor(
     fun deleteUser(userId: Long) {
         userRepository.deleteById(userId)
     }
+
+    fun findUserBySearching(pageable: Pageable) =
+            userRepository.findAllBySearch(
+                    name =
+            )
 }
