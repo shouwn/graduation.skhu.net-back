@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @Secured("ROLE_ADMIN")
-@RequestMapping("api/admin")
+@RequestMapping("api/admins")
 class AdminController @Autowired constructor(
         val userService: UserService,
         val courseService: CourseService

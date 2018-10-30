@@ -45,10 +45,6 @@ class AuthController @Autowired constructor(
     fun findHint(@PathVariable("userNumberOrEmail") userNumberOrEmail: String) =
             ResponseEntity.ok(authService.findHintByUserNumberOrEmail(userNumberOrEmail))
 
-    @GetMapping("hints")
-    fun hintList() =
-            ResponseEntity.ok(Hint.values())
-
     @PostMapping("user/hintAnswer")
     fun signinByHintAnswer(@RequestBody forgotRequest: ForgotRequest) =
             ResponseEntity.ok(authService.authenticateUserByHint(forgotRequest))
