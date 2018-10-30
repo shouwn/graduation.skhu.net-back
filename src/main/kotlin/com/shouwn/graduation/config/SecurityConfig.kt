@@ -51,6 +51,7 @@ class SecurityConfig @Autowired constructor(
                     .sessionCreationPolicy((SessionCreationPolicy.STATELESS))
                     .and()
                 .authorizeRequests()
+                    .antMatchers("/api/list/**").permitAll() // for get list
                     .antMatchers("/api/auth/**").permitAll() // for sign up, sign in
                     .antMatchers("/api/parties/belong/**").permitAll() // for find party belong type
                     .antMatchers("/profile").permitAll() // for get profile

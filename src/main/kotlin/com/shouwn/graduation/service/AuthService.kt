@@ -122,6 +122,15 @@ class AuthService @Autowired constructor(
                         ) }
                 }
 
+        if(parties.isEmpty())
+            throw ApiException(
+                    status = HttpStatus.PRECONDITION_FAILED,
+                    apiResponse = ApiResponse(
+                            success = false,
+                            message = "소속이 선택되어야 합니다."
+                    )
+            )
+
         val user = User(
                 role = role,
                 userNumber = signUpRequest.userNumber,

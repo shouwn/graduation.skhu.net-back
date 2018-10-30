@@ -65,12 +65,18 @@ class RequirementService @Autowired constructor(
                     )
             )
 
-        val requirement = requirementRepository.findSubsByName("졸업")
-                .asSequence()
+        val requirements = requirementRepository.findAllSubs()
+
+        val generalRequirement = requirements.asSequence()
                 .filter { it.name == "졸업" }
                 .first()
 
-        return this.isMeet(requirement, user.attends!!.toSet(), user)
+        val majorRequirement = requirements
+                .asSequence()
+                .filter { it == user.requirement!! }
+                .first()
+
+        return this.isMeet(generalRequirement, user.attends!!.toSet(), user)
     }
 
     private fun isMeet(requirement: Requirement, attends: Set<Attend>, user: User): Int {

@@ -1,8 +1,10 @@
 package com.shouwn.graduation.repository
 
+import com.shouwn.graduation.model.domain.entity.UserData
 import com.shouwn.graduation.model.domain.entity.Party
 import com.shouwn.graduation.model.domain.entity.User
-import com.sun.org.apache.xpath.internal.XPath.MATCH
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.data.neo4j.annotation.Query
 import org.springframework.data.neo4j.repository.Neo4jRepository
 import org.springframework.data.repository.query.Param
@@ -58,4 +60,40 @@ interface UserRepository : Neo4jRepository<User, Long>{
     fun modifyPassword(@Param("userId") userId: Long,
                        @Param("password") password: String,
                        @Param("updatedAt") updatedAt: String)
+
+    @Query(value = """
+        MATCH (u: User) -[:BELONG]-> (party) WITH u, COLLECT(party) AS parties
+        WHERE u.name =~ {name}
+            AND u.userNumber =~ {userNumber}
+            AND u.role = {role}
+            AND CASE {partyId}
+                WHEN 0 THEN true
+                ELSE {partyId} IN EXTRACT(p IN parties | ID(p))
+                END
+        optional MATCH (u) -[r:ATTEND]-> () WITH u, parties, SUM(r.credit) AS credit
+        WHERE {minCredit} <= credit AND credit < {maxCredit}
+        RETURN ID(u) AS id, u.userNumber as userNumber,
+          u.name as name, u.email as email, u.role as role,
+          credit, parties
+    """, countQuery = """
+        MATCH (u: User) -[:BELONG]-> (party) WITH u, COLLECT(party) AS parties
+        WHERE u.name =~ {name}
+            AND u.userNumber =~ {userNumber}
+            AND u.role = {role}
+            AND CASE {partyId}
+                WHEN 0 THEN true
+                ELSE {partyId} IN EXTRACT(p IN parties | ID(p))
+                END
+        optional MATCH (u) -[r:ATTEND]-> () WITH u, parties, SUM(r.credit) AS credit
+        WHERE {minCredit} <= credit AND credit < {maxCredit}
+        RETURN COUNT(u)
+    """)
+
+    fun findAllBySearch(@Param("name") name: String,
+                        @Param("userNumber") userNumber: String,
+                        @Param("role") role: String,
+                        @Param("partyId") partyId: Long,
+                        @Param("minCredit") minCredit: Long,
+                        @Param("maxCredit") maxCredit: Long,
+                        pageable: Pageable): Page<UserData>
 }

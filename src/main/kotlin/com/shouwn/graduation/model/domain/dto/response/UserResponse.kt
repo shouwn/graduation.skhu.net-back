@@ -4,7 +4,7 @@ import com.shouwn.graduation.model.domain.entity.Party
 import com.shouwn.graduation.model.domain.entity.User
 import com.shouwn.graduation.model.domain.type.RoleName
 
-data class StudentReponse (
+data class UserResponse (
 
         val id: Long,
 

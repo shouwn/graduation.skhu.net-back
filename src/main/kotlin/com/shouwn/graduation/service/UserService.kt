@@ -1,21 +1,22 @@
 package com.shouwn.graduation.service
 
+import com.shouwn.graduation.model.domain.entity.UserData
 import com.shouwn.graduation.model.domain.dto.request.PasswordModifyRequest
 import com.shouwn.graduation.model.domain.dto.request.UserDataModifyRequest
 import com.shouwn.graduation.model.domain.dto.response.ApiResponse
-import com.shouwn.graduation.model.domain.dto.response.StudentReponse
-import com.shouwn.graduation.model.domain.entity.Attend
+import com.shouwn.graduation.model.domain.dto.response.UserResponse
 import com.shouwn.graduation.model.domain.entity.User
 import com.shouwn.graduation.model.domain.exception.ApiException
 import com.shouwn.graduation.model.domain.type.BelongType
 import com.shouwn.graduation.model.domain.type.RoleName
+import com.shouwn.graduation.model.domain.type.SearchType
 import com.shouwn.graduation.repository.UserRepository
 import com.shouwn.graduation.security.UserPrincipal
 import com.shouwn.graduation.utils.findAllById
 import com.shouwn.graduation.utils.info
 import com.shouwn.graduation.utils.logger
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
+import org.springframework.data.domain.PageRequest
 import org.springframework.http.HttpStatus
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -26,21 +27,9 @@ import kotlin.streams.toList
 class UserService @Autowired constructor(
         private val userRepository: UserRepository,
         private val partyService: PartyService,
-        private val passwordEncoder: PasswordEncoder
+        private val passwordEncoder: PasswordEncoder,
+        private val yearService: YearService
 ){
-
-    @Value("\${year.first}")
-    private var firstYear: Long? = null
-
-    @Value("\${year.second}")
-    private var secondYear: Long? = null
-
-    @Value("\${year.third}")
-    private var thirdYear: Long? = null
-
-    @Value("\${year.fourth}")
-    private var fourthYear: Long? = null
-
     private val logger = logger()
 
     fun modifyUserData(user: UserPrincipal, request: UserDataModifyRequest) =
@@ -76,62 +65,62 @@ class UserService @Autowired constructor(
     fun findUsersById(ids: Iterable<Long>) =
             findAllById(userRepository, ids)
 
-    fun student(user: User) =
-            user.apply {
-                if(user.role != RoleName.ROLE_STUDENT)
-                    throw ApiException(
-                            status = HttpStatus.PRECONDITION_FAILED,
-                            apiResponse = ApiResponse(
-                                    success = false,
-                                    message = "${user.id}는 학생이 아닙니다."
-                            )
-                    )
-            }.let {
-                StudentReponse(
-                        id = it.id!!,
-                        userNumber = it.userNumber,
-                        year = calStudentYearByAttends(it.attends!!),
-                        name = it.name,
-                        email = it.email,
-                        role = it.role,
+    fun userData(user: User) =
+            user.let {
+                UserData().apply {
+                        id = it.id!!
+                        userNumber = it.userNumber
+                        credit =
+                        if (it.attends?.isEmpty() == true) 0.0
+                        else it.attends!!.asSequence()
+                                .map { attend -> attend.credit }
+                                .reduce { acc, d -> acc + d }
+                        name = it.name
+                        email = it.email
+                        role = it.role
                         parties = it.parties!!
-                )
+                }
             }
-
-    fun calStudentYearByAttends(attends: MutableSet<Attend>): Long {
-        val grade: Double = try{
-            attends.asSequence()
-                    .map { it.credit }
-                    .reduce { acc, d ->  acc + d }
-        } catch (e: UnsupportedOperationException){
-            0.0
-        }
-
-        if(grade < firstYear!!)
-            return 1
-
-        if(grade < secondYear!!)
-            return 2
-
-        if(grade < thirdYear!!)
-            return 3
-
-        return 4
-    }
-
 
     fun findUserByNotEnabled(): List<User> =
             userRepository.findAllByEnabled(false).stream()
                     .sorted(Comparator.comparing(User::userNumber))
                     .toList()
 
-    fun userSetEnable(id: Long, user: UserPrincipal) {
-        logger.info("${user.id} 에 의해 $id 유저 활성화")
-
-        userRepository.userSetEnable(id)
-    }
+    fun userSetEnable(id: Long, user: UserPrincipal)  =
+            userRepository.userSetEnable(id).apply {
+                logger.info("${user.id} 에 의해 $id 유저 활성화")
+            }
 
     fun deleteUser(userId: Long) {
         userRepository.deleteById(userId)
     }
+
+    fun findUserBySearching(type: SearchType, searchTxt: String, role: RoleName, partyId: Long, year: Int, page: Int, size: Int) =
+            findAllUserBySearching(type, searchTxt, role, partyId, year, page, size)
+                    .map { userResponse(it) }
+
+    fun userResponse(userData: UserData) =
+            userData.let {
+                UserResponse(
+                        id = it.id,
+                        userNumber = it.userNumber,
+                        year = yearService.getYear(it.credit).toLong(),
+                        name = it.name,
+                        email = it.email,
+                        role = it.role,
+                        parties = it.parties
+                )
+            }
+
+    private fun findAllUserBySearching(type: SearchType, searchTxt: String, role: RoleName, partyId: Long, year: Int, page: Int, size: Int) =
+            userRepository.findAllBySearch(
+                    name = if(type != SearchType.ALL && type == SearchType.NAME) ".*$searchTxt.*" else ".*",
+                    userNumber = if(type != SearchType.ALL && type == SearchType.NUMBER) ".*$searchTxt.*" else ".*",
+                    role = role.value,
+                    partyId = partyId,
+                    maxCredit = if(year > 0) yearService.getCompletionCredit(year).toLong() else 9999,
+                    minCredit = if(year >= 1) yearService.getCompletionCredit(year - 1).toLong() else 0,
+                    pageable = PageRequest.of(page, size)
+            )
 }
