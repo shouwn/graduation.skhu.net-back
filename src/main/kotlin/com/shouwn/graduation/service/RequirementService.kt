@@ -35,9 +35,11 @@ class RequirementService @Autowired constructor(
                 satisfying = request.satisfyingType,
                 need = request.need,
                 clazzMin = request.clazzMin ?: 0,
-                clazzMax = request.clazzMax ?: 9999,
-                party = request.party?.let { partyService.findPartiesByPartyIds(listOf(it)).first() }
-        ).apply { createUserDateAudit(userId) }
+                clazzMax = request.clazzMax ?: 9999
+        ).apply {
+            createUserDateAudit(userId)
+            party = request.party?.let { partyService.findPartiesByPartyIds(listOf(it)).first() }
+        }
 
         when(requirement.satisfying){
             in SatisfyingType.COURSE_SET ->
@@ -49,6 +51,64 @@ class RequirementService @Autowired constructor(
 
         requirementRepository.save(requirement)
     }
+
+    @Transactional
+    fun modifyRequirement(userId: Long, requirementId: Long, request: RequirementRequest) =
+            requirementRepository.findById(requirementId)
+                    .orElseThrow {
+                        ApiException(
+                                status = HttpStatus.NOT_FOUND,
+                                apiResponse = ApiResponse(
+                                        success = false,
+                                        message = "${requirementId}에 해당하는 요건이 없습니다."
+                                )
+                        )
+                    }.let {
+                        it.copy(
+                                name = request.name,
+                                satisfying = request.satisfyingType,
+                                need = request.need,
+                                clazzMin = request.clazzMin ?: 0,
+                                clazzMax = request.clazzMax ?: 9999
+                        ).apply {
+                            this.party = request.party?.let { partyService.findPartiesByPartyIds(listOf(it)).first() }
+                            when(this.satisfying){
+                                in SatisfyingType.COURSE_SET ->
+                                    this.courses = courseService.findCoursesByIds(request.target)
+                                SatisfyingType.CHILDREN ->
+                                    this.subs = this@RequirementService.findRequirementByIds(request.target)
+                                else -> { }
+                            }
+                            this.createdAt = it.createdAt
+                            this.createdBy = it.createdBy
+                            updateUserDateAudit(userId)
+                            this@RequirementService.requirementRepository.save(this, 1)
+                        }
+                    }
+
+    fun findGeneralRequirements() =
+            requirementRepository.findAllSubs()
+                    .asSequence()
+                    .find { it.name == "졸업" }
+                    ?: throw ApiException(
+                            status = HttpStatus.NOT_FOUND,
+                            apiResponse = ApiResponse(
+                                    success = false,
+                                    message = "졸업 요건이 없습니다. 관리자에게 문의하세요."
+                            )
+                    )
+
+    fun findMajorRequirements(partyId: Long) =
+            requirementRepository.findAllSubs()
+                    .asSequence()
+                    .find { it.party?.id == partyId }
+                    ?: throw ApiException(
+                            status = HttpStatus.NOT_FOUND,
+                            apiResponse = ApiResponse(
+                                    success = false,
+                                    message = "해당 학과에 졸업학과가 없습니다."
+                            )
+                    )
 
     @Transactional
     fun checkGraduation(userId: Long): Int{
@@ -63,16 +123,21 @@ class RequirementService @Autowired constructor(
                     )
             )
 
-        val requirement = requirementRepository.findSubsByName("졸업")
-                .asSequence()
+        val requirements = requirementRepository.findAllSubs()
+
+        val generalRequirement = requirements.asSequence()
                 .filter { it.name == "졸업" }
                 .first()
 
-        return this.isMeet(requirement, user.attends!!.toSet(), user)
+        val majorRequirement = requirements
+                .asSequence()
+                .filter { it == user.requirement!! }
+                .first()
+
+        return this.isMeet(generalRequirement, user.attends!!.toSet(), user)
     }
 
     private fun isMeet(requirement: Requirement, attends: Set<Attend>, user: User): Int {
-
 
         if(user.userNumber.substring(0, 4).toLong().let { it > requirement.clazzMax
                         || it < requirement.clazzMin
@@ -86,47 +151,32 @@ class RequirementService @Autowired constructor(
 
         return try { when(requirement.satisfying){
             SatisfyingType.COURSE_CREDIT -> {
-                if(attends.filterCredit { it.course in requirement.courses!! }
-                                .reduce { acc, d -> acc + d } >= requirement.need)
-                    logger.info("${requirement.name} 합격").let { 1 }
-                else
-                    logger.info("${requirement.name} 불합격").let { 0 }
+                check(attends.filterCredit { it.course in requirement.courses!! }
+                        .reduce { acc, d -> acc + d } >= requirement.need, requirement.name)
             }
             SatisfyingType.COURSE_COUNT -> {
-                if(attends.asSequence().filter { it.course in requirement.courses!! }
-                        .count() >= requirement.need)
-                    1
-                else 0
+                check(attends.asSequence().filter { it.course in requirement.courses!! }
+                        .count() >= requirement.need, requirement.name)
             }
             SatisfyingType.CHILDREN -> {
-                if(requirement.subs!!.asSequence().map { this.isMeet(it, attends, user) }
-                                .reduce { acc, i -> acc + i } >= requirement.need)
-                    1
-                else 0
+                check(requirement.subs!!.asSequence().map { this.isMeet(it, attends, user) }
+                        .reduce { acc, i -> acc + i } >= requirement.need, requirement.name)
             }
             SatisfyingType.GENERAL -> {
-                if(attends.filterCredit { it.section in SectionType.GENERAL_SET }
-                                .reduce { acc, d -> acc + d } >= requirement.need)
-                    1
-                else 0
+                check(attends.filterCredit { it.section in SectionType.GENERAL_SET }
+                        .reduce { acc, d -> acc + d } >= requirement.need, requirement.name)
             }
             SatisfyingType.MAJOR -> {
-                if(attends.filterCredit { it.section in SectionType.MAJOR_SET }
-                                .reduce { acc, d -> acc + d } >= requirement.need)
-                    1
-                else 0
+                check(attends.filterCredit { it.section in SectionType.MAJOR_SET }
+                        .reduce { acc, d -> acc + d } >= requirement.need, requirement.name)
             }
             SatisfyingType.MINOR -> {
-                if(attends.filterCredit { it.section in SectionType.MINOR_SET }
-                                .reduce { acc, d -> acc + d } >= requirement.need)
-                    1
-                else 0
+                check(attends.filterCredit { it.section in SectionType.MINOR_SET }
+                        .reduce { acc, d -> acc + d } >= requirement.need, requirement.name)
             }
             SatisfyingType.ALL -> {
-                if(attends.filterCredit { true }
-                                .reduce { acc, d -> acc + d } >= requirement.need)
-                    1
-                else 0
+                check(attends.filterCredit { true }
+                        .reduce { acc, d -> acc + d } >= requirement.need, requirement.name)
             }
         }}
         catch (e: UnsupportedOperationException) {
@@ -141,6 +191,10 @@ class RequirementService @Autowired constructor(
             this.asSequence().filter(predicate)
                     .map { it.credit }
 
-//    private fun
+    private fun check(bool: Boolean, requirementName: String) =
+            if(bool)
+                logger.info("$requirementName 합격").let { 1 }
+            else
+                logger.info("$requirementName 불합격").let { 0 }
 
 }

@@ -12,12 +12,14 @@ data class Interview constructor(
 
         var title: String, // 메모의 제목
 
-        var content: String, // 메모 내용
+        var content: String // 메모 내용
 
-        @Relationship(type = "WRITE", direction = Relationship.INCOMING)
-        var writer: User?, // 작성자와의 관계
+) : UserDateAudit() {
 
-        @Relationship(type = "ASK", direction = Relationship.OUTGOING)
-        var asker: User? // 작성 대상인 학생과의 관계
+    @Relationship(type = "WRITE", direction = Relationship.INCOMING)
+    var writer: User? = null // 작성자와의 관계
 
-) : UserDateAudit()
+    @Relationship(type = "ASK", direction = Relationship.OUTGOING)
+    var asker: User? = null // 작성 대상인 학생과의 관계
+
+}

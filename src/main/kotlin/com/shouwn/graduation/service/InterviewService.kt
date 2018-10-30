@@ -21,12 +21,12 @@ class InterviewService @Autowired constructor(
     fun saveInterview(writer: User, askerId: Long, interviewRequest: InterviewRequest): Interview =
             Interview(
                     title = interviewRequest.title,
-                    content = interviewRequest.content,
-                    writer = writer,
-                    asker = userRepository.findById(askerId).get()
-            )
-                    .apply { createUserDateAudit(writer.id!!) }
-                    .let { interviewRepository.save(it) }
+                    content = interviewRequest.content
+            ).apply {
+                createUserDateAudit(writer.id!!)
+                this.writer = writer
+                this.asker = userRepository.findById(askerId).get()
+            }.let { interviewRepository.save(it) }
 
     fun findInterviewByAsker(askerId: Long) =
             interviewRepository.findAllByAskerId(askerId)
