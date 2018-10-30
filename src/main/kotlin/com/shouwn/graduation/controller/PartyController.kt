@@ -35,10 +35,6 @@ class PartyController @Autowired constructor(
                     @RequestBody partyRequest: PartyRequest) =
             ResponseEntity.ok(partyService.updateParty(user, partyId, partyRequest))
 
-    @GetMapping("belong")
-    fun belongType() =
-            ResponseEntity.ok(BelongType.values())
-
     @GetMapping("belong/{belongValue}")
     fun findPartiesByBelong(@PathVariable("belongValue") belongValue: Long) =
             ResponseEntity.ok(partyService.findPartiesByBelongValue(belongValue))

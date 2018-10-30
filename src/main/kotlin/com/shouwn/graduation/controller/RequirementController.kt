@@ -11,7 +11,7 @@ import org.springframework.security.access.annotation.Secured
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("api/requirement")
+@RequestMapping("api/requirements")
 class RequirementController @Autowired constructor(
         val requirementService: RequirementService
 ){

@@ -33,8 +33,7 @@ class UserController @Autowired constructor(
                        @RequestBody passwordModifyRequest: PasswordModifyRequest) =
             ResponseEntity.ok(userService.modifyPassword(user, passwordModifyRequest).let { "비밀번호 변경 완료" })
 
-    @GetMapping("student")
-    @Secured("ROLE_STUDENT")
+    @GetMapping("userData")
     fun findSelfStudentData(@CurrentUser user: UserPrincipal) =
             ResponseEntity.ok(userService.userData(user.entity).let { userService.userResponse(it) })
 
@@ -61,7 +60,6 @@ class UserController @Autowired constructor(
     fun findAdminBySearch(@PathVariable("searchTypeValue") searchTypeValue: Long,
                          @PathVariable("searchTxt") searchTxt: String,
                          @PathVariable("partyId") partyId: Long,
-                         @PathVariable("year") year: Int,
                          @PathVariable("page") page: Int,
                          @PathVariable("size") size: Int) =
             ResponseEntity.ok(userService.findUserBySearching(
@@ -69,7 +67,7 @@ class UserController @Autowired constructor(
                     searchTxt = searchTxt,
                     role = RoleName.ROLE_ADMIN,
                     partyId = partyId,
-                    year = year,
+                    year = 0,
                     page = page,
                     size = size
             ))
