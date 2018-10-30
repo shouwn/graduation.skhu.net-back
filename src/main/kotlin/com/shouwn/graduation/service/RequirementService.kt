@@ -53,6 +53,64 @@ class RequirementService @Autowired constructor(
     }
 
     @Transactional
+    fun modifyRequirement(userId: Long, requirementId: Long, request: RequirementRequest) =
+            requirementRepository.findById(requirementId)
+                    .orElseThrow {
+                        ApiException(
+                                status = HttpStatus.NOT_FOUND,
+                                apiResponse = ApiResponse(
+                                        success = false,
+                                        message = "${requirementId}에 해당하는 요건이 없습니다."
+                                )
+                        )
+                    }.let {
+                        it.copy(
+                                name = request.name,
+                                satisfying = request.satisfyingType,
+                                need = request.need,
+                                clazzMin = request.clazzMin ?: 0,
+                                clazzMax = request.clazzMax ?: 9999
+                        ).apply {
+                            this.party = request.party?.let { partyService.findPartiesByPartyIds(listOf(it)).first() }
+                            when(this.satisfying){
+                                in SatisfyingType.COURSE_SET ->
+                                    this.courses = courseService.findCoursesByIds(request.target)
+                                SatisfyingType.CHILDREN ->
+                                    this.subs = this@RequirementService.findRequirementByIds(request.target)
+                                else -> { }
+                            }
+                            this.createdAt = it.createdAt
+                            this.createdBy = it.createdBy
+                            updateUserDateAudit(userId)
+                            this@RequirementService.requirementRepository.save(this, 1)
+                        }
+                    }
+
+    fun findGeneralRequirements() =
+            requirementRepository.findAllSubs()
+                    .asSequence()
+                    .find { it.name == "졸업" }
+                    ?: throw ApiException(
+                            status = HttpStatus.NOT_FOUND,
+                            apiResponse = ApiResponse(
+                                    success = false,
+                                    message = "졸업 요건이 없습니다. 관리자에게 문의하세요."
+                            )
+                    )
+
+    fun findMajorRequirements(partyId: Long) =
+            requirementRepository.findAllSubs()
+                    .asSequence()
+                    .find { it.party?.id == partyId }
+                    ?: throw ApiException(
+                            status = HttpStatus.NOT_FOUND,
+                            apiResponse = ApiResponse(
+                                    success = false,
+                                    message = "해당 학과에 졸업학과가 없습니다."
+                            )
+                    )
+
+    @Transactional
     fun checkGraduation(userId: Long): Int{
         val user = userService.findUsersById(setOf(userId)).first()
 
@@ -81,7 +139,6 @@ class RequirementService @Autowired constructor(
 
     private fun isMeet(requirement: Requirement, attends: Set<Attend>, user: User): Int {
 
-
         if(user.userNumber.substring(0, 4).toLong().let { it > requirement.clazzMax
                         || it < requirement.clazzMin
                 }) { // 학번 확인
@@ -95,7 +152,7 @@ class RequirementService @Autowired constructor(
         return try { when(requirement.satisfying){
             SatisfyingType.COURSE_CREDIT -> {
                 check(attends.filterCredit { it.course in requirement.courses!! }
-                                .reduce { acc, d -> acc + d } >= requirement.need, requirement.name)
+                        .reduce { acc, d -> acc + d } >= requirement.need, requirement.name)
             }
             SatisfyingType.COURSE_COUNT -> {
                 check(attends.asSequence().filter { it.course in requirement.courses!! }
@@ -103,23 +160,23 @@ class RequirementService @Autowired constructor(
             }
             SatisfyingType.CHILDREN -> {
                 check(requirement.subs!!.asSequence().map { this.isMeet(it, attends, user) }
-                                .reduce { acc, i -> acc + i } >= requirement.need, requirement.name)
+                        .reduce { acc, i -> acc + i } >= requirement.need, requirement.name)
             }
             SatisfyingType.GENERAL -> {
                 check(attends.filterCredit { it.section in SectionType.GENERAL_SET }
-                                .reduce { acc, d -> acc + d } >= requirement.need, requirement.name)
+                        .reduce { acc, d -> acc + d } >= requirement.need, requirement.name)
             }
             SatisfyingType.MAJOR -> {
                 check(attends.filterCredit { it.section in SectionType.MAJOR_SET }
-                                .reduce { acc, d -> acc + d } >= requirement.need, requirement.name)
+                        .reduce { acc, d -> acc + d } >= requirement.need, requirement.name)
             }
             SatisfyingType.MINOR -> {
                 check(attends.filterCredit { it.section in SectionType.MINOR_SET }
-                                .reduce { acc, d -> acc + d } >= requirement.need, requirement.name)
+                        .reduce { acc, d -> acc + d } >= requirement.need, requirement.name)
             }
             SatisfyingType.ALL -> {
                 check(attends.filterCredit { true }
-                                .reduce { acc, d -> acc + d } >= requirement.need, requirement.name)
+                        .reduce { acc, d -> acc + d } >= requirement.need, requirement.name)
             }
         }}
         catch (e: UnsupportedOperationException) {

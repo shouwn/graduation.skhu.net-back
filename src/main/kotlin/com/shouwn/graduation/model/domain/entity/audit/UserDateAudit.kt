@@ -18,6 +18,12 @@ abstract class UserDateAudit : DateAudit() {
 
     fun updateUserDateAudit(userId: Long){
         super.updateDateAudit()
-        updatedBy = userId
+        this.updatedBy = userId
+    }
+
+    fun updateUserDateAudit(userId: Long, before: UserDateAudit){
+        super.updateDateAudit(before)
+        this.createdBy = before.createdBy
+        this.updatedBy = userId
     }
 }

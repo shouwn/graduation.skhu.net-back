@@ -26,4 +26,19 @@ class RequirementController @Autowired constructor(
     @GetMapping("users/{userId}")
     fun checkGraduate(@PathVariable("userId") userId: Long) =
             ResponseEntity.ok(requirementService.checkGraduation(userId))
+
+    @GetMapping("general")
+    fun generalRequirements() =
+            ResponseEntity.ok(requirementService.findGeneralRequirements())
+
+    @GetMapping("major/{partyId}")
+    fun majorRequirements(@PathVariable("partyId") partyId: Long) =
+            ResponseEntity.ok(requirementService.findMajorRequirements(partyId))
+
+    @PutMapping("{requirementId}")
+    @Secured("ROLE_ADMIN")
+    fun modifyRequirement(@CurrentUser user: UserPrincipal,
+                          @PathVariable("requirementId") requirementId: Long,
+                          @RequestBody request: RequirementRequest) =
+            ResponseEntity.ok(requirementService.modifyRequirement(user.id, requirementId, request))
 }

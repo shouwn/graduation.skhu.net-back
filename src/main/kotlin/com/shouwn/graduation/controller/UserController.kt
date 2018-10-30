@@ -64,7 +64,7 @@ class UserController @Autowired constructor(
                          @PathVariable("size") size: Int) =
             ResponseEntity.ok(userService.findUserBySearching(
                     type = SearchType.valueOf(searchTypeValue),
-                    searchTxt = searchTxt,
+                    searchTxt = searchTxt.trim(),
                     role = RoleName.ROLE_ADMIN,
                     partyId = partyId,
                     year = 0,
