@@ -1,6 +1,6 @@
 package com.shouwn.graduation.service
 
-import com.shouwn.graduation.model.domain.dto.UserDataModifyDto
+import com.shouwn.graduation.model.domain.dto.UserDataDto
 import com.shouwn.graduation.model.domain.entity.UserData
 import com.shouwn.graduation.model.domain.dto.request.PasswordModifyRequest
 import com.shouwn.graduation.model.domain.dto.request.UserDataModifyRequest
@@ -36,13 +36,13 @@ class UserService @Autowired constructor(
     private val logger = logger()
 
     fun modifyPassword(user: User, request: PasswordModifyRequest): User =
-            this.modifyUserData(user, UserDataModifyDto(
+            this.saveUser(user, UserDataDto(
                     password = passwordEncoder.encode(request.password)
             )).apply { logger.info("${user.info()} 가 비밀번호를 변경") }
 
     fun modifyUserData(user: User, request: UserDataModifyRequest) =
-            this.modifyUserData(user,
-                    UserDataModifyDto(
+            this.saveUser(user,
+                    UserDataDto(
                             password = passwordEncoder.encode(request.password),
                             name = request.name,
                             email = request.email,
@@ -53,14 +53,17 @@ class UserService @Autowired constructor(
             )
 
     fun userSetEnable(id: Long, user: UserPrincipal)  =
-            this.modifyUserData(
+            this.saveUser(
                     this.findUsersByIds(listOf(id)).first(),
-                    UserDataModifyDto(enabled = true)
+                    UserDataDto(enabled = true)
             ).apply { logger.info("${user.id} 에 의해 $id 유저 활성화") }
 
     fun deleteUser(userId: Long) {
         userRepository.deleteById(userId)
     }
+
+    fun findUserByUserNumberOrEmail(userNumberOrEmail: String) =
+            userRepository.findByUserNumberOrEmail(userNumberOrEmail, userNumberOrEmail)
 
     fun findUsersByIds(ids: Iterable<Long>) =
             findAllById(userRepository, ids)
@@ -79,6 +82,43 @@ class UserService @Autowired constructor(
     fun userResponse(user: User) =
             this.userResponse(this.userData(user))
 
+    fun existsByUserNumberOrEmail(userNumberOrEmail: String) =
+            this.findUserByUserNumberOrEmail(userNumberOrEmail) != null
+
+    @Transactional
+    fun saveUser(user: User, request: UserDataDto): User =
+            userRepository.save(
+                    user.let { it.copy(
+                            password = request.password ?: it.password,
+                            name = request.name ?: it.name,
+                            email = request.email ?: it.email,
+                            hint = request.hint ?: it.hint,
+                            hintAnswer = request.hintAnswer ?: it.hintAnswer,
+                            enabled = request.enabled ?: it.enabled,
+                            role = request.role ?: it.role
+                    ).apply {
+                        requirement = request.requirement?.let { requirementId ->
+                            requirementService.findRequirementByIds(listOf(requirementId)).first() } ?: it.requirement
+                        parties = request.parties?.let { partyIds ->
+                            partyService.findPartiesByIds(partyIds)
+                                    .apply { filter { party -> party.belong == BelongType.GENERAL }
+                                            .forEach { _ ->
+                                                throw ApiException(
+                                                        status = HttpStatus.PRECONDITION_FAILED,
+                                                        apiResponse = ApiResponse(
+                                                                success = false,
+                                                                message = "교양 소속으로는 선택할 수 없습니다."
+                                                        )
+                                                ) }
+                                        println(this)
+                                    }
+                        } ?: it.parties
+                        if(it.createdAt == null) createDateAudit()
+                        updateDateAudit(it)
+                    } },
+                    1
+            )
+
     private fun findAllUserBySearching(type: SearchType, searchTxt: String,
                                        role: RoleName, partyId: Long, year: Int,
                                        page: Int, size: Int) =
@@ -90,39 +130,6 @@ class UserService @Autowired constructor(
                     maxCredit = if(year > 0) yearService.getCompletionCredit(year).toLong() else 9999,
                     minCredit = if(year >= 1) yearService.getCompletionCredit(year - 1).toLong() else 0,
                     pageable = PageRequest.of(page, size)
-            )
-
-    @Transactional
-    fun modifyUserData(user: User, request: UserDataModifyDto): User =
-            userRepository.save(
-                    user.let { it.copy(
-                            password = request.password ?: it.password,
-                            name = request.name ?: it.name,
-                            email = request.email ?: it.email,
-                            hint = request.hint ?: it.hint,
-                            hintAnswer = request.hintAnswer ?: it.hintAnswer
-                    ).apply {
-                        attends = request.attends?.let { attendIds ->
-                            attendService.findAttendsByIds(attendIds) } ?: it.attends
-                        requirement = request.requirement?.let { requirementId ->
-                            requirementService.findRequirementByIds(listOf(requirementId)).first() } ?: it.requirement
-                        parties = request.parties?.let { partyIds ->
-                            partyService.findPartiesByIds(partyIds)
-                                .apply { filter { party -> party.belong == BelongType.GENERAL }
-                                        .forEach { _ ->
-                                            throw ApiException(
-                                                    status = HttpStatus.PRECONDITION_FAILED,
-                                                    apiResponse = ApiResponse(
-                                                            success = false,
-                                                            message = "교양 소속으로는 선택할 수 없습니다."
-                                                    )
-                                            ) }
-                                    println(this)
-                                }
-                        } ?: it.parties
-                        updateDateAudit(it)
-                    } },
-                    1
             )
 
     private fun userResponse(userData: UserData) =

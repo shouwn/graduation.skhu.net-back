@@ -1,5 +1,6 @@
 package com.shouwn.graduation.service
 
+import com.shouwn.graduation.model.domain.dto.UserDataDto
 import com.shouwn.graduation.model.domain.dto.request.ForgotRequest
 import com.shouwn.graduation.model.domain.dto.response.ApiResponse
 import com.shouwn.graduation.model.domain.dto.response.JwtAuthenticationResponse
@@ -13,6 +14,7 @@ import com.shouwn.graduation.model.domain.type.RoleName
 import com.shouwn.graduation.repository.UserRepository
 import com.shouwn.graduation.security.JwtTokenProvider
 import com.shouwn.graduation.security.UserPrincipal
+import com.shouwn.graduation.utils.info
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -30,10 +32,10 @@ import java.net.URI
 @Service
 class AuthService @Autowired constructor(
         private val authenticationManager: AuthenticationManager,
-        private val userRepository: UserRepository,
         private val tokenProvider: JwtTokenProvider,
         private val partyService: PartyService,
-        private val passwordEncoder: PasswordEncoder
+        private val passwordEncoder: PasswordEncoder,
+        private val userService: UserService
 ) {
     private val logger = LoggerFactory.getLogger(AuthService::class.java)
 
@@ -65,13 +67,14 @@ class AuthService @Autowired constructor(
     }
 
     fun authenticateUserByHint(request: ForgotRequest): JwtAuthenticationResponse {
-        val user = userRepository.findByUserNumberOrEmail(request.userNumberOrEmail, request.userNumberOrEmail) ?: throw ApiException(
-                status = HttpStatus.NOT_FOUND,
-                apiResponse = ApiResponse(
-                        success = false,
-                        message = "${request.userNumberOrEmail}에 해당하는 유저가 없습니다."
+        val user = userService.findUserByUserNumberOrEmail(request.userNumberOrEmail)
+                ?: throw ApiException(
+                        status = HttpStatus.NOT_FOUND,
+                        apiResponse = ApiResponse(
+                                success = false,
+                                message = "${request.userNumberOrEmail}에 해당하는 유저가 없습니다."
+                        )
                 )
-        )
 
         if(user.hintAnswer != request.hintAnswer)
             throw ApiException(
@@ -93,45 +96,19 @@ class AuthService @Autowired constructor(
     fun registerUser(signUpRequest: SignUpRequest, role: RoleName): URI {
         val signCode = if(role == RoleName.ROLE_STUDENT) userSignCode else adminSignCode
 
-        if(signUpRequest.code != signCode) {
-            logger.error("Register Fail: ${signUpRequest.code} is not $signCode")
-
+        if(signUpRequest.code != signCode)
             throw ApiException(
                     apiResponse = ApiResponse(false, "인증코드가 맞지 않습니다."),
                     status = HttpStatus.UNAUTHORIZED
-            )
-        }
+            ).apply { logger.error("Register Fail: ${signUpRequest.code} is not $signCode") }
 
-        if (userRepository.existsByUserNumberOrEmail(signUpRequest.userNumber, signUpRequest.email)) {
-            logger.error("Register Fail: ${signUpRequest.userNumber} or ${signUpRequest.email} is not already exist")
-
+        if (userService.existsByUserNumberOrEmail(signUpRequest.userNumber))
             throw ApiException(
                     apiResponse = ApiResponse(false, "사용자번호 혹은 이메일이 이미 존재합니다."),
-                    status = HttpStatus.CONFLICT)
-        }
+                    status = HttpStatus.CONFLICT
+            ).apply { logger.error("Register Fail: ${signUpRequest.userNumber} or ${signUpRequest.email} is not already exist") }
 
-        var parties = partyService.findPartiesByIds(signUpRequest.parties)
-                .apply { filter { it.belong == BelongType.GENERAL }
-                        .forEach { _ ->
-                            throw ApiException(
-                                status = HttpStatus.PRECONDITION_FAILED,
-                                apiResponse = ApiResponse(
-                                        success = false,
-                                        message = "교양 소속으로는 선택할 수 없습니다."
-                                )
-                        ) }
-                }
-
-        if(parties.isEmpty())
-            throw ApiException(
-                    status = HttpStatus.PRECONDITION_FAILED,
-                    apiResponse = ApiResponse(
-                            success = false,
-                            message = "소속이 선택되어야 합니다."
-                    )
-            )
-
-        val user = User(
+        val user = userService.saveUser(User(
                 role = role,
                 userNumber = signUpRequest.userNumber,
                 password = passwordEncoder.encode(signUpRequest.password),
@@ -140,23 +117,16 @@ class AuthService @Autowired constructor(
                 enabled = role == RoleName.ROLE_STUDENT,
                 hint = signUpRequest.hint,
                 hintAnswer = signUpRequest.hintAnswer
-        ).apply {
-            this.parties = parties
-            createDateAudit()
-        }
-
-        val result = userRepository.save(user)
-
-        logger.info("권한: $role ${signUpRequest.userNumber}, 사용자 번호: ${signUpRequest.userNumber}, " +
-                "사용자 이름: ${signUpRequest.name} 회원 등록")
+        ), UserDataDto(parties = signUpRequest.parties))
+                .apply { logger.info("${this.info()} 사용자 이름: ${this.name} 회원 등록") }
 
         return ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/users/{username}")
-                .buildAndExpand(result.userNumber).toUri()
+                .buildAndExpand(user.userNumber).toUri()
     }
 
     fun findHintByUserNumberOrEmail(userNameOrEmail: String) =
-            userRepository.findByUserNumberOrEmail(userNameOrEmail, userNameOrEmail)?.hint
+            userService.findUserByUserNumberOrEmail(userNameOrEmail)?.hint
                     ?: throw ApiException(
                             status = HttpStatus.NOT_FOUND,
                             apiResponse = ApiResponse(false,

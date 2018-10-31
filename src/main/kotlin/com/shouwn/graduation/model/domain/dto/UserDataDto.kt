@@ -2,10 +2,13 @@ package com.shouwn.graduation.model.domain.dto
 
 import com.shouwn.graduation.model.domain.entity.Attend
 import com.shouwn.graduation.model.domain.entity.Requirement
+import com.shouwn.graduation.model.domain.type.RoleName
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.Size
 
-data class UserDataModifyDto (
+data class UserDataDto (
+
+        var userNumber: String? = null,
 
         val password: String? = null,
 
@@ -19,9 +22,11 @@ data class UserDataModifyDto (
 
         var enabled: Boolean? = null,
 
+        var role: RoleName? = null,
+
         var parties: List<Long>? = null,
 
-        var attends: List<Long>? = null,
+        var attends: List<Attend>? = null,
 
         var requirement: Long? = null
 )

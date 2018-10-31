@@ -1,8 +1,12 @@
 package com.shouwn.graduation.service
 
+import com.shouwn.graduation.model.domain.dto.AttendDataDto
 import com.shouwn.graduation.model.domain.dto.request.AttendRequest
+import com.shouwn.graduation.model.domain.dto.response.ApiResponse
 import com.shouwn.graduation.model.domain.entity.Attend
 import com.shouwn.graduation.model.domain.entity.Course
+import com.shouwn.graduation.model.domain.entity.User
+import com.shouwn.graduation.model.domain.exception.ApiException
 import com.shouwn.graduation.model.domain.type.AttendType
 import com.shouwn.graduation.model.domain.type.GradeType
 import com.shouwn.graduation.model.domain.type.SectionType
@@ -14,6 +18,7 @@ import com.shouwn.graduation.utils.logger
 import com.shouwn.graduation.utils.toValueString
 import org.apache.poi.ss.usermodel.WorkbookFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.io.InputStream
@@ -21,7 +26,8 @@ import java.time.LocalDateTime
 
 @Service
 class AttendService @Autowired constructor(
-        private val attendRepository: AttendRepository
+        private val attendRepository: AttendRepository,
+        private val partyService: PartyService
 ){
     private val logger = logger()
 
@@ -61,27 +67,27 @@ class AttendService @Autowired constructor(
         return attendRepository.addAttend(user.id, attendList)
     }
 
-    fun updateAttend(user: UserPrincipal, attendId: Long, request: AttendRequest) =
-            attendRepository.save(findAttendsByIds(listOf(attendId)).first()).let {
-                it.copy(
+    fun saveAttends(user: User, requests: Iterable<AttendDataDto>) {
+        val partyMap = partyService.findPartiesByIds(
+                requests.map {
+                    it.courseId
+                            ?: throw ApiException(
+                                    status = HttpStatus.PRECONDITION_FAILED,
+                                    apiResponse = ApiResponse(
+                                            success = false,
+                                            message = "과목은 항상 필요합니다."
+                                    )
+                            )
+                }.toList()).associate { it.id to it }
 
-                )
-            })
+        attendRepository.saveAll(
+                requests.map {
+                    Attend(
 
-
-    updateAttend(
-                    attendId = attendId,
-                    courseId = request.courseId,
-                    year = request.year,
-                    term = request.term.value,
-                    name = request.name,
-                    credit = request.credit,
-                    grade = request.grade.value,
-                    section = request.section.value,
-                    type = request.type.value,
-                    updatedBy = user.id,
-                    updatedAt = LocalDateTime.now().toString()
-            )
+                    )
+                }
+        )
+    }
 
     fun findAttendsByIds(ids: Iterable<Long>) =
             findAllById(attendRepository, ids).toList()
