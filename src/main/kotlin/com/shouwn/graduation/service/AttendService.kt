@@ -9,6 +9,7 @@ import com.shouwn.graduation.model.domain.type.SectionType
 import com.shouwn.graduation.model.domain.type.TermType
 import com.shouwn.graduation.repository.AttendRepository
 import com.shouwn.graduation.security.UserPrincipal
+import com.shouwn.graduation.utils.findAllById
 import com.shouwn.graduation.utils.logger
 import com.shouwn.graduation.utils.toValueString
 import org.apache.poi.ss.usermodel.WorkbookFactory
@@ -61,7 +62,14 @@ class AttendService @Autowired constructor(
     }
 
     fun updateAttend(user: UserPrincipal, attendId: Long, request: AttendRequest) =
-            attendRepository.updateAttend(
+            attendRepository.save(findAttendsByIds(listOf(attendId)).first()).let {
+                it.copy(
+
+                )
+            })
+
+
+    updateAttend(
                     attendId = attendId,
                     courseId = request.courseId,
                     year = request.year,
@@ -74,4 +82,7 @@ class AttendService @Autowired constructor(
                     updatedBy = user.id,
                     updatedAt = LocalDateTime.now().toString()
             )
+
+    fun findAttendsByIds(ids: Iterable<Long>) =
+            findAllById(attendRepository, ids).toList()
 }

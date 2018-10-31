@@ -110,7 +110,7 @@ class AuthService @Autowired constructor(
                     status = HttpStatus.CONFLICT)
         }
 
-        var parties = partyService.findPartiesByPartyIds(signUpRequest.parties)
+        var parties = partyService.findPartiesByIds(signUpRequest.parties)
                 .apply { filter { it.belong == BelongType.GENERAL }
                         .forEach { _ ->
                             throw ApiException(

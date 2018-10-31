@@ -37,12 +37,12 @@ data class User constructor(
 
     @JsonIgnore
     @Relationship(type = "ATTEND", direction = Relationship.OUTGOING)
-    var attends: MutableSet<Attend>? = null
+    var attends: List<Attend>? = null
 
     @JsonIgnore
     @Relationship(type = "SELECT", direction = Relationship.OUTGOING)
     var requirement: Requirement? = null
 
     @Relationship(type = "BELONG", direction = Relationship.OUTGOING)
-    var parties: Set<Party>? = null // IT 융합부에 소속되면서 소프트웨어공학과에 소속된다면?
+    var parties: List<Party>? = null // IT 융합부에 소속되면서 소프트웨어공학과에 소속된다면?
 }

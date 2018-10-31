@@ -18,5 +18,5 @@ data class UserResponse (
 
         val role: RoleName,
 
-        val parties: Set<Party>
+        val parties: List<Party>
 )

@@ -38,7 +38,7 @@ class RequirementService @Autowired constructor(
                 clazzMax = request.clazzMax ?: 9999
         ).apply {
             createUserDateAudit(userId)
-            party = request.party?.let { partyService.findPartiesByPartyIds(listOf(it)).first() }
+            party = request.party?.let { partyService.findPartiesByIds(listOf(it)).first() }
         }
 
         when(requirement.satisfying){
@@ -71,7 +71,7 @@ class RequirementService @Autowired constructor(
                                 clazzMin = request.clazzMin ?: 0,
                                 clazzMax = request.clazzMax ?: 9999
                         ).apply {
-                            this.party = request.party?.let { partyService.findPartiesByPartyIds(listOf(it)).first() }
+                            this.party = request.party?.let { partyService.findPartiesByIds(listOf(it)).first() }
                             when(this.satisfying){
                                 in SatisfyingType.COURSE_SET ->
                                     this.courses = courseService.findCoursesByIds(request.target)
@@ -79,9 +79,7 @@ class RequirementService @Autowired constructor(
                                     this.subs = this@RequirementService.findRequirementByIds(request.target)
                                 else -> { }
                             }
-                            this.createdAt = it.createdAt
-                            this.createdBy = it.createdBy
-                            updateUserDateAudit(userId)
+                            updateUserDateAudit(userId, it)
                             this@RequirementService.requirementRepository.save(this, 1)
                         }
                     }
@@ -112,7 +110,7 @@ class RequirementService @Autowired constructor(
 
     @Transactional
     fun checkGraduation(userId: Long): Int{
-        val user = userService.findUsersById(setOf(userId)).first()
+        val user = userService.findUsersByIds(setOf(userId)).first()
 
         if(user.requirement == null)
             throw ApiException(
