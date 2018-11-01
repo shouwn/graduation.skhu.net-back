@@ -19,16 +19,10 @@ class UserData{
 
     lateinit var email: String
 
-    lateinit var parties: Set<Party>
+    lateinit var parties: List<Party>
 
     var credit: Double = 0.0
 
     @Convert(RoleNameConverter::class)
     lateinit var role: RoleName
-
-    override fun toString(): String {
-        return "UserData(id=$id, userNumber='$userNumber', name='$name', email='$email', parties=$parties, credit=$credit, role=$role)"
-    }
-
-
 }

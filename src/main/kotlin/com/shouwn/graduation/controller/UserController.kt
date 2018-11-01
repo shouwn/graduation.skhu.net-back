@@ -22,7 +22,7 @@ class UserController @Autowired constructor(
     @PutMapping
     fun modifyUserData(@CurrentUser user: UserPrincipal,
                        @RequestBody userDataModifyRequest: UserDataModifyRequest) =
-            ResponseEntity.ok(userService.modifyUserData(user, userDataModifyRequest))
+            ResponseEntity.ok(userService.modifyUserData(user.entity, userDataModifyRequest))
 
     @GetMapping
     fun findUserData(@CurrentUser user: UserPrincipal) =
@@ -31,11 +31,11 @@ class UserController @Autowired constructor(
     @PutMapping("password")
     fun modifyPassword(@CurrentUser user: UserPrincipal,
                        @RequestBody passwordModifyRequest: PasswordModifyRequest) =
-            ResponseEntity.ok(userService.modifyPassword(user, passwordModifyRequest).let { "비밀번호 변경 완료" })
+            ResponseEntity.ok(userService.modifyPassword(user.entity, passwordModifyRequest).let { "비밀번호 변경 완료" })
 
     @GetMapping("userData")
     fun findSelfStudentData(@CurrentUser user: UserPrincipal) =
-            ResponseEntity.ok(userService.userData(user.entity).let { userService.userResponse(it) })
+            ResponseEntity.ok(userService.userResponse(user.entity))
 
     @GetMapping("student/{searchTypeValue}/{searchTxt}/{partyId}/{year}/{page}/{size}")
     @Secured("ROLE_ADMIN")

@@ -43,4 +43,16 @@ class KotlinBasic{
             println("also!!!!")
         }
     }
+
+    @Test
+    fun copyTest(){
+        data class Test (
+                val a: Int,
+                val b: Int
+        ){
+            var c: Int? = null
+        }
+
+        println(Test(10, 20).apply { c = 100 }.copy(a = 20).c)
+    }
 }

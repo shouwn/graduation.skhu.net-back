@@ -87,6 +87,6 @@ class PartyService @Autowired constructor(
                 }
             })
 
-    fun findPartiesByPartyIds(ids: Iterable<Long>): Set<Party> =
-            findAllById(partyRepository, ids).toSet()
+    fun findPartiesByIds(ids: Iterable<Long>): List<Party> =
+            findAllById(partyRepository, ids).toList()
 }

@@ -12,6 +12,12 @@ interface AttendRepository : Neo4jRepository<Attend, Long> {
 //    a.section = attend.section.value, a.updatedBy = attend.updatedBy, a.updatedAt = attend.updatedAt
 
     @Query("""
+
+    """)
+    fun deleteByUserIdAndType(@Param("userId") userId: Long,
+                              @Param("typeValue") typeValue: Long)
+
+    @Query("""
         WITH {attends} AS attends
         UNWIND attends AS attend
         MATCH (u: User)

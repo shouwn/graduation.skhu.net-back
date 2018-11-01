@@ -126,4 +126,10 @@ class CourseService @Autowired constructor(
 
     fun findCoursesByIds(ids: Iterable<Long>) =
             findAllById(courseRepository, ids).toSet()
+
+    fun findCoursesLikeCodeAndName(code: String?, name: String?) =
+            courseRepository.findAllLikeCodeAndName(
+                    code?.let { ".*$it.*" } ?: ".*",
+                    name?.let { ".*$it.*" } ?: ".*"
+            )
 }
