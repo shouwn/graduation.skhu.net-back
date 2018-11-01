@@ -22,9 +22,9 @@ class AttendController @Autowired constructor(
             ResponseEntity.status(HttpStatus.CREATED)
                     .body(attendService.addAttendFromFile(user, file.inputStream))
 
-    @PutMapping("{attendId}")
-    fun updateAttend(@CurrentUser user: UserPrincipal,
-                     @PathVariable("attendId") attendId: Long,
-                     @RequestBody attendRequest: AttendRequest) =
-            ResponseEntity.ok(attendService.updateAttend(user, attendId, attendRequest))
+//    @PutMapping("{attendId}")
+//    fun updateAttend(@CurrentUser user: UserPrincipal,
+//                     @PathVariable("attendId") attendId: Long,
+//                     @RequestBody attendRequest: AttendRequest) =
+//            ResponseEntity.ok(attendService.updateAttend(user, attendId, attendRequest))
 }

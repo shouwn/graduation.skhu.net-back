@@ -29,4 +29,9 @@ class CourseController @Autowired constructor(
                      @PathVariable("courseId") courseId: Long,
                      @RequestBody courseRequest: CourseRequest) =
             ResponseEntity.ok(courseService.updateCourse(user, courseId, courseRequest))
+
+    @GetMapping("{code}/{name}")
+    fun findCoursesByCodeOrName(@PathVariable("code") code: String,
+                                @PathVariable("name") name: String) =
+            ResponseEntity.ok(courseService.findCoursesLikeCodeAndName(code.trim(), name.trim()))
 }

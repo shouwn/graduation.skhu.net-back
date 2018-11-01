@@ -10,6 +10,7 @@ import com.shouwn.graduation.model.domain.exception.ApiException
 import com.shouwn.graduation.model.domain.type.SatisfyingType
 import com.shouwn.graduation.model.domain.type.SectionType
 import com.shouwn.graduation.repository.RequirementRepository
+import com.shouwn.graduation.repository.UserRepository
 import com.shouwn.graduation.security.UserPrincipal
 import com.shouwn.graduation.utils.findAllById
 import com.shouwn.graduation.utils.logger
@@ -24,7 +25,7 @@ class RequirementService @Autowired constructor(
         private val requirementRepository: RequirementRepository,
         private val partyService: PartyService,
         private val courseService: CourseService,
-        private val userService: UserService
+        private val userRepository: UserRepository
 ){
     private val logger = logger()
 
@@ -110,7 +111,7 @@ class RequirementService @Autowired constructor(
 
     @Transactional
     fun checkGraduation(userId: Long): Int{
-        val user = userService.findUsersByIds(setOf(userId)).first()
+        val user = findAllById(userRepository, setOf(userId)).first()
 
         if(user.requirement == null)
             throw ApiException(

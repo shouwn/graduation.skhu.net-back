@@ -67,27 +67,27 @@ class AttendService @Autowired constructor(
         return attendRepository.addAttend(user.id, attendList)
     }
 
-    fun saveAttends(user: User, requests: Iterable<AttendDataDto>) {
-        val partyMap = partyService.findPartiesByIds(
-                requests.map {
-                    it.courseId
-                            ?: throw ApiException(
-                                    status = HttpStatus.PRECONDITION_FAILED,
-                                    apiResponse = ApiResponse(
-                                            success = false,
-                                            message = "과목은 항상 필요합니다."
-                                    )
-                            )
-                }.toList()).associate { it.id to it }
-
-        attendRepository.saveAll(
-                requests.map {
-                    Attend(
-
-                    )
-                }
-        )
-    }
+//    fun saveAttends(user: User, requests: Iterable<AttendDataDto>) {
+//        val partyMap = partyService.findPartiesByIds(
+//                requests.map {
+//                    it.courseId
+//                            ?: throw ApiException(
+//                                    status = HttpStatus.PRECONDITION_FAILED,
+//                                    apiResponse = ApiResponse(
+//                                            success = false,
+//                                            message = "과목은 항상 필요합니다."
+//                                    )
+//                            )
+//                }.toList()).associate { it.id to it }
+//
+//        attendRepository.saveAll(
+//                requests.map {
+//                    Attend(
+//
+//                    )
+//                }
+//        )
+//    }
 
     fun findAttendsByIds(ids: Iterable<Long>) =
             findAllById(attendRepository, ids).toList()
