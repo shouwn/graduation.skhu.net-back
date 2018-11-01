@@ -58,10 +58,11 @@ interface CourseRepository : Neo4jRepository<Course, Long>{
                @Param("updatedAt") updatedAt: String): Course
 
     @Query("""
-        MATCH (c: Course)
-        WHERE c.name =~ {name} AND c.code =~ {code}
-        RETURN c
+        MATCH p = (c: Course) <-[:OPEN]- (party: Party)
+        WHERE c.name =~ {name} AND c.code =~ {code} AND party.name =~ {partyName}
+        RETURN p
     """)
     fun findAllLikeCodeAndName(@Param("code") code: String,
-                            @Param("name")name: String): List<Course>
+                               @Param("name") name: String,
+                               @Param("partyName") partyName: String): List<Course>
 }
