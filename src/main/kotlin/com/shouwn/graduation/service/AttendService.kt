@@ -12,6 +12,7 @@ import com.shouwn.graduation.model.domain.type.GradeType
 import com.shouwn.graduation.model.domain.type.SectionType
 import com.shouwn.graduation.model.domain.type.TermType
 import com.shouwn.graduation.repository.AttendRepository
+import com.shouwn.graduation.repository.CourseRepository
 import com.shouwn.graduation.security.UserPrincipal
 import com.shouwn.graduation.utils.findAllById
 import com.shouwn.graduation.utils.logger
@@ -23,18 +24,20 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.io.InputStream
 import java.time.LocalDateTime
+import kotlin.reflect.full.declaredMembers
 
 @Service
 class AttendService @Autowired constructor(
         private val attendRepository: AttendRepository,
-        private val partyService: PartyService
+        private val partyService: PartyService,
+        private val courseRepository: CourseRepository
 ){
     private val logger = logger()
 
     @Transactional
     fun addAttendFromFile(user: UserPrincipal, file: InputStream): List<Attend>{
 
-        attendRepository.deleteAllByUserId(user.id)
+        attendRepository.deleteAllByUserIdAndType(user.id, AttendType.DONE)
 
         val attendList = arrayListOf<Attend>()
 
@@ -67,28 +70,86 @@ class AttendService @Autowired constructor(
         return attendRepository.addAttend(user.id, attendList)
     }
 
-//    fun saveAttends(user: User, requests: Iterable<AttendDataDto>) {
-//        val partyMap = partyService.findPartiesByIds(
-//                requests.map {
-//                    it.courseId
-//                            ?: throw ApiException(
-//                                    status = HttpStatus.PRECONDITION_FAILED,
-//                                    apiResponse = ApiResponse(
-//                                            success = false,
-//                                            message = "과목은 항상 필요합니다."
-//                                    )
-//                            )
-//                }.toList()).associate { it.id to it }
-//
-//        attendRepository.saveAll(
-//                requests.map {
-//                    Attend(
-//
-//                    )
-//                }
-//        )
-//    }
+    @Transactional
+    fun saveAttends(user: User, requests: List<AttendDataDto>) {
+        if(requests.isEmpty())
+            throw ApiException(
+                    status = HttpStatus.BAD_REQUEST,
+                    apiResponse = ApiResponse(
+                            success = false,
+                            message = "보내진 데이터가 없습니다."
+                    )
+            )
+
+        val attendType = requests.first().apply {
+            requests.forEach {
+                if(this.type != it.type)
+                    throw ApiException(
+                            status = HttpStatus.PRECONDITION_FAILED,
+                            apiResponse = ApiResponse(
+                                    success = false,
+                                    message = "같은 타입의 attend 끼리만 저장 가능합니다."
+                            )
+                    )
+            }
+        }.type
+
+        val partyMap = partyService.findPartiesByIds(
+                requests.asSequence().map {
+                    it.courseId
+                            ?: throw ApiException(
+                                    status = HttpStatus.PRECONDITION_FAILED,
+                                    apiResponse = ApiResponse(
+                                            success = false,
+                                            message = "과목은 항상 필요합니다."
+                                    )
+                            )
+                }.toList()).associate { it.id to it }
+
+        attendRepository.deleteAllByUserIdAndType(user.id!!, attendType!!)
+
+        attendRepository.saveAll(
+                requests.map {
+                    Attend(
+                            year = it.year!!,
+                            name = it.name!!,
+                            term = it.term!!,
+                            grade = it.grade!!,
+                            credit = it.credit!!,
+                            section = it.section!!,
+                            type = it.type!!
+                    ).apply {
+                        this.user = user
+                        this.course = courseRepository.findById(it.courseId!!)
+                                .orElseThrow {
+                                    ApiException(
+                                            status = HttpStatus.PRECONDITION_FAILED,
+                                            apiResponse = ApiResponse(
+                                                    success = false,
+                                                    message = "${it.courseId}에 해당하는 과목이 없습니다."
+                                            )
+                                    )
+                                }
+                    }
+                }
+        )
+    }
+
+//    fun modifyAttend(user: User, request: AttendDataDto, attendId: Long) =
+////            findAttendsByIds(listOf(attendId)).first()
+////                    .let {
+////                        it.copy(
+////                                year = request.year ?: it.year,
+////                                name = request.name ?: it.name,
+////                                term = request.term ?: it.term,
+////                                grade = request.grade ?: it.grade,
+////
+////                        )
+////
+////                    }
 
     fun findAttendsByIds(ids: Iterable<Long>) =
-            findAllById(attendRepository, ids).toList()
+            findAllById(attendRepository, ids)
+
+
 }

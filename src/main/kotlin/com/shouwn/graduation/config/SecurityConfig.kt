@@ -52,6 +52,7 @@ class SecurityConfig @Autowired constructor(
                     .and()
                 .authorizeRequests()
                     .antMatchers("/api/list/**").permitAll() // for get list
+                    .antMatchers("/api/parties/belong/**").permitAll() // 학과 목록 조회용
                     .antMatchers("/api/requirements/general/**").permitAll() // 졸업 요건 조회
                     .antMatchers("/api/requirements/major/**").permitAll() // 졸업 요건 조회
                     .antMatchers("/api/auth/**").permitAll() // for sign up, sign in
