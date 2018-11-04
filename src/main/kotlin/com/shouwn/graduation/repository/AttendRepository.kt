@@ -2,6 +2,7 @@ package com.shouwn.graduation.repository
 
 import com.shouwn.graduation.model.domain.dto.request.AttendRequest
 import com.shouwn.graduation.model.domain.entity.Attend
+import com.shouwn.graduation.model.domain.type.AttendType
 import org.springframework.data.neo4j.annotation.Query
 import org.springframework.data.neo4j.repository.Neo4jRepository
 import org.springframework.data.repository.query.Param
@@ -61,9 +62,11 @@ interface AttendRepository : Neo4jRepository<Attend, Long> {
                      @Param("updatedAt") updatedAt: String): Attend
 
     @Query("""
+        WITH {type} AS attendType
         MATCH (u) -[r:ATTEND]-> ()
-        WHERE id(u) = {userId}
+        WHERE ID(u) = {userId} AND r.type = type.value
         DELETE r
     """)
-    fun deleteAllByUserId(@Param("userId") userId: Long)
+    fun deleteAllByUserIdAndType(@Param("userId") userId: Long,
+                                 @Param("type") type: AttendType)
 }
