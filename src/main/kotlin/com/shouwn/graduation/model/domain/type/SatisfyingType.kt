@@ -6,14 +6,14 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import org.neo4j.ogm.typeconversion.AttributeConverter
 
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
-enum class SatisfyingType(val value: Long){
-    COURSE_CREDIT(0), // 하위 과목 몇 점 이상 수강
-    COURSE_COUNT(1), // 하위 과목 몇 개 이상 수강 (중복 가능)
-    CHILDREN(2), // 하위 자식 요건들 충족
-    GENERAL(3), // 교양
-    MAJOR(4), // 전공
-    MINOR(5), // 부전공
-    ALL(6) // 총 학점
+enum class SatisfyingType(val value: Long, val label: String){
+    COURSE_CREDIT(0, "필수 과목 학점"), // 하위 과목 몇 점 이상 수강
+    COURSE_COUNT(1, "필수 과목 갯수"), // 하위 과목 몇 개 이상 수강 (중복 가능)
+    CHILDREN(2, "하위 요건"), // 하위 자식 요건들 충족
+    GENERAL(3, "교양"), // 교양
+    MAJOR(4, "전공"), // 전공
+    MINOR(5, "부전공"), // 부전공
+    ALL(6, "총학점") // 총 학점
     ;
 
     companion object {

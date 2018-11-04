@@ -2,6 +2,7 @@ package com.shouwn.graduation.controller
 
 import com.shouwn.graduation.model.domain.Hint
 import com.shouwn.graduation.model.domain.type.BelongType
+import com.shouwn.graduation.model.domain.type.SatisfyingType
 import com.shouwn.graduation.model.domain.type.SearchType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -23,4 +24,8 @@ class ListController {
     @GetMapping("belongs")
     fun belongType() =
             ResponseEntity.ok(BelongType.values())
+
+    @GetMapping("satisfyings")
+    fun satisfyingType() =
+            ResponseEntity.ok(SatisfyingType.values())
 }
