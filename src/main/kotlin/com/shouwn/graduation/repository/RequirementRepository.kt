@@ -15,4 +15,11 @@ interface RequirementRepository : Neo4jRepository<Requirement, Long> {
         RETURN p
     """)
     fun findAllSubs(): Set<Requirement>
+
+    @Query("""
+        MATCH (requirement: Requirement)
+        WHERE requirement.name =~ {name}
+        RETURN requirement
+    """)
+    fun findAllLikeName(@Param("name") name: String): List<Requirement>
 }
