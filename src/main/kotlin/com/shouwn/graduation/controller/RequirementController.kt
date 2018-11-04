@@ -42,7 +42,11 @@ class RequirementController @Autowired constructor(
                           @RequestBody request: RequirementRequest) =
             ResponseEntity.ok(requirementService.modifyRequirement(user.id, requirementId, request))
 
-    @GetMapping("{name}")
+    @GetMapping("id/{requirementId}")
+    fun findRequirementById(@PathVariable("requirementId") requirementId: Long) =
+            ResponseEntity.ok(requirementService.findRequirementByIds(listOf(requirementId)))
+
+    @GetMapping("name/{name}")
     fun findAllByName(@PathVariable("name") name: String) =
             ResponseEntity.ok(requirementService.findAllByName(name.trim()))
 }
