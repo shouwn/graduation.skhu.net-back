@@ -32,9 +32,6 @@ data class Requirement constructor(
     @Relationship(type = "SUB", direction = Relationship.OUTGOING)
     var subs: Set<Requirement>? = null // 하위 요건
 
-    @Relationship(type = "SUB", direction = Relationship.INCOMING)
-    var parent: Requirement? = null
-
     @Relationship(type = "REQUIRE", direction = Relationship.OUTGOING)
     var courses: Set<Course>? = null // 이 요건 아래에 과목이 있다면 과목과의 관계 표현
 }
