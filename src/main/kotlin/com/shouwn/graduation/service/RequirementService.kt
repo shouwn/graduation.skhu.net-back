@@ -85,6 +85,9 @@ class RequirementService @Autowired constructor(
                         }
                     }
 
+    fun findAllByName(name: String) =
+            requirementRepository.findAllLikeName(".*$name.*")
+
     fun findGeneralRequirements() =
             requirementRepository.findAllSubs()
                     .asSequence()
