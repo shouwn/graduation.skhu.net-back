@@ -8,7 +8,7 @@ import org.springframework.data.annotation.LastModifiedDate
 import java.io.Serializable
 import java.time.LocalDateTime
 
-abstract class DateAudit : Serializable {
+abstract class DateAudit{
     var createdAt: LocalDateTime? = null
 
     var updatedAt: LocalDateTime? = null

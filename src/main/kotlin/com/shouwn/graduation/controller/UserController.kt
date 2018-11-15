@@ -2,6 +2,7 @@ package com.shouwn.graduation.controller
 
 import com.shouwn.graduation.model.domain.dto.request.PasswordModifyRequest
 import com.shouwn.graduation.model.domain.dto.request.UserDataModifyRequest
+import com.shouwn.graduation.model.domain.dto.request.UserSelectRequirementsRequest
 import com.shouwn.graduation.model.domain.type.RoleName
 import com.shouwn.graduation.model.domain.type.SearchType
 import com.shouwn.graduation.repository.UserRepository
@@ -71,4 +72,12 @@ class UserController @Autowired constructor(
                     page = page,
                     size = size
             ))
+
+    @PutMapping("requirements")
+    @Secured("ROLE_STUDENT")
+    fun selectRequirements(@CurrentUser user: UserPrincipal,
+                           @RequestBody request: UserSelectRequirementsRequest) =
+            ResponseEntity.noContent().apply {
+                userService.userSelectRequirement(user.entity, request.requirementIds)
+            }.build<String>()
 }

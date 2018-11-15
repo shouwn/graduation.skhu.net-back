@@ -9,7 +9,7 @@ import java.io.Serializable
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 enum class RoleName constructor(
         val value: String
-) : Serializable{
+){
     ROLE_STUDENT("STUDENT"), // 회원 가입한 유저
     ROLE_ADMIN("ADMIN")
     ;

@@ -23,7 +23,7 @@ class RequirementController @Autowired constructor(
             ResponseEntity.status(HttpStatus.CREATED)
                     .body(requirementService.addRequirement(user.entity.id!!, requirementRequest).let { "요건 생성 완료" })
 
-    @GetMapping("users/{userId}")
+    @GetMapping("user/{userId}")
     fun checkGraduate(@PathVariable("userId") userId: Long) =
             ResponseEntity.ok(requirementService.checkGraduation(userId))
 

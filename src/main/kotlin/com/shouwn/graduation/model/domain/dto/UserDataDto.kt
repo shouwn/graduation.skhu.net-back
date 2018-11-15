@@ -28,5 +28,5 @@ data class UserDataDto (
 
         var attends: List<Attend>? = null,
 
-        var requirement: Long? = null
+        var requirements: List<Long>? = null
 )

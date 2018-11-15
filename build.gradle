@@ -98,15 +98,6 @@ dependencies {
     compile 'org.apache.tika:tika-core:1.14'
     
     compile 'org.modelmapper:modelmapper:2.3.0'
-    
-    // for processor
-    compileOnly 'org.projectlombok:lombok:1.18.4'
-
-    compile 'com.google.auto.service:auto-service:1.0-rc4'
-    kapt 'com.google.auto.service:auto-service:1.0-rc4'
-
-    compile 'com.squareup:javapoet:1.11.1'
-    compile 'com.squareup:kotlinpoet:1.0.0-RC2'
 
     testCompile("org.junit.jupiter:junit-jupiter-api:5.3.1")
     testCompile("org.junit.jupiter:junit-jupiter-params:5.3.1")

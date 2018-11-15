@@ -14,6 +14,6 @@ class WebMvcConfig : WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedOrigins("*")
                 .allowedMethods("HEAD", "OPTIONS", "GET", "POST", "PUT", "PATCH", "DELETE")
-                .maxAge(WebMvcConfig.MAX_AGE_SECS);
+                .maxAge(WebMvcConfig.MAX_AGE_SECS)
     }
 }

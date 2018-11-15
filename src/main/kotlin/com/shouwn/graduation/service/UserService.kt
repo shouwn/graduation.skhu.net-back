@@ -35,6 +35,14 @@ class UserService @Autowired constructor(
 ){
     private val logger = logger()
 
+    fun userSelectRequirement(user: User, requirementIds: List<Long>){
+
+        val selectedRequirement =
+                requirementService.findRequirementByIds(requirementIds).first()
+
+        this.saveUser(user, UserDataDto(requirements =  requirementIds))
+    }
+
     fun modifyPassword(user: User, request: PasswordModifyRequest): User =
             this.saveUser(user, UserDataDto(
                     password = passwordEncoder.encode(request.password)
@@ -97,8 +105,10 @@ class UserService @Autowired constructor(
                             enabled = request.enabled ?: it.enabled,
                             role = request.role ?: it.role
                     ).apply {
-                        requirement = request.requirement?.let { requirementId ->
-                            requirementService.findRequirementByIds(listOf(requirementId)).first() } ?: it.requirement
+                        requirements = request.requirements.let { requirementIds ->
+                            requirementService.findRequirementByIds(requirementIds!!).toList().let {
+                                foundRequirements -> if(foundRequirements.isNullOrEmpty()) it.requirements else foundRequirements }
+                        }
                         parties = request.parties?.let { partyIds ->
                             partyService.findPartiesByIds(partyIds)
                                     .apply { filter { party -> party.belong == BelongType.GENERAL }

@@ -12,7 +12,8 @@ interface RequirementRepository : Neo4jRepository<Requirement, Long> {
 
     @Query("""
         MATCH p = (requirement: Requirement) -[*..]-> ()
-        RETURN p
+        OPTIONAL MATCH p2 = (party:Party) -[:APPLY]-> (requirement)
+        RETURN p, p2
     """)
     fun findAllSubs(): Set<Requirement>
 
