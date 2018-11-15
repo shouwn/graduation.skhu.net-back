@@ -24,7 +24,7 @@ class RequirementPrincipal{
 
     var party: Party? = null // 요건을 만족해야 하는 소속이 어디인가를 나타냄
 
-    var subs: Set<RequirementPrincipal>? = null // 하위 요건
+    var subs: MutableSet<RequirementPrincipal>? = null // 하위 요건
 
     var courses: Set<CoursePrincipal>? = null // 이 요건 아래에 과목이 있다면 과목과의 관계 표현
 }

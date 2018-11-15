@@ -1,5 +1,6 @@
 package com.shouwn.graduation.service
 
+import com.shouwn.graduation.model.domain.dto.CoursePrincipal
 import com.shouwn.graduation.model.domain.dto.RequirementPrincipal
 import com.shouwn.graduation.model.domain.dto.request.RequirementRequest
 import com.shouwn.graduation.model.domain.dto.response.ApiResponse
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.lang.IllegalStateException
 
 @Service
 class RequirementService @Autowired constructor(
@@ -107,17 +109,17 @@ class RequirementService @Autowired constructor(
                     .toList()
 
     @Transactional
-    fun checkGraduation(userId: Long): Int{
+    fun checkGraduation(userId: Long): List<RequirementPrincipal>{
         val user = findAllById(userRepository, setOf(userId)).first()
 
-//        if(!user.requirements.isNullOrEmpty())
-//            throw ApiException(
-//                    status = HttpStatus.PRECONDITION_FAILED,
-//                    apiResponse = ApiResponse(
-//                            success = false,
-//                            message = "졸업 요건이 선택되지 않았습니다,"
-//                    )
-//            )
+        if(user.requirements.isNullOrEmpty())
+            throw ApiException(
+                    status = HttpStatus.PRECONDITION_FAILED,
+                    apiResponse = ApiResponse(
+                            success = false,
+                            message = "졸업 요건이 선택되지 않았습니다,"
+                    )
+            )
 
         val requirements = requirementRepository.findAllSubs()
                 .asSequence()
@@ -127,16 +129,11 @@ class RequirementService @Autowired constructor(
                     }
                 }.toList()
 
-        val generalRequirement = requirements.asSequence()
-                .filter { it.name == "졸업" }
-                .first()
-
-        val majorRequirement = requirements
-                .asSequence()
-                .filter { it.id in user.requirements!!.map { r -> r.id } }
-                .first()
-
-        return this.isMeet(generalRequirement, user.attends!!.toSet(), user)
+        return requirements.asSequence()
+                .filter { it.name == "졸업" || it.id in user.requirements!!.map { r -> r.id } }
+                .onEach {
+                    isMeet(it, user.attends!!.toSet(), user)
+                }.toList()
     }
 
     private fun isMeet(requirement: RequirementPrincipal, attends: Set<Attend>, user: User): Int {
@@ -144,49 +141,65 @@ class RequirementService @Autowired constructor(
         if(user.userNumber.substring(0, 4).toLong().let { it > requirement.clazzMax!!
                         || it < requirement.clazzMin!!
                 }) { // 학번 확인
-            return 0
+            throw IllegalStateException()
         }
-        if(requirement.party?.let { user.parties?.contains(it) } == true)
-            return 0
+        if(requirement.party?.let { user.parties?.contains(it) } == false)
+            throw IllegalStateException()
 
         val requirementCourseIds =
                 requirement.courses?.map { it.id }
 
-        logger.info("${requirement.name} 체크 중")
+        val courseMap = requirement.courses?.associate { it.id!! to it }
 
-        return try { when(requirement.satisfying!!){
+        requirement.isMeet = try { when(requirement.satisfying!!){
             SatisfyingType.COURSE_CREDIT -> {
-                check(attends.filterCredit { it.course?.id in requirementCourseIds!! }
-                        .reduce { acc, d -> acc + d } >= requirement.need!!, requirement.name!!)
+                attends.asSequence().filter { it.course?.id in requirementCourseIds!! }
+                        .onEach { courseMap?.get(it.course?.id)?.isMeet = true }
+                        .map { it.credit }
+                        .reduce { acc, d -> acc + d } >= requirement.need!!
             }
             SatisfyingType.COURSE_COUNT -> {
-                check(attends.asSequence().filter { it.course?.id in requirementCourseIds!! }
-                        .count() >= requirement.need!!, requirement.name!!)
+                attends.asSequence().filter { it.course?.id in requirementCourseIds!! }
+                        .onEach { courseMap?.get(it.course?.id)?.isMeet = true }
+                        .map { it.credit }
+                        .count() >= requirement.need!!
             }
             SatisfyingType.CHILDREN -> {
-                check(requirement.subs!!.asSequence().map { this.isMeet(it, attends, user) }
-                        .reduce { acc, i -> acc + i } >= requirement.need!!, requirement.name!!)
+                val removedRequirements = mutableSetOf<RequirementPrincipal>()
+
+                requirement.subs!!.asSequence().map {
+                    try {
+                        this.isMeet(it, attends, user)
+                    } catch (e: IllegalStateException){
+                        removedRequirements.add(it)
+                        0
+                    }
+                }.reduce { acc, i -> acc + i } >= requirement.need!!
+                        .apply {
+                            requirement.subs!!.removeAll(removedRequirements)
+                        }
             }
             SatisfyingType.GENERAL -> {
-                check(attends.filterCredit { it.section in SectionType.GENERAL_SET }
-                        .reduce { acc, d -> acc + d } >= requirement.need!!, requirement.name!!)
+                attends.filterCredit { it.section in SectionType.GENERAL_SET }
+                        .reduce { acc, d -> acc + d } >= requirement.need!!
             }
             SatisfyingType.MAJOR -> {
-                check(attends.filterCredit { it.section in SectionType.MAJOR_SET }
-                        .reduce { acc, d -> acc + d } >= requirement.need!!, requirement.name!!)
+                attends.filterCredit { it.section in SectionType.MAJOR_SET }
+                        .reduce { acc, d -> acc + d } >= requirement.need!!
             }
             SatisfyingType.MINOR -> {
-                check(attends.filterCredit { it.section in SectionType.MINOR_SET }
-                        .reduce { acc, d -> acc + d } >= requirement.need!!, requirement.name!!)
+                attends.filterCredit { it.section in SectionType.MINOR_SET }
+                        .reduce { acc, d -> acc + d } >= requirement.need!!
             }
             SatisfyingType.ALL -> {
-                check(attends.filterCredit { true }
-                        .reduce { acc, d -> acc + d } >= requirement.need!!, requirement.name!!)
+                attends.filterCredit { true }
+                        .reduce { acc, d -> acc + d } >= requirement.need!!
             }
-        }}
-        catch (e: UnsupportedOperationException) {
-            0
+        }} catch (e: UnsupportedOperationException) {
+            false
         }
+
+        return requirement.isMeet.let { if(it) 1 else 0 }
     }
 
     fun findRequirementByIds(ids: Iterable<Long>) =

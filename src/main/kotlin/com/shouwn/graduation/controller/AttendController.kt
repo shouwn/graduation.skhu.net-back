@@ -18,7 +18,7 @@ class AttendController @Autowired constructor(
 
     @PostMapping
     fun addAttendFromFile(@CurrentUser user: UserPrincipal,
-                          @RequestBody file: MultipartFile) =
+                          @RequestParam file: MultipartFile) =
             ResponseEntity.status(HttpStatus.CREATED)
                     .body(attendService.addAttendFromFile(user, file.inputStream))
 
