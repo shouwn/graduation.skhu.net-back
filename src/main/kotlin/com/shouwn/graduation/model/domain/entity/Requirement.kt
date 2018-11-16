@@ -1,10 +1,13 @@
 package com.shouwn.graduation.model.domain.entity
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.shouwn.graduation.model.domain.entity.audit.UserDateAudit
 import com.shouwn.graduation.model.domain.type.SatisfyingType
 import com.shouwn.graduation.model.domain.type.SatisfyingTypeConverter
 import org.neo4j.ogm.annotation.*
 import org.neo4j.ogm.annotation.typeconversion.Convert
+import java.io.Serializable
 
 @NodeEntity
 data class Requirement constructor(
@@ -24,9 +27,9 @@ data class Requirement constructor(
 
         var clazzMax: Long // 요건이 해당되는 학번을 가르킴 e.g.) 2013 이면 ~ 2013
 
-) : UserDateAudit() {
+) : UserDateAudit(){
 
-    @Relationship(type = "APPLY", direction = Relationship.OUTGOING)
+    @Relationship(type = "APPLY", direction = Relationship.INCOMING)
     var party: Party? = null // 요건을 만족해야 하는 소속이 어디인가를 나타냄
 
     @Relationship(type = "SUB", direction = Relationship.OUTGOING)

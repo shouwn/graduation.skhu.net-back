@@ -4,9 +4,6 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
-import org.springframework.boot.builder.SpringApplicationBuilder
-import java.util.HashMap
-
 
 @SpringBootApplication
 class Application

@@ -4,6 +4,7 @@ import com.shouwn.graduation.model.domain.dto.request.CourseRequest
 import com.shouwn.graduation.model.domain.dto.response.ApiResponse
 import com.shouwn.graduation.model.domain.entity.Course
 import com.shouwn.graduation.model.domain.entity.Party
+import com.shouwn.graduation.model.domain.entity.User
 import com.shouwn.graduation.model.domain.exception.ApiException
 import com.shouwn.graduation.repository.CourseRepository
 import com.shouwn.graduation.repository.PartyRepository
@@ -27,6 +28,55 @@ class CourseService @Autowired constructor(
         private val partyRepository: PartyRepository
 ){
     private val logger = logger()
+
+    fun findCourseCanReplaced(courseId: Long) =
+            courseRepository.findAllReplacedCourse(courseId)
+
+    fun disableCourse(user: User, courseId: Long) =
+            courseRepository.findById(courseId).orElseThrow { throw ApiException(
+                    status = HttpStatus.NOT_FOUND,
+                    apiResponse = ApiResponse(
+                            success = false,
+                            message = "해당 과목을 찾을 수 없습니다."
+                    )
+            ) }.let {
+                it.copy(
+                        enabled = false
+                ).apply {
+                    updateUserDateAudit(user.id!!, it)
+                    replacement = it.replacement
+                    parties = it.parties
+                }
+            }.let { courseRepository.save(it) }
+
+    fun setReplaceByFile(user: User, file: InputStream){ // 문제 소지 있음. 폐강되었다가 다시 부활하면? 대체가 풀리면?
+        val sheet = WorkbookFactory.create(file).getSheetAt(0)
+        val rows = sheet.physicalNumberOfRows
+
+        val courseMap = courseRepository.findAll().associate { it.code to it!! }
+
+        val changedCourses = mutableListOf<Course>()
+
+        for(rowIndex in 1..rows){
+            val row = sheet.getRow(rowIndex)
+
+            if(row != null){
+                val code = row.getCell(2).toValueString().trim()
+                if(courseMap[code] != null) {
+                    courseMap[code]!!.enabled = false
+                    val replaceCode = row.getCell(6).toValueString().trim()
+
+                    if (replaceCode.isNotEmpty() && courseMap[replaceCode] != null) {
+                        courseMap[code]!!.replacement = courseMap[replaceCode]!!
+                    }
+
+                    courseMap[code]?.let { changedCourses.add(it) }
+                }
+            }
+        }
+
+        courseRepository.saveAll(changedCourses)
+    }
 
     fun addCourseFromFile(user: UserPrincipal, file: InputStream): List<Course>{
 

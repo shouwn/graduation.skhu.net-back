@@ -5,6 +5,7 @@ import com.shouwn.graduation.model.domain.type.BelongType
 import com.shouwn.graduation.model.domain.type.BelongTypeConverter
 import org.neo4j.ogm.annotation.*
 import org.neo4j.ogm.annotation.typeconversion.Convert
+import java.io.Serializable
 
 @NodeEntity
 data class Party constructor(

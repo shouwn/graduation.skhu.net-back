@@ -41,7 +41,7 @@ data class User constructor(
 
     @JsonIgnore
     @Relationship(type = "SELECT", direction = Relationship.OUTGOING)
-    var requirement: Requirement? = null
+    var requirements: List<Requirement>? = null
 
     @Relationship(type = "BELONG", direction = Relationship.OUTGOING)
     var parties: List<Party>? = null // IT 융합부에 소속되면서 소프트웨어공학과에 소속된다면?

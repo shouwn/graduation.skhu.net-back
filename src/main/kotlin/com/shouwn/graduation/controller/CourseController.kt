@@ -35,4 +35,22 @@ class CourseController @Autowired constructor(
                                 @PathVariable("name") name: String,
                                 @PathVariable("partyName") partyName: String) =
             ResponseEntity.ok(courseService.findCoursesLikeCodeAndName(code.trim(), name.trim(), partyName.trim()))
+
+    @PutMapping("disable/{courseId}")
+    @Secured("ROLE_ADMIN")
+    fun disableCourse(@CurrentUser user: UserPrincipal,
+                      @PathVariable courseId: Long) =
+            ResponseEntity.ok(courseService.disableCourse(user.entity, courseId))
+
+    @PostMapping("replace")
+    @Secured("ROLE_ADMIN")
+    fun replaceByFile(@CurrentUser user: UserPrincipal,
+                      @RequestParam file: MultipartFile) =
+            ResponseEntity.noContent()
+                    .apply { courseService.setReplaceByFile(user.entity, file.inputStream) }
+                    .build<String>()
+
+    @GetMapping("{courseId}/replace")
+    fun findCanReplacedCourse(@PathVariable courseId: Long) =
+            ResponseEntity.ok(courseService.findCourseCanReplaced(courseId))
 }

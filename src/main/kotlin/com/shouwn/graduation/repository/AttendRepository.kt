@@ -13,6 +13,13 @@ interface AttendRepository : Neo4jRepository<Attend, Long> {
 //    a.section = attend.section.value, a.updatedBy = attend.updatedBy, a.updatedAt = attend.updatedAt
 
     @Query("""
+        MATCH p = () <-[attend:ATTEND]- (user: User)
+        WHERE ID(user) = {userId}
+        RETURN p ORDER BY attend.year, attend.term
+    """)
+    fun findAllByUserIdOrderByYearAndTerm(@Param("userId") userId: Long): List<Attend>
+
+    @Query("""
 
     """)
     fun deleteByUserIdAndType(@Param("userId") userId: Long,
@@ -35,13 +42,11 @@ interface AttendRepository : Neo4jRepository<Attend, Long> {
                     @Param("attends") attends: List<Attend>): List<Attend>
 
     @Query("""
-        MATCH (u: User)
-        WHERE id(u) = {userId}
-        MATCH (c: Course)
-        WHERE id(c) = {courseId}
         MATCH (u) -[old:ATTEND]-> (c)
         WHERE id(old) = {attendId}
-        CREATE p = (u) -[a:ATTEND]-> (c)
+        MATCH (newCourse: Course)
+        WHERE id(newCourse) = {courseId}
+        CREATE p = (u) -[a:ATTEND]-> (newCourse)
         SET a = old, a.year = {year}, a.term = {term}, a.grade = {grade}, a.type = {type},
           a.section = {section}, a.updatedBy = {updatedBy}, a.updatedAt = {updatedAt},
           a.credit = {credit}, a.name = {name},

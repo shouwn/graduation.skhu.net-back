@@ -65,4 +65,13 @@ interface CourseRepository : Neo4jRepository<Course, Long>{
     fun findAllLikeCodeAndName(@Param("code") code: String,
                                @Param("name") name: String,
                                @Param("partyName") partyName: String): List<Course>
+
+    @Query("""MATCH (origin:Course) <-[:OPEN]- (party:Party)
+        WHERE ID(origin) = {courseId}
+        OPTIONAL MATCH (closed:Course) <-[:OPEN]- (party)
+        WHERE closed.enabled = false
+        OPTIONAL MATCH (origin) <-[:REPLACE]- (canReplace:Course)
+        RETURN closed, canReplace
+    """)
+    fun findAllReplacedCourse(@Param("courseId") courseId: Long): List<Course>
 }

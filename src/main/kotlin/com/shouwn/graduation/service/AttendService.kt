@@ -135,21 +135,46 @@ class AttendService @Autowired constructor(
         )
     }
 
-//    fun modifyAttend(user: User, request: AttendDataDto, attendId: Long) =
-////            findAttendsByIds(listOf(attendId)).first()
-////                    .let {
-////                        it.copy(
-////                                year = request.year ?: it.year,
-////                                name = request.name ?: it.name,
-////                                term = request.term ?: it.term,
-////                                grade = request.grade ?: it.grade,
-////
-////                        )
-////
-////                    }
+    fun modifyAttend(user: User, request: AttendDataDto, attendId: Long) =
+            this.findAttendsByIds(listOf(attendId)).first()
+                    .let {
+                        it.copy(
+                                year = request.year ?: it.year,
+                                name = request.name ?: it.name,
+                                term = request.term ?: it.term,
+                                grade = request.grade ?: it.grade,
+                                credit = request.credit ?: it.credit,
+                                section = request.section ?: it.section
+                                // type 은 수강 예정이냐, 수강한 것이냐를 가르키기 때문에
+                                // 변경 되면 안 되어서 제외
+                        ).apply {
+                            this.updateUserDateAudit(user.id!!, it)
+                            this.user = user
+                            if (it.course?.id != request.courseId) {
+                                println(it.course?.id)
+                                println(request.courseId)
+                                this.course =
+                                        findAllById(courseRepository, listOf(request.courseId!!)).first()
+                                this.name = "${this.name} -> ${this.course!!.name}"
+                            }
+                        }
+                    }.let { attendRepository.updateAttend(
+                            attendId = it.id!!,
+                            courseId = it.course!!.id!!,
+                            year = it.year,
+                            name = it.name,
+                            credit = it.credit,
+                            term = it.term.value,
+                            grade = it.grade.value,
+                            section = it.section.value,
+                            type = it.type.value,
+                            updatedAt = it.updatedAt.toString(),
+                            updatedBy = it.updatedBy!!
+                    ) }
 
     fun findAttendsByIds(ids: Iterable<Long>) =
             findAllById(attendRepository, ids)
 
-
+    fun attendsByUserId(userId: Long) =
+            this.attendRepository.findAllByUserIdOrderByYearAndTerm(userId)
 }
