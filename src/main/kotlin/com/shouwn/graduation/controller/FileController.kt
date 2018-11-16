@@ -20,7 +20,7 @@ class FileController @Autowired constructor(
 ){
     @GetMapping("/downloadFile/{fileName:.+}")
     fun downloadFile(@PathVariable fileName: String, request: HttpServletRequest): ResponseEntity<Resource>{
-        val resource = fileStorageService.loadFileAsResource(fileName)
+        val resource = fileStorageService.loadFileAsResource("$fileName.xlsx")
 
         val contentType =
             request.servletContext.getMimeType(resource.file.absolutePath) ?: "application/octet-stream"

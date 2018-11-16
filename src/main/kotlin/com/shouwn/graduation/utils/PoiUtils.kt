@@ -9,5 +9,6 @@ fun Cell.toValueString(): String =
             Cell.CELL_TYPE_STRING -> this.stringCellValue
             Cell.CELL_TYPE_BOOLEAN -> this.booleanCellValue.toString()
             Cell.CELL_TYPE_ERROR -> this.errorCellValue.toString()
+            Cell.CELL_TYPE_BLANK -> ""
             else -> throw IllegalArgumentException()
         }

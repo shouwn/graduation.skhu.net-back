@@ -136,7 +136,7 @@ class AttendService @Autowired constructor(
     }
 
     fun modifyAttend(user: User, request: AttendDataDto, attendId: Long) =
-            this.attendRepository.save(this.findAttendsByIds(listOf(attendId)).first()
+            this.findAttendsByIds(listOf(attendId)).first()
                     .let {
                         it.copy(
                                 year = request.year ?: it.year,
@@ -150,14 +150,31 @@ class AttendService @Autowired constructor(
                         ).apply {
                             this.updateUserDateAudit(user.id!!, it)
                             this.user = user
-                            if (it.course?.id != request.courseId)
+                            if (it.course?.id != request.courseId) {
+                                println(it.course?.id)
+                                println(request.courseId)
                                 this.course =
                                         findAllById(courseRepository, listOf(request.courseId!!)).first()
+                                this.name = "${this.name} -> ${this.course!!.name}"
+                            }
                         }
-                    })
+                    }.let { attendRepository.updateAttend(
+                            attendId = it.id!!,
+                            courseId = it.course!!.id!!,
+                            year = it.year,
+                            name = it.name,
+                            credit = it.credit,
+                            term = it.term.value,
+                            grade = it.grade.value,
+                            section = it.section.value,
+                            type = it.type.value,
+                            updatedAt = it.updatedAt.toString(),
+                            updatedBy = it.updatedBy!!
+                    ) }
 
     fun findAttendsByIds(ids: Iterable<Long>) =
             findAllById(attendRepository, ids)
 
-
+    fun attendsByUserId(userId: Long) =
+            this.attendRepository.findAllByUserIdOrderByYearAndTerm(userId)
 }

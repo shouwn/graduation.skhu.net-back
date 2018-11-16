@@ -21,7 +21,6 @@ class FileStorageService {
         fileStorageLocation = Paths.get(dir)
                 .toAbsolutePath().normalize()
 
-        println(fileStorageLocation)
         Files.createDirectories(this.fileStorageLocation)
     }
 
