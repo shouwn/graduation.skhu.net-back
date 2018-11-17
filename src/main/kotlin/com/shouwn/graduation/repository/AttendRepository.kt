@@ -69,7 +69,7 @@ interface AttendRepository : Neo4jRepository<Attend, Long> {
     @Query("""
         WITH {type} AS attendType
         MATCH (u) -[r:ATTEND]-> ()
-        WHERE ID(u) = {userId} AND r.type = type.value
+        WHERE ID(u) = {userId} AND r.type = attendType.value
         DELETE r
     """)
     fun deleteAllByUserIdAndType(@Param("userId") userId: Long,
