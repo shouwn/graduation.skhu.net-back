@@ -1,5 +1,6 @@
 package com.shouwn.graduation.service
 
+import com.shouwn.graduation.utils.logger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.UrlResource
 import org.springframework.stereotype.Service
@@ -16,10 +17,14 @@ class FileStorageService {
 
     private lateinit var fileStorageLocation: Path
 
+    private val logger = logger()
+
     @PostConstruct
     fun init(){
         fileStorageLocation = Paths.get(dir)
                 .toAbsolutePath().normalize()
+
+        logger.info("dir: $fileStorageLocation")
 
         Files.createDirectories(this.fileStorageLocation)
     }

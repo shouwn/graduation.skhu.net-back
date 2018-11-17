@@ -161,10 +161,11 @@ class UserService @Autowired constructor(
                     id = it.id!!
                     userNumber = it.userNumber
                     credit =
-                            if (it.attends?.isEmpty() == true) 0.0
-                            else it.attends!!.asSequence()
-                                    .map { attend -> attend.credit }
-                                    .reduce { acc, d -> acc + d }
+                            if (it.attends?.isEmpty() == false)
+                                it.attends!!.asSequence()
+                                        .map { attend -> attend.credit }
+                                        .reduce { acc, d -> acc + d }
+                            else 0.0
                     name = it.name
                     email = it.email
                     role = it.role
