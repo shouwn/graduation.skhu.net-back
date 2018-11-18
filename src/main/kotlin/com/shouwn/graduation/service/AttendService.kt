@@ -157,6 +157,8 @@ class AttendService @Autowired constructor(
                                         findAllById(courseRepository, listOf(request.courseId!!)).first()
                                 this.name = "${this.name} -> ${this.course!!.name}"
                             }
+                            else
+                                this.course = it.course
                         }
                     }.let { attendRepository.updateAttend(
                             attendId = it.id!!,
