@@ -55,4 +55,13 @@ class KotlinBasic{
 
         println(Test(10, 20).apply { c = 100 }.copy(a = 20).c)
     }
+
+    @Test
+    fun nullSafe(){
+        println(TestBox().text?.let { "TEST" })
+    }
+
+    private inner class TestBox{
+        var text: String? = null
+    }
 }
