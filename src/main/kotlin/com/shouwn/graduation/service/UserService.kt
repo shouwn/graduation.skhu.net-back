@@ -105,10 +105,10 @@ class UserService @Autowired constructor(
                             enabled = request.enabled ?: it.enabled,
                             role = request.role ?: it.role
                     ).apply {
-                        requirements = request.requirements.let { requirementIds ->
-                            requirementService.findRequirementByIds(requirementIds!!).toList().let {
+                        requirements = request.requirements?.let { requirementIds ->
+                            requirementService.findRequirementByIds(requirementIds).toList().let {
                                 foundRequirements -> if(foundRequirements.isNullOrEmpty()) it.requirements else foundRequirements }
-                        }
+                        } ?: it.requirements
                         parties = request.parties?.let { partyIds ->
                             partyService.findPartiesByIds(partyIds)
                                     .apply { filter { party -> party.belong == BelongType.GENERAL }
