@@ -49,4 +49,8 @@ class AttendController @Autowired constructor(
                     user.entity,
                     AttendDataDto(courseId = courseId),
                     attendId))
+
+    @GetMapping("{attendId}")
+    fun findAttendById(@PathVariable attendId: Long) =
+            ResponseEntity.ok(attendService.findAttendsByIds(listOf(attendId)).first())
 }
