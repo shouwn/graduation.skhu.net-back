@@ -112,14 +112,14 @@ class RequirementService @Autowired constructor(
     fun checkGraduation(userId: Long): List<RequirementPrincipal>{
         val user = findAllById(userRepository, setOf(userId)).first()
 
-        if(user.requirements.isNullOrEmpty())
-            throw ApiException(
-                    status = HttpStatus.PRECONDITION_FAILED,
-                    apiResponse = ApiResponse(
-                            success = false,
-                            message = "졸업 요건이 선택되지 않았습니다,"
-                    )
-            )
+//        if(user.requirements.isNullOrEmpty())
+//            throw ApiException(
+//                    status = HttpStatus.PRECONDITION_FAILED,
+//                    apiResponse = ApiResponse(
+//                            success = false,
+//                            message = "졸업 요건이 선택되지 않았습니다,"
+//                    )
+//            )
 
         val requirements = requirementRepository.findAllSubs()
                 .asSequence()
@@ -130,7 +130,7 @@ class RequirementService @Autowired constructor(
                 }.toList()
 
         return requirements.asSequence()
-                .filter { it.name == "졸업" || it.id in user.requirements!!.map { r -> r.id } }
+                .filter { it.name == "졸업" || user.requirements?.map { r -> r.id }?.contains(it.id) ?: false }
                 .onEach {
                     isMeet(it, user.attends!!.toSet(), user)
                 }.toList()

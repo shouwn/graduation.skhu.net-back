@@ -39,7 +39,6 @@ data class User constructor(
     @Relationship(type = "ATTEND", direction = Relationship.OUTGOING)
     var attends: List<Attend>? = null
 
-    @JsonIgnore
     @Relationship(type = "SELECT", direction = Relationship.OUTGOING)
     var requirements: List<Requirement>? = null
 
