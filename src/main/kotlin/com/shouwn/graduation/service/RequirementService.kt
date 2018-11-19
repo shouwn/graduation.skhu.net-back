@@ -20,6 +20,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.lang.IllegalStateException
+import java.util.*
 
 @Service
 class RequirementService @Autowired constructor(
@@ -134,6 +135,15 @@ class RequirementService @Autowired constructor(
                 .onEach {
                     isMeet(it, user.attends!!.toSet(), user)
                 }.toList()
+                .let { sortRequirements(it) }
+    }
+
+    private fun sortRequirements(requirements: Iterable<RequirementPrincipal>): List<RequirementPrincipal> {
+        requirements.asSequence()
+                .filter { it.subs?.isNotEmpty() ?: false }
+                .forEach { it.subs = sortRequirements(it.subs!!).toMutableSet() }
+
+        return requirements.sortedWith(compareBy(RequirementPrincipal::id))
     }
 
     private fun isMeet(requirement: RequirementPrincipal, attends: Set<Attend>, user: User): Int {
