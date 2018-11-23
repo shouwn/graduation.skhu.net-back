@@ -26,15 +26,15 @@ class InterviewController @Autowired constructor(
                     .status(HttpStatus.CREATED)
                     .body(interviewService.saveInterview(user.entity, askerId, interviewRequest))
 
-    @GetMapping("ask/{askerId}")
+    @GetMapping("asker/{askerId}")
     fun findInterviewsByAsker(@PathVariable("askerId") askerId: Long) =
             ResponseEntity.ok(interviewService.findInterviewByAsker(askerId))
 
-    @GetMapping("write/{writerId}")
+    @GetMapping("writer/{writerId}")
     fun findInterviewsByWriter(@PathVariable("writerId") writerId: Long) =
             ResponseEntity.ok(interviewService.findInterviewByWriter(writerId))
 
-    @PutMapping("update/{interviewId}")
+    @PutMapping("interview/{interviewId}")
     fun updateInterview(@PathVariable interviewId: Long,
                         @Valid @RequestBody interviewRequest: InterviewRequest,
                         @CurrentUser user: UserPrincipal) =

@@ -39,6 +39,10 @@ class InterviewService @Autowired constructor(
                     ?.let { interviewRepository.save(it.copy(
                             title = interviewRequest.title,
                             content = interviewRequest.content
-                    )) }
+                    ).apply {
+                        this.asker = it.asker
+                        this.writer = it.writer
+                        this.updateUserDateAudit(user.id, it)
+                    })}
                     ?: throw ApiException(HttpStatus.BAD_REQUEST, ApiResponse(false, "작성자가 다릅니다."))
 }
