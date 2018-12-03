@@ -25,7 +25,7 @@ enum class GradeType(val value: Long, val grade: Double, val label: String){
         private val mapLabel = GradeType.values().associate { it.label to it }
 
         fun valueOf(value: Long): GradeType =
-                map[value] ?: throw IllegalStateException("$value 에 해당하는 타입이 없습니다.")
+                map[value] ?: throw IllegalStateException("$value 에 해당하는 타입이 없습니다.") as Throwable
 
         fun labelOf(value: String): GradeType =
                 mapLabel[value] ?: throw IllegalStateException("$value 에 해당하는 타입이 없습니다.")

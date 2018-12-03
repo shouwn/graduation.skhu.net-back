@@ -38,14 +38,15 @@ class UserController @Autowired constructor(
     fun findSelfStudentData(@CurrentUser user: UserPrincipal) =
             ResponseEntity.ok(userService.userResponse(user.entity))
 
-    @GetMapping("student/{searchTypeValue}/{searchTxt}/{partyId}/{year}/{page}/{size}")
+    @GetMapping("student/{searchTypeValue}/{searchTxt}/{partyId}/{year}/{page}/{size}/{enough}")
     @Secured("ROLE_ADMIN")
     fun findStudentBySearch(@PathVariable("searchTypeValue") searchTypeValue: Long,
                          @PathVariable("searchTxt") searchTxt: String,
                          @PathVariable("partyId") partyId: Long,
                          @PathVariable("year") year: Int,
                          @PathVariable("page") page: Int,
-                         @PathVariable("size") size: Int) =
+                         @PathVariable("size") size: Int,
+                         @PathVariable("enough") enough: Boolean) =
             ResponseEntity.ok(userService.findUserBySearching(
                     type = SearchType.valueOf(searchTypeValue),
                     searchTxt = searchTxt,
@@ -53,7 +54,8 @@ class UserController @Autowired constructor(
                     partyId = partyId,
                     year = year,
                     page = page,
-                    size = size
+                    size = size,
+                    enough = enough
             ))
 
     @GetMapping("admin/{searchTypeValue}/{searchTxt}/{partyId}/{year}/{page}/{size}")
@@ -70,7 +72,8 @@ class UserController @Autowired constructor(
                     partyId = partyId,
                     year = 0,
                     page = page,
-                    size = size
+                    size = size,
+                    enough = false
             ))
 
     @PutMapping("requirements")
