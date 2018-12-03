@@ -83,9 +83,14 @@ class UserService @Autowired constructor(
 
     fun findUserBySearching(type: SearchType, searchTxt: String,
                             role: RoleName, partyId: Long, year: Int,
-                            page: Int, size: Int) =
+                            page: Int, size: Int, enough: Boolean) =
             findAllUserBySearching(type, searchTxt, role, partyId, year, page, size)
+                    .filter { if(enough) !requirementService.checkGraduation(it.id)
+                            .map { requirement -> println(requirement.isMeet)
+                                requirement.isMeet }
+                            .reduce { boo, b -> boo && b } else true}
                     .map { userResponse(it) }
+                    .toList()
 
     fun userResponse(user: User) =
             this.userResponse(this.userData(user))
