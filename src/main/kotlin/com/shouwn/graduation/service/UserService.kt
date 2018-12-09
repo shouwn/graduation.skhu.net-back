@@ -95,7 +95,7 @@ class UserService @Autowired constructor(
                                 .toList()
 
                 PageImpl(filteredUserData, page.pageable, page.totalElements)
-            }
+            }.map { userResponse(it) }
 
     fun userResponse(user: User) =
             this.userResponse(this.userData(user))
