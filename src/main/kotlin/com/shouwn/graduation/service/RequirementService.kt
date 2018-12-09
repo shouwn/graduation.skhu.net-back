@@ -132,8 +132,8 @@ class RequirementService @Autowired constructor(
 
         return requirements.asSequence()
                 .filter { it.name == "졸업" || user.requirements?.map { r -> r.id }?.contains(it.id) ?: false }
-                .onEach {
-                    isMeet(it, user.attends!!.toSet(), user)
+                .onEach { requirement ->
+                    user.attends?.let { isMeet(requirement, it.toSet(), user) }
                 }.toList()
                 .let { sortRequirements(it) }
     }
