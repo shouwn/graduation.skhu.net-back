@@ -12,7 +12,6 @@ class InfoController(
 ) {
 
     @GetMapping("profile")
-    fun profile(): String? {
-        return env.activeProfiles.firstOrNull()
-    }
+    fun profile() =
+         env.activeProfiles.firstOrNull()
 }
