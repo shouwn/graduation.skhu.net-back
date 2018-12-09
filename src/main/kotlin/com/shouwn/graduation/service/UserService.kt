@@ -17,6 +17,7 @@ import com.shouwn.graduation.utils.findAllById
 import com.shouwn.graduation.utils.info
 import com.shouwn.graduation.utils.logger
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.http.HttpStatus
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -84,13 +85,17 @@ class UserService @Autowired constructor(
     fun findUserBySearching(type: SearchType, searchTxt: String,
                             role: RoleName, partyId: Long, year: Int,
                             page: Int, size: Int, enough: Boolean) =
-            findAllUserBySearching(type, searchTxt, role, partyId, year, page, size)
-                    .filter { if(enough) !requirementService.checkGraduation(it.id)
-                            .map { requirement -> println(requirement.isMeet)
-                                requirement.isMeet }
-                            .reduce { boo, b -> boo && b } else true}
-                    .map { userResponse(it) }
-                    .toList()
+            findAllUserBySearching(type, searchTxt, role, partyId, year, page, size).let{ page ->
+
+                val filteredUserData =
+                        page.content.filter { if(enough) !requirementService.checkGraduation(it.id)
+                                .map { requirement -> println(requirement.isMeet)
+                                    requirement.isMeet }
+                                .reduce { boo, b -> boo && b } else true}
+                                .toList()
+
+                PageImpl(filteredUserData, page.pageable, page.totalElements)
+            }
 
     fun userResponse(user: User) =
             this.userResponse(this.userData(user))
